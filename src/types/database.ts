@@ -507,6 +507,62 @@ export type Database = {
           },
         ];
       };
+      pet_alerts: {
+        Row: {
+          commune_code: string | null;
+          created_at: string;
+          id: string;
+          kind: Database["public"]["Enums"]["listing_kind"];
+          region_code: string | null;
+          size: Database["public"]["Enums"]["pet_size"] | null;
+          species: Database["public"]["Enums"]["species"] | null;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          commune_code?: string | null;
+          created_at?: string;
+          id?: string;
+          kind?: Database["public"]["Enums"]["listing_kind"];
+          region_code?: string | null;
+          size?: Database["public"]["Enums"]["pet_size"] | null;
+          species?: Database["public"]["Enums"]["species"] | null;
+          user_id?: string;
+        };
+        Update: {
+          commune_code?: string | null;
+          created_at?: string;
+          id?: string;
+          kind?: Database["public"]["Enums"]["listing_kind"];
+          region_code?: string | null;
+          size?: Database["public"]["Enums"]["pet_size"] | null;
+          species?: Database["public"]["Enums"]["species"] | null;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "pet_alerts_commune_code_fkey";
+            columns: ["commune_code"];
+            isOneToOne: false;
+            referencedRelation: "communes";
+            referencedColumns: ["code"];
+          },
+          {
+            foreignKeyName: "pet_alerts_region_code_fkey";
+            columns: ["region_code"];
+            isOneToOne: false;
+            referencedRelation: "regions";
+            referencedColumns: ["code"];
+          },
+          {
+            foreignKeyName: "pet_alerts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       pet_photos: {
         Row: {
           created_at: string;
