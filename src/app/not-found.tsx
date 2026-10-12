@@ -11,7 +11,7 @@ export default function NotFound() {
         Puede que la publicación ya no esté disponible, que haya sido pausada o que el enlace sea incorrecto.
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <ButtonLink href="/mascotas">Ver perritos</ButtonLink>
+        <ButtonLink href="/mascotas">Ver mascotas</ButtonLink>
         <ButtonLink href="/" variant="secondary">
           Ir al inicio
         </ButtonLink>

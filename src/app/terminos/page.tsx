@@ -19,8 +19,9 @@ export default function TermsPage() {
         <h2>1. Qué es {APP_NAME}</h2>
         <p>
           {APP_NAME} es una plataforma gratuita que conecta a personas, rescatistas y fundaciones para dar en adopción a
-          perritos rescatados y ayudar a reencontrar perritos perdidos. {APP_NAME} no es dueño de los animales publicados ni
-          participa en los acuerdos entre las partes: es un punto de encuentro.
+          mascotas rescatadas y ayudar a reencontrar mascotas perdidas. Es exclusivamente para animales domésticos (perros,
+          gatos, conejos, roedores, aves domésticas, caballos y otros animales de compañía o de granja). {APP_NAME} no es
+          dueño de los animales publicados ni participa en los acuerdos entre las partes: es un punto de encuentro.
         </p>
 
         <h2>2. Requisitos para usar {APP_NAME}</h2>
@@ -38,7 +39,11 @@ export default function TermsPage() {
             “gastos”, “donación obligatoria”).
           </li>
           <li>Publicar animales para cruza, crianza comercial, peleas o cualquier fin que afecte su bienestar.</li>
-          <li>Publicar información falsa, fotos que no correspondan o perritos que ya no estén disponibles.</li>
+          <li>Publicar información falsa, fotos que no correspondan o animales que ya no estén disponibles.</li>
+          <li>
+            Publicar fauna silvestre o exótica (aves nativas, reptiles, primates u otros animales silvestres), cuya captura,
+            tenencia y comercio están regulados por la Ley de Caza N° 19.473 y fiscalizados por el SAG.
+          </li>
           <li>Acosar, amenazar, discriminar o insultar a otras personas.</li>
           <li>Suplantar a otras personas u organizaciones.</li>
           <li>Pedir datos bancarios, claves o códigos de verificación.</li>

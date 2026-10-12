@@ -1,9 +1,9 @@
 import type { Enums } from "@/types/database";
 
 export const APP_NAME = "Huellitas";
-export const APP_TAGLINE = "Adopción responsable de perritos rescatados en Chile";
+export const APP_TAGLINE = "Adopción responsable de mascotas rescatadas en Chile";
 export const APP_DESCRIPTION =
-  "Encuentra, adopta y ayuda a perritos de la calle en todo Chile. Publicaciones verificadas, mensajería segura y seguimiento post-adopción.";
+  "Encuentra, adopta y ayuda a perros, gatos y otros animales rescatados en todo Chile. Publicaciones verificadas, mensajería segura y seguimiento post-adopción.";
 
 export const MAX_PHOTOS = 8;
 export const PAGE_SIZE = 12;

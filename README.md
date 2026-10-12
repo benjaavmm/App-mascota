@@ -1,6 +1,6 @@
-# 🐾 Huellitas — Adopción responsable de perritos de la calle
+# 🐾 Huellitas — Adopción responsable de mascotas de todas las especies
 
-Aplicación web (instalable en el celular como app) para **adoptar, publicar y reencontrar perritos** en todo Chile, con foco en la **seguridad de las personas y de los perritos**.
+Aplicación web (instalable en el celular como app) para **adoptar, publicar y reencontrar mascotas de todas las especies** (perros, gatos, conejos, roedores, aves domésticas, caballos y otros animales domésticos) en todo Chile, con foco en la **seguridad de las personas y de los animales**. La fauna silvestre o exótica no está permitida.
 
 Construida con **Next.js 16 + TypeScript + Tailwind CSS 4** y **Supabase** (Postgres, Auth, Storage y Realtime). Toda la interfaz está en español de Chile.
 
@@ -24,19 +24,19 @@ Construida con **Next.js 16 + TypeScript + Tailwind CSS 4** y **Supabase** (Post
 ## Funcionalidades
 
 ### Para todas las personas
-- **Búsqueda de perritos** en adopción, **perdidos** y **encontrados**, con filtros por región/comuna (las 16 regiones y 346 comunas de Chile), tamaño, sexo, edad, esterilización, compatibilidad con niños/perros/gatos y casos urgentes. Búsqueda de texto que ignora tildes (“ñuñoa” = “Ñuñoa”).
-- **Ficha completa de cada perrito**: galería de fotos, salud (vacunas, desparasitación, esterilización, microchip), personalidad, requisitos y datos de quien publica (con insignia de verificación y número de adopciones logradas).
-- **Finales felices**: perritos adoptados o que volvieron a casa.
+- **Búsqueda de mascotas** en `/mascotas`: en adopción, **perdidas** y **encontradas**, con **filtro por especie** (perros, gatos, conejos, roedores, aves, caballos y otros; enlazable, por ejemplo `/mascotas?especie=gatos`) y filtros por región/comuna (las 16 regiones y 346 comunas de Chile), tamaño, sexo, edad, esterilización, compatibilidad con niños/perros/gatos y casos urgentes. Búsqueda de texto que ignora tildes (“ñuñoa” = “Ñuñoa”).
+- **Ficha completa de cada mascota** (`/mascotas/[id]`): especie, galería de fotos, salud (vacunas, desparasitación, esterilización, microchip), personalidad, requisitos y datos de quien publica (con insignia de verificación y número de adopciones logradas).
+- **Finales felices**: mascotas adoptadas o que volvieron a casa.
 - **Centro de seguridad** y **guía de adopción responsable** (incluye Ley N° 21.020 y cómo denunciar maltrato).
 - **PWA**: se puede instalar en el celular; diseño “mobile first” con barra de navegación inferior.
 
 ### Para quienes publican (personas, rescatistas y fundaciones)
-- Publicar perritos **en adopción, perdidos o encontrados** con hasta 8 fotos.
+- Publicar mascotas de cualquier especie doméstica **en adopción, perdidas o encontradas** con hasta 8 fotos.
 - Panel **Mis publicaciones**: editar, cambiar portada, pausar, archivar, marcar “adoptado” o “volvió a casa”.
 - **Solicitudes recibidas** con todas las respuestas del cuestionario, historial de la persona postulante y acciones: *en revisión*, *aprobar*, *no aceptar* (con mensaje), *cancelar aprobación* y *confirmar adopción*.
 - **Acta de adopción imprimible** (PDF desde el navegador) con los compromisos legales.
 - **Seguimientos post‑adopción** automáticos: 1 semana, 1 mes, 3 meses y 6 meses.
-- **Coincidencias perdidos/encontrados**: al publicar un perrito encontrado, se avisa a quienes buscan uno parecido en la misma región.
+- **Coincidencias perdidos/encontrados**: al publicar una mascota encontrada, se avisa a quienes buscan una parecida en la misma región.
 - **Verificación** de rescatistas y fundaciones (con documento de respaldo opcional y privado).
 
 ### Para quienes adoptan
@@ -73,8 +73,8 @@ La seguridad está implementada **en la base de datos**, no solo en la interfaz:
 - Mayoría de edad declarada y aceptación de términos obligatorias antes de interactuar.
 - Eliminar la cuenta y cambiar la contraseña exigen la contraseña actual.
 
-**Protección de los perritos**
-- **Prohibida la venta**: normas explícitas, advertencias y motivo de reporte específico.
+**Protección de los animales**
+- **Prohibida la venta** y la publicación de fauna silvestre o exótica: normas explícitas, advertencias y motivo de reporte específico.
 - Proceso de adopción ordenado (cuestionario → aprobación → acta → confirmación) controlado por una **máquina de estados en SQL**.
 - Compromisos obligatorios y **seguimientos** con recordatorios diarios (pg_cron) y alertas por seguimientos atrasados.
 - Reportes de **maltrato** priorizados e información sobre cómo denunciar a Carabineros (133), PDI (134), Fiscalía o municipalidad.
@@ -108,7 +108,7 @@ La seguridad está implementada **en la base de datos**, no solo en la interfaz:
 │   └── seed.sql                 # Datos de ejemplo (solo desarrollo)
 ├── src/
 │   ├── proxy.ts                 # Sesión de Supabase, rutas protegidas y CSP con nonce
-│   ├── actions/                 # Server Actions (auth, perfil, perritos, solicitudes, chat, seguridad, moderación)
+│   ├── actions/                 # Server Actions (auth, perfil, mascotas, solicitudes, chat, seguridad, moderación)
 │   ├── app/                     # Páginas (rutas en español: /mascotas, /publicar, /solicitudes, /mensajes, /admin…)
 │   ├── components/              # UI reutilizable y componentes por dominio
 │   ├── lib/                     # Supabase, validaciones, utilidades, datos de Chile
@@ -220,8 +220,8 @@ Los correos (confirmación de cuenta, recuperar contraseña) llegan a **Mailpit*
 | `regions`, `communes` | Regiones y comunas de Chile (Código Único Territorial). |
 | `profiles` | Perfil público: nombre, comuna, tipo de cuenta, verificación, rol y estado (campos protegidos). |
 | `profile_private` | Teléfono (privado). |
-| `pets`, `pet_photos` | Publicaciones (adopción, perdido, encontrado) y sus fotos. |
-| `favorites` | Perritos guardados. |
+| `pets`, `pet_photos` | Publicaciones de mascotas de cualquier especie (adopción, perdido, encontrado) y sus fotos. |
+| `favorites` | Mascotas guardadas. |
 | `applications` | Solicitudes de adopción con el cuestionario. |
 | `followups` | Seguimientos post‑adopción. |
 | `conversations`, `messages` | Chat interno y consentimiento para compartir contacto. |
@@ -239,7 +239,7 @@ pendiente ──► en revisión ──► aprobada ──► adopción concreta
     └──────────────┴──► no aceptada / retirada / cerrada / cancelada
 ```
 
-Al aprobar, el perrito pasa a “en proceso” y no recibe nuevas solicitudes. Al concretar la adopción, el resto de las solicitudes se cierran y se avisa a cada postulante.
+Al aprobar, la mascota pasa a “en proceso” y no recibe nuevas solicitudes. Al concretar la adopción, el resto de las solicitudes se cierran y se avisa a cada postulante.
 
 **Buckets de Storage**
 
@@ -289,7 +289,7 @@ GitHub Actions (`.github/workflows/ci.yml`) ejecuta lint, verificación de tipos
 
 - Notificaciones por correo o push (por ejemplo, con Supabase Edge Functions + Resend).
 - Mapa de avistamientos para perdidos/encontrados con ubicación aproximada.
-- Alertas guardadas (“avísame cuando publiquen un perrito pequeño en Ñuñoa”).
+- Alertas guardadas (“avísame cuando publiquen un gato en Ñuñoa”).
 - CAPTCHA en registro e ingreso (Turnstile) y MFA para cuentas de moderación.
 - App móvil nativa (React Native/Expo) reutilizando el mismo backend de Supabase.
 

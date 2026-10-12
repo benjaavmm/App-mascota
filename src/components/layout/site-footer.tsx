@@ -7,7 +7,7 @@ const COLUMNS = [
   {
     title: "Adoptar",
     links: [
-      { href: "/mascotas", label: "Perritos en adopción" },
+      { href: "/mascotas", label: "Mascotas en adopción" },
       { href: "/mascotas?tipo=perdidos", label: "Perdidos" },
       { href: "/mascotas?tipo=encontrados", label: "Encontrados" },
       { href: "/adoptados", label: "Finales felices" },
@@ -24,7 +24,7 @@ const COLUMNS = [
   {
     title: "Huellitas",
     links: [
-      { href: "/publicar", label: "Publicar un perrito" },
+      { href: "/publicar", label: "Publicar una mascota" },
       { href: "/terminos", label: "Términos y normas" },
       { href: "/privacidad", label: "Privacidad" },
     ],
@@ -38,8 +38,8 @@ export function SiteFooter() {
         <div>
           <Logo />
           <p className="mt-4 text-sm leading-relaxed text-stone-600">
-            Conectamos perritos rescatados con familias responsables en todo Chile. Adoptar es gratis: nunca pagues
-            por una adopción.
+            Conectamos perros, gatos y otros animales rescatados con familias responsables en todo Chile.
+            Adoptar es gratis: nunca pagues por una adopción.
           </p>
         </div>
         {COLUMNS.map((column) => (
@@ -59,7 +59,8 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-stone-100">
         <p className="mx-auto w-full max-w-6xl px-4 py-5 text-xs text-stone-500 sm:px-6">
-          © {new Date().getFullYear()} {APP_NAME}. Ante maltrato animal llama a Carabineros (133) o a la PDI (134).
+          © {new Date().getFullYear()} {APP_NAME}. Ante maltrato animal llama a Carabineros (133) o a la PDI
+          (134).
         </p>
       </div>
     </footer>

@@ -10,7 +10,7 @@ export default function SignUpPage() {
   return (
     <AuthShell
       title="Únete a Huellitas"
-      description="Crea tu cuenta gratis para adoptar, publicar y ayudar a perritos de la calle."
+      description="Crea tu cuenta gratis para adoptar, publicar y ayudar a animales que necesitan un hogar."
       footer={
         <>
           ¿Ya tienes cuenta?{" "}
