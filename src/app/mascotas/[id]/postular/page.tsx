@@ -27,7 +27,7 @@ export default async function ApplyPage({ params }: PageProps<"/mascotas/[id]/po
   const { data: pet } = await supabase
     .from("pets")
     .select(
-      "id, owner_id, kind, status, hidden, name, sex, size, birth_date_estimate, commune_code, cover_path, requirements",
+      "id, owner_id, kind, status, hidden, name, species, sex, size, birth_date_estimate, commune_code, cover_path, requirements",
     )
     .eq("id", id)
     .maybeSingle();
@@ -97,7 +97,11 @@ export default async function ApplyPage({ params }: PageProps<"/mascotas/[id]/po
               </span>
             )}
           </Alert>
-          <ApplicationForm petName={pet.name} action={submitApplication.bind(null, pet.id)} />
+          <ApplicationForm
+            petName={pet.name}
+            species={pet.species}
+            action={submitApplication.bind(null, pet.id)}
+          />
         </>
       )}
     </Container>

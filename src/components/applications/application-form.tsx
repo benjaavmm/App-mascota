@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox, ChoiceGroup, Field, FieldError, Input, Textarea } from "@/components/ui/field";
 import { HOUSING_TENURE_LABELS, HOUSING_TYPE_LABELS } from "@/lib/constants";
 import type { ActionState } from "@/lib/validation";
+import type { Enums } from "@/types/database";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -21,9 +22,11 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 export function ApplicationForm({
   petName,
+  species,
   action,
 }: {
   petName: string;
+  species: Enums<"species">;
   action: (state: ActionState, formData: FormData) => Promise<ActionState>;
 }) {
   const [state, dispatch] = useActionState(action, {});
@@ -31,6 +34,8 @@ export function ApplicationForm({
   const [tenure, setTenure] = useState("");
   const errors = state.fieldErrors ?? {};
   const v = state.values ?? {};
+  // La Ley 21.020 exige microchip y registro solo para perros y gatos.
+  const requiresRegistry = species === "dog" || species === "cat";
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -222,8 +227,8 @@ export function ApplicationForm({
       <Section title="Compromisos de adopción responsable">
         <p className="-mt-2 text-sm text-stone-600">
           Según la Ley 21.020 de Tenencia Responsable, quien adopta una mascota debe velar por su bienestar.
-          Si es perro o gato, además debe identificarla con microchip e inscribirla en el Registro Nacional de
-          Mascotas.
+          {requiresRegistry &&
+            " En perros y gatos, además, es obligatorio identificarla con microchip e inscribirla en el Registro Nacional de Mascotas."}
         </p>
         {(
           [
@@ -233,7 +238,9 @@ export function ApplicationForm({
             ],
             [
               "commits_sterilization",
-              "Me comprometo a esterilizarla si corresponde a su especie y aún no lo está. Si es perro o gato, también a identificarla con microchip e inscribirla en el Registro Nacional de Mascotas.",
+              requiresRegistry
+                ? "Me comprometo a esterilizarla si aún no lo está, y a identificarla con microchip e inscribirla en el Registro Nacional de Mascotas."
+                : "Me comprometo a esterilizarla si corresponde a su especie y aún no lo está.",
             ],
             [
               "accepts_followup",

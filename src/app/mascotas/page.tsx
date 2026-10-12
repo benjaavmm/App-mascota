@@ -148,7 +148,8 @@ export default async function PetsPage({ searchParams }: PageProps<"/mascotas">)
         : feminine
           ? "encontradas"
           : "encontrados";
-  const title = `${species ? SPECIES_PLURAL[species] : "Mascotas"} ${status}`;
+  const noun = !species ? "Mascotas" : species === "other" ? "Otros animales" : SPECIES_PLURAL[species];
+  const title = `${noun} ${status}`;
   const speciesSuffix = species ? `&especie=${especie}` : "";
 
   // Enlaces de especie: conservan los demás filtros y vuelven a la página 1.

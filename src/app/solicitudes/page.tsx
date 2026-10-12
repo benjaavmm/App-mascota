@@ -21,7 +21,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/sol
   const profile = await requireProfile("/solicitudes");
   const params = await searchParams;
   const view = firstParam(params.vista) === "recibidas" ? "recibidas" : "enviadas";
-  const petFilter = firstParam(params.perrito);
+  const petFilter = firstParam(params.mascota) ?? firstParam(params.perrito);
   const supabase = await createClient();
 
   const [sentRes, receivedRes, receivedActive] = await Promise.all([

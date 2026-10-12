@@ -103,7 +103,7 @@ export default async function MyListingsPage() {
                     </ButtonLink>
                     {pet.kind === "adoption" && (
                       <ButtonLink
-                        href={`/solicitudes?vista=recibidas&perrito=${pet.id}`}
+                        href={`/solicitudes?vista=recibidas&mascota=${pet.id}`}
                         variant={c?.active ? "soft" : "ghost"}
                         size="sm"
                       >

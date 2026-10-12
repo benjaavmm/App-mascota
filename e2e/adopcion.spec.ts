@@ -9,6 +9,7 @@ test.describe.serial("Flujo completo de adopción", () => {
   const adopterPassword = "Perritos2026";
   const petName = `Nala ${run}`;
   const reportPetName = `Toby ${run}`;
+  const catName = `Michi ${run}`;
 
   let adopter: Page;
   let shelter: Page;
@@ -51,7 +52,7 @@ test.describe.serial("Flujo completo de adopción", () => {
     await expect(adopter.getByRole("button", { name: "Menú de mi cuenta" })).toBeVisible();
   });
 
-  test("una fundación publica perritos (con y sin foto)", async ({ browser }) => {
+  test("una fundación publica mascotas (con y sin foto)", async ({ browser }) => {
     shelter = await newLoggedInPage(browser, SEED.shelter);
     const photo = await makeTestPhoto(browser);
 
@@ -80,7 +81,7 @@ test.describe.serial("Flujo completo de adopción", () => {
     await shelter.goto("/publicar");
     await shelter.getByLabel("Nombre").fill(reportPetName);
     await shelter.getByLabel("Tamaño").selectOption("small");
-    await shelter.getByLabel("Descripción").fill("Toby es un perrito juguetón y sociable que busca una familia activa.");
+    await shelter.getByLabel("Descripción").fill("Toby es un perro juguetón y sociable que busca una familia activa.");
     await shelter.getByLabel("Región").selectOption("13");
     await shelter.getByLabel("Comuna").selectOption("13101");
     await shelter.getByLabel("Publicar sin fotos por ahora").check();
@@ -94,9 +95,52 @@ test.describe.serial("Flujo completo de adopción", () => {
     await expect(adopter.getByRole("link", { name: new RegExp(petName) })).toBeVisible();
   });
 
+  test("publicar un gato y filtrar por especie", async ({ browser }) => {
+    await shelter.goto("/publicar?especie=gatos");
+    const speciesGroup = shelter.getByRole("group", { name: /Especie/ });
+    await expect(speciesGroup.getByRole("radio", { name: /Gato/ })).toBeChecked();
+    await expect(shelter.getByLabel("Raza")).toHaveValue(/[Mm]estiz/);
+    await shelter.getByLabel("Nombre").fill(catName);
+    await shelter.getByText("Macho", { exact: true }).click();
+    await shelter.getByLabel("Tamaño").selectOption("small");
+    await shelter.getByLabel("Descripción").fill(
+      "Michi llegó a una fundación tras ser rescatado de un techo. Es curioso, limpio y muy regalón.",
+    );
+    await shelter.getByLabel("Región").selectOption("13");
+    await shelter.getByLabel("Comuna").selectOption("13120");
+    await shelter.locator('input[type="file"]').setInputFiles(await makeTestPhoto(browser, "gatito.jpg"));
+    await expect(shelter.getByText("Portada")).toBeVisible();
+    await shelter.getByRole("button", { name: "Publicar", exact: true }).click();
+    await expect(shelter).toHaveURL(/\/mascotas\/[0-9a-f-]{36}\?publicado=1/, { timeout: 30_000 });
+    await expect(shelter.getByRole("heading", { level: 1, name: catName })).toBeVisible();
+    await expect(shelter.getByText("Gato", { exact: true }).first()).toBeVisible();
+
+    // Filtro por especie: aparece en gatos y no en perros.
+    const q = encodeURIComponent(`michi ${run}`);
+    await adopter.goto(`/mascotas?especie=gatos&q=${q}`);
+    await expect(adopter.getByRole("heading", { level: 1, name: "Gatos en adopción" })).toBeVisible();
+    await expect(adopter.getByRole("link", { name: new RegExp(catName) })).toBeVisible();
+    await adopter.goto(`/mascotas?especie=perros&q=${q}`);
+    await expect(adopter.getByRole("heading", { level: 1, name: "Perros en adopción" })).toBeVisible();
+    await expect(adopter.getByRole("link", { name: new RegExp(catName) })).toHaveCount(0);
+
+    // Los chips de especie conservan la búsqueda.
+    await adopter
+      .getByRole("navigation", { name: "Filtrar por especie" })
+      .getByRole("link", { name: "Gatos" })
+      .click();
+    await expect(adopter).toHaveURL(/especie=gatos/);
+    await expect(adopter.getByRole("link", { name: new RegExp(catName) })).toBeVisible();
+  });
+
+  test("las URL antiguas de /perritos redirigen a /mascotas", async ({ page }) => {
+    await page.goto("/perritos?tipo=adopcion");
+    await expect(page).toHaveURL(/\/mascotas\?tipo=adopcion/);
+  });
+
   test("postular con el cuestionario de adopción", async () => {
     await adopter.goto(petUrl);
-    await adopter.getByRole("link", { name: "Quiero adoptarlo" }).click();
+    await adopter.getByRole("link", { name: "Quiero adoptar" }).click();
     await expect(adopter).toHaveURL(/\/postular$/);
 
     await adopter.getByText("Departamento", { exact: true }).click();
@@ -106,15 +150,15 @@ test.describe.serial("Flujo completo de adopción", () => {
     await adopter.getByLabel("Adultos en el hogar").fill("2");
     await adopter.getByLabel(/Todas las personas con las que vivo/).check();
     await adopter.getByLabel(/Cuántas horas al día/).fill("4");
-    await adopter.getByLabel("¿Qué experiencia tienes con perros?").fill("Crecí con perros rescatados en la casa de mis padres.");
+    await adopter.getByLabel("¿Qué experiencia tienes cuidando animales?").fill("Crecí con perros rescatados en la casa de mis padres.");
     await adopter
       .getByLabel(/Por qué quieres adoptar/)
       .fill("Trabajo de forma híbrida, tengo tiempo para paseos diarios y quiero darle un hogar definitivo y mucho amor.");
     await adopter.getByLabel(/vacaciones, mudanzas/).fill("Mi hermana vive cerca y la cuidaría si viajo.");
     await adopter.getByLabel(/atención veterinaria/).check();
-    await adopter.getByLabel(/esterilizarlo/).check();
+    await adopter.getByLabel(/esterilizarla/).check();
     await adopter.getByLabel(/seguimientos/).check();
-    await adopter.getByLabel(/Nunca lo abandonaré/).check();
+    await adopter.getByLabel(/Nunca la abandonaré/).check();
     await adopter.getByRole("button", { name: "Enviar solicitud" }).click();
 
     await expect(adopter).toHaveURL(/\/solicitudes\/[0-9a-f-]{36}\?enviada=1/);

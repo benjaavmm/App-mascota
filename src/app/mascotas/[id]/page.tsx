@@ -216,7 +216,7 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
             </ButtonLink>
             {isAdoption && (
               <ButtonLink
-                href={`/solicitudes?vista=recibidas&perrito=${pet.id}`}
+                href={`/solicitudes?vista=recibidas&mascota=${pet.id}`}
                 variant="secondary"
                 size="lg"
                 className="w-full"
