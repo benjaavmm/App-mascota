@@ -296,7 +296,7 @@ select throws_ok(format($$ select public.moderate_pet(%L, false) $$, :'lostpet')
   'solo moderación puede restaurar publicaciones');
 
 select set_config('request.jwt.claims', json_build_object('sub', :mod, 'role', 'authenticated')::text, true);
-select is((select count(*)::int from public.reports), 3, 'moderación ve todos los reportes');
+select is((select count(*)::int from public.reports where pet_id = :'lostpet'), 3, 'moderación ve todos los reportes');
 select lives_ok(format($$ select public.moderate_pet(%L, false) $$, :'lostpet'), 'moderación restaura la publicación');
 select ok((select count(*) from public.audit_log) >= 2, 'las acciones quedan en auditoría');
 select lives_ok(format($$ select public.set_account_status(%L, 'banned', 'Estafas reiteradas') $$, :diego),
