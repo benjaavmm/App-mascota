@@ -351,7 +351,7 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
 
       <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
         <div className="min-w-0 space-y-6">
-          <PetGallery name={pet.name} photos={photos} />
+          <PetGallery name={pet.name} photos={photos} species={pet.species} />
           <div className="lg:hidden">{actionCard}</div>
 
           <Card className="p-5 sm:p-6">

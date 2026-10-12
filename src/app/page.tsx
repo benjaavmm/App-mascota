@@ -101,6 +101,16 @@ const SAFETY = [
   },
 ];
 
+// Mosaico de especies de la portada (cuando aún no hay fotos destacadas).
+const HERO_TILES = [
+  { slug: "perros", species: "dog", className: "bg-brand-100 text-brand-700" },
+  { slug: "gatos", species: "cat", className: "bg-teal-100 text-teal-700" },
+  { slug: "conejos", species: "rabbit", className: "bg-rose-100 text-rose-700" },
+  { slug: "aves", species: "bird", className: "bg-sky-100 text-sky-700" },
+  { slug: "roedores", species: "rodent", className: "bg-amber-100 text-amber-700" },
+  { slug: "caballos", species: "horse", className: "bg-violet-100 text-violet-700" },
+] as const;
+
 export default async function HomePage({ searchParams }: PageProps<"/">) {
   const deleted = firstParam((await searchParams).cuenta) === "eliminada";
   const supabase = await createClient();
@@ -225,8 +235,21 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
                 )}
               </>
             ) : (
-              <div className="flex h-full items-center justify-center rounded-[3rem] bg-gradient-to-br from-brand-100 to-brand-200 text-brand-500">
-                <PawIcon className="h-40 w-40" />
+              <div className="grid h-full grid-cols-3 grid-rows-2 gap-4">
+                {HERO_TILES.map(({ slug, species, className }) => (
+                  <Link
+                    key={slug}
+                    href={`/mascotas?tipo=adopcion&especie=${slug}`}
+                    className={`group flex flex-col items-center justify-center gap-3 rounded-3xl shadow-sm ring-1 ring-black/5 transition hover:-translate-y-1 hover:shadow-lg ${className}`}
+                  >
+                    <SpeciesIcon
+                      species={species}
+                      className="h-14 w-14 transition-transform group-hover:scale-110"
+                      strokeWidth={1.5}
+                    />
+                    <span className="text-sm font-extrabold">{SPECIES_PLURAL[species]}</span>
+                  </Link>
+                ))}
               </div>
             )}
           </div>

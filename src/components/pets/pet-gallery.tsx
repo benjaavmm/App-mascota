@@ -7,18 +7,23 @@ import { useState } from "react";
 import { PetPhoto } from "@/components/pets/pet-photo";
 import { petPhotoUrl } from "@/lib/storage";
 import { cn } from "@/lib/utils";
+import type { Enums } from "@/types/database";
 
 export function PetGallery({
   name,
   photos,
+  species,
 }: {
   name: string;
   photos: { id: string; storage_path: string }[];
+  species?: Enums<"species">;
 }) {
   const [index, setIndex] = useState(0);
 
   if (photos.length === 0) {
-    return <PetPhoto path={null} alt={name} className="aspect-[4/3] rounded-[var(--radius-card)]" />;
+    return (
+      <PetPhoto path={null} alt={name} species={species} className="aspect-[4/3] rounded-[var(--radius-card)]" />
+    );
   }
 
   const current = photos[Math.min(index, photos.length - 1)];

@@ -4,6 +4,17 @@ Aplicación web (instalable en el celular como app) para **adoptar, publicar y r
 
 Construida con **Next.js 16 + TypeScript + Tailwind CSS 4** y **Supabase** (Postgres, Auth, Storage y Realtime). Toda la interfaz está en español de Chile.
 
+<p align="center">
+  <img src="docs/capturas/inicio-movil.png" alt="Portada en el celular" width="200">
+  <img src="docs/capturas/buscar-movil.png" alt="Búsqueda con filtro por especie" width="200">
+  <img src="docs/capturas/ficha-movil.png" alt="Ficha de una mascota" width="200">
+  <img src="docs/capturas/alertas-movil.png" alt="Mis alertas" width="200">
+</p>
+
+<p align="center">
+  <img src="docs/capturas/inicio-escritorio.png" alt="Portada en el computador" width="820">
+</p>
+
 ---
 
 ## Índice
@@ -27,6 +38,7 @@ Construida con **Next.js 16 + TypeScript + Tailwind CSS 4** y **Supabase** (Post
 
 - **Búsqueda de mascotas** en `/mascotas`: en adopción, **perdidas** y **encontradas**, con **filtro por especie** (perros, gatos, conejos, roedores, aves, caballos y otros; enlazable, por ejemplo `/mascotas?especie=gatos`) y filtros por región/comuna (las 16 regiones y 346 comunas de Chile), tamaño, sexo, edad, esterilización, compatibilidad con niños/perros/gatos y casos urgentes. Búsqueda de texto que ignora tildes (“ñuñoa” = “Ñuñoa”).
 - **Ficha completa de cada mascota** (`/mascotas/[id]`): especie, galería de fotos, salud (vacunas, desparasitación, esterilización, microchip), personalidad, requisitos y datos de quien publica (con insignia de verificación y número de adopciones logradas).
+- **Alertas de búsqueda** (`/alertas`): “avísame cuando publiquen un gato en adopción en Ñuñoa” o “si alguien encuentra un perro en mi región”. Se crean con un toque desde cualquier búsqueda (hasta 10 por persona) y avisan al instante en las notificaciones.
 - **Finales felices**: mascotas adoptadas o que volvieron a casa.
 - **Centro de seguridad** y **guía de adopción responsable** (incluye Ley N° 21.020 y cómo denunciar maltrato).
 - **PWA**: se puede instalar en el celular; diseño “mobile first” con barra de navegación inferior.
@@ -52,7 +64,7 @@ Construida con **Next.js 16 + TypeScript + Tailwind CSS 4** y **Supabase** (Post
 
 - **Chat interno en tiempo real** (Supabase Realtime), con historial, mensajes del sistema y contador de no leídos.
 - **Contacto protegido**: el teléfono y el correo nunca se publican; cada persona decide si los comparte en una conversación.
-- **Notificaciones** dentro de la app (solicitudes, mensajes, seguimientos, moderación, coincidencias).
+- **Notificaciones** dentro de la app (solicitudes, mensajes, seguimientos, moderación, coincidencias y alertas).
 
 ### Moderación
 
@@ -106,7 +118,7 @@ La seguridad está implementada **en la base de datos**, no solo en la interfaz:
 | Estilos             | Tailwind CSS 4, íconos `lucide-react`, tipografía Nunito                                     |
 | Validación          | zod 4                                                                                        |
 | Backend             | Supabase: Postgres 17, Auth, Storage, Realtime, pg_cron                                      |
-| Pruebas             | pgTAP (95 pruebas de seguridad), Playwright (flujo completo E2E)                             |
+| Pruebas             | pgTAP (114 pruebas de seguridad), Playwright (flujo completo E2E)                            |
 
 ```
 ├── supabase/
@@ -237,6 +249,7 @@ Los correos (confirmación de cuenta, recuperar contraseña) llegan a **Mailpit*
 | `profile_private`           | Teléfono (privado).                                                                             |
 | `pets`, `pet_photos`        | Publicaciones de mascotas de cualquier especie (adopción, perdido, encontrado) y sus fotos.     |
 | `favorites`                 | Mascotas guardadas.                                                                             |
+| `pet_alerts`                | Alertas de búsqueda (tipo, especie, región/comuna y tamaño); avisan al publicarse una mascota.  |
 | `applications`              | Solicitudes de adopción con el cuestionario.                                                    |
 | `followups`                 | Seguimientos post‑adopción.                                                                     |
 | `conversations`, `messages` | Chat interno y consentimiento para compartir contacto.                                          |
@@ -270,7 +283,7 @@ Al aprobar, la mascota pasa a “en proceso” y no recibe nuevas solicitudes. A
 ## Pruebas
 
 ```bash
-# Pruebas de seguridad de la base de datos (RLS, permisos, flujos) — 95 pruebas pgTAP
+# Pruebas de seguridad de la base de datos (RLS, permisos, flujos, alertas) — 114 pruebas pgTAP
 npm run db:test
 
 # Pruebas end-to-end con navegador (requiere Supabase local con `db reset` y la app corriendo o se inicia sola)
@@ -278,7 +291,7 @@ npx playwright install chromium   # solo la primera vez
 npm run test:e2e
 ```
 
-La prueba E2E recorre el flujo completo: registro con confirmación por correo → bienvenida → una fundación publica con foto → búsqueda sin tildes → postulación → chat en tiempo real con advertencia de estafa → aprobación → acta → adopción concretada → seguimiento con foto privada → reporte → moderación y auditoría. También verifica rutas protegidas y que la CSP no bloquee la app.
+La prueba E2E recorre el flujo completo: registro con confirmación por correo → bienvenida → una fundación publica con foto → búsqueda sin tildes → alerta de gatos → publicar un gato, filtrar por especie y recibir el aviso → gestionar alertas → postulación → chat en tiempo real con advertencia de estafa → aprobación → acta → adopción concretada → seguimiento con foto privada → reporte → moderación y auditoría. También verifica rutas protegidas y que la CSP no bloquee la app.
 
 GitHub Actions (`.github/workflows/ci.yml`) ejecuta lint, verificación de tipos, build y las pruebas de base de datos en cada _pull request_.
 
@@ -286,17 +299,18 @@ GitHub Actions (`.github/workflows/ci.yml`) ejecuta lint, verificación de tipos
 
 ## Scripts
 
-| Script                         | Descripción                                              |
-| ------------------------------ | -------------------------------------------------------- |
-| `npm run dev`                  | Servidor de desarrollo                                   |
-| `npm run build` / `npm start`  | Build y servidor de producción                           |
-| `npm run lint`                 | ESLint                                                   |
-| `npm run typecheck`            | Verificación de tipos                                    |
-| `npm run db:start` / `db:stop` | Levantar / detener Supabase local                        |
-| `npm run db:reset`             | Recrear la base local con migraciones y datos de ejemplo |
-| `npm run db:test`              | Pruebas pgTAP                                            |
-| `npm run db:types`             | Regenerar `src/types/database.ts` desde la base local    |
-| `npm run test:e2e`             | Pruebas Playwright                                       |
+| Script                         | Descripción                                               |
+| ------------------------------ | --------------------------------------------------------- |
+| `npm run dev`                  | Servidor de desarrollo                                    |
+| `npm run build` / `npm start`  | Build y servidor de producción                            |
+| `npm run lint`                 | ESLint                                                    |
+| `npm run typecheck`            | Verificación de tipos                                     |
+| `npm run db:start` / `db:stop` | Levantar / detener Supabase local                         |
+| `npm run db:reset`             | Recrear la base local con migraciones y datos de ejemplo  |
+| `npm run db:test`              | Pruebas pgTAP                                             |
+| `npm run db:types`             | Regenerar `src/types/database.ts` desde la base local     |
+| `npm run test:e2e`             | Pruebas Playwright                                        |
+| `node e2e/screenshots.mjs`     | Regenerar las capturas de `docs/capturas` (app corriendo) |
 
 ---
 
@@ -304,7 +318,6 @@ GitHub Actions (`.github/workflows/ci.yml`) ejecuta lint, verificación de tipos
 
 - Notificaciones por correo o push (por ejemplo, con Supabase Edge Functions + Resend).
 - Mapa de avistamientos para perdidos/encontrados con ubicación aproximada.
-- Alertas guardadas (“avísame cuando publiquen un gato en Ñuñoa”).
 - CAPTCHA en registro e ingreso (Turnstile) y MFA para cuentas de moderación.
 - App móvil nativa (React Native/Expo) reutilizando el mismo backend de Supabase.
 

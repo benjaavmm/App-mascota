@@ -21,6 +21,7 @@ export function PetCard({ pet, showStatus = false }: { pet: PetCardData; showSta
       <div className="relative">
         <PetPhoto
           path={pet.cover_path}
+          species={pet.species}
           alt={`Foto de ${pet.name}`}
           className="aspect-[4/3] transition-transform duration-300 group-hover:scale-[1.02]"
         />
