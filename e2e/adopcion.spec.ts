@@ -293,6 +293,17 @@ test.describe("Protección de rutas", () => {
     await page.context().close();
   });
 
+  test("el menú del celular se abre a pantalla completa", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Abrir menú" }).click();
+    const menu = page.getByRole("dialog", { name: "Menú" });
+    await expect(menu.getByRole("link", { name: "Ingresar" })).toBeVisible();
+    expect((await menu.boundingBox())?.height).toBe(844);
+    await page.getByRole("button", { name: "Cerrar menú" }).click();
+    await expect(menu).toBeHidden();
+  });
+
   test("la portada carga sin violaciones de CSP", async ({ page }) => {
     const errors: string[] = [];
     page.on("console", (msg) => {
