@@ -83,14 +83,14 @@ export default async function ApplyPage({ params }: PageProps<"/mascotas/[id]/po
         <div className="space-y-4">
           <Alert variant="warning">{blocker}</Alert>
           <ButtonLink href="/mascotas" variant="secondary">
-            Ver otros perritos
+            Ver otras mascotas
           </ButtonLink>
         </div>
       ) : (
         <>
           <Alert variant="info" title="Antes de postular" className="mb-6">
-            Adoptar es un compromiso de 10 a 15 años. Responde con sinceridad: no hay respuestas “correctas”,
-            solo buscamos el mejor hogar para {pet.name}.
+            Adoptar es un compromiso por toda su vida, que puede durar muchos años. Responde con sinceridad:
+            no hay respuestas “correctas”, solo buscamos el mejor hogar para {pet.name}.
             {pet.requirements && (
               <span className="mt-2 block">
                 <strong>Requisitos de quien publica:</strong> {pet.requirements}

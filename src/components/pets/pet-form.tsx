@@ -219,7 +219,7 @@ export function PetForm(props: Props) {
             htmlFor="name"
             required
             errors={errors.name}
-            hint={kind === "found" ? "Si no lo sabes, escribe “Sin nombre”." : undefined}
+            hint={kind === "found" ? "Si no sabes su nombre, escribe “Sin nombre”." : undefined}
           >
             <Input
               id="name"
@@ -333,8 +333,8 @@ export function PetForm(props: Props) {
             isAdoption
               ? "Cuenta su historia, cómo es su carácter y qué tipo de hogar necesita."
               : kind === "lost"
-                ? "Describe señas particulares, collar, comportamiento y dónde se vio por última vez."
-                : "Describe dónde y cómo lo encontraste, su estado y señas particulares."
+                ? "Describe señas particulares (manchas, collar, cicatrices…), su comportamiento y dónde se vio por última vez."
+                : "Describe dónde y cómo encontraste al animal, su estado y señas particulares."
           }
         >
           <Textarea
@@ -367,8 +367,16 @@ export function PetForm(props: Props) {
         {(
           [
             ["good_with_kids", "¿Se lleva bien con niños?", pet?.good_with_kids],
-            ["good_with_dogs", "¿Se lleva bien con otros perros?", pet?.good_with_dogs],
-            ["good_with_cats", "¿Se lleva bien con gatos?", pet?.good_with_cats],
+            [
+              "good_with_dogs",
+              species === "dog" ? "¿Se lleva bien con otros perros?" : "¿Se lleva bien con perros?",
+              pet?.good_with_dogs,
+            ],
+            [
+              "good_with_cats",
+              species === "cat" ? "¿Se lleva bien con otros gatos?" : "¿Se lleva bien con gatos?",
+              pet?.good_with_cats,
+            ],
           ] as const
         ).map(([name, legend, value]) => (
           <ChoiceGroup
@@ -451,7 +459,7 @@ export function PetForm(props: Props) {
               />
             </Field>
             <Field
-              label={kind === "lost" ? "¿Cuándo se perdió?" : "¿Cuándo lo encontraste?"}
+              label={kind === "lost" ? "¿Cuándo se perdió?" : "¿Cuándo la encontraste?"}
               htmlFor="event_date"
               required
               errors={errors.event_date}
@@ -473,7 +481,7 @@ export function PetForm(props: Props) {
       {isAdoption && (
         <Section
           title="Requisitos para adoptar"
-          description="Opcional. Ej: patio cerrado, compromiso de esterilización, visitas de seguimiento."
+          description="Opcional. Ej: patio cerrado o mallas en ventanas, compromiso de esterilización, visitas de seguimiento."
         >
           <Field label="Requisitos" htmlFor="requirements" errors={errors.requirements}>
             <Textarea

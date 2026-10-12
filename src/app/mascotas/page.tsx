@@ -39,7 +39,7 @@ const COPY = {
   },
   perdidos: {
     title: "perdidos",
-    description: "Si viste a alguno, escríbele a su familia por el chat. Cada dato ayuda.",
+    description: "Si viste a alguna de estas mascotas, escríbele a su familia por el chat. Cada dato ayuda.",
     empty: "No hay mascotas perdidas con esos filtros",
   },
   encontrados: {

@@ -7,7 +7,7 @@ import { isAccountActive, requireProfile } from "@/lib/auth";
 import { SPECIES_SLUGS } from "@/lib/constants";
 import { firstParam } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Publicar un perrito" };
+export const metadata: Metadata = { title: "Publicar una mascota" };
 
 export default async function PublishPage({ searchParams }: PageProps<"/publicar">) {
   const profile = await requireProfile("/publicar");
@@ -20,7 +20,7 @@ export default async function PublishPage({ searchParams }: PageProps<"/publicar
   return (
     <Container className="max-w-3xl py-8 sm:py-10">
       <PageHeader
-        title="Publicar un perrito"
+        title="Publicar una mascota"
         description="Completa la información con honestidad. Mientras más detalles, más fácil será encontrarle el hogar correcto."
       />
       <Alert variant="info" title="Normas de la comunidad" className="mb-6">
@@ -28,7 +28,7 @@ export default async function PublishPage({ searchParams }: PageProps<"/publicar
           <li>
             Está prohibido vender animales o cobrar por adoptar. Solo puedes pedir compromisos de cuidado.
           </li>
-          <li>Usa fotos reales y actuales del perrito.</li>
+          <li>Usa fotos reales y actuales del animal.</li>
           <li>No publiques tu teléfono ni tu dirección: las personas te escribirán por el chat seguro.</li>
         </ul>
       </Alert>

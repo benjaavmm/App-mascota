@@ -181,7 +181,7 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
     ? `¿Quieres adoptar a ${pet.name}?`
     : pet.kind === "lost"
       ? `¿Viste a ${pet.name}?`
-      : "¿Es tu perrito o sabes de quién es?";
+      : "¿Es tu mascota o sabes de quién es?";
 
   // Tarjeta con nombre y acciones: en móvil va bajo la galería; en escritorio, en la columna lateral.
   const actionCard = (
@@ -201,7 +201,7 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
       {!isAdoption && pet.event_date && (
         <p className="mt-1 flex items-center gap-1.5 text-sm text-stone-600">
           <CalendarDays className="h-4 w-4" />
-          {pet.kind === "lost" ? "Se perdió el " : "Encontrado el "}
+          {pet.kind === "lost" ? "Se perdió el " : "Se encontró el "}
           {formatDate(pet.event_date)}
         </p>
       )}
@@ -245,7 +245,7 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
                 className="w-full"
               >
                 <HeartHandshake className="h-5 w-5" />
-                Quiero adoptarlo
+                Quiero adoptar
               </ButtonLink>
             ) : null}
             {pet.status !== "archived" &&
@@ -260,7 +260,7 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
                         ? "Hacer una pregunta"
                         : pet.kind === "lost"
                           ? "Tengo información"
-                          : "Es mío / sé de quién es"
+                          : "Es mi mascota / sé de quién es"
                     }
                   />
                 ) : (
@@ -294,7 +294,7 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
                 ? `${pet.name} busca hogar en ${placeLabel(pet.commune_code)}. ¡Ayuda compartiendo!`
                 : pet.kind === "lost"
                   ? `Se busca a ${pet.name} en ${placeLabel(pet.commune_code)}. ¡Ayuda compartiendo!`
-                  : `Encontraron a este perrito en ${placeLabel(pet.commune_code)}. ¿Lo conoces?`
+                  : `Encontraron esta mascota en ${placeLabel(pet.commune_code)}. ¿La conoces?`
             }
           />
           {!isOwner && (
@@ -332,12 +332,12 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
       )}
       {pet.status === "adopted" && (
         <Alert variant="success" title={`¡${pet.name} ya encontró un hogar!`} className="mb-6">
-          Gracias a todas las personas que ayudaron. Hay muchos más perritos esperando una familia.
+          Gracias a todas las personas que ayudaron. Hay muchas más mascotas esperando una familia.
         </Alert>
       )}
       {pet.status === "reunited" && (
         <Alert variant="success" title={`¡${pet.name} está de vuelta en casa!`} className="mb-6">
-          Gracias por compartir y ayudar a encontrarlo.
+          Gracias por compartir y ayudar en la búsqueda.
         </Alert>
       )}
       {(pet.status === "paused" || pet.status === "archived") && (
@@ -420,13 +420,17 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <dt className="text-stone-600">Con otros perros</dt>
+                  <dt className="text-stone-600">
+                    {pet.species === "dog" ? "Con otros perros" : "Con perros"}
+                  </dt>
                   <dd>
                     <YesNo value={pet.good_with_dogs} />
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <dt className="text-stone-600">Con gatos</dt>
+                  <dt className="text-stone-600">
+                    {pet.species === "cat" ? "Con otros gatos" : "Con gatos"}
+                  </dt>
                   <dd>
                     <YesNo value={pet.good_with_cats} />
                   </dd>
@@ -448,7 +452,7 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
             <section>
               <h2 className="mb-1 text-xl font-extrabold">Posibles coincidencias</h2>
               <p className="mb-4 text-sm text-stone-600">
-                Perritos encontrados recientemente en tu región con un tamaño parecido.
+                Mascotas encontradas recientemente en tu región con un tamaño parecido.
               </p>
               <PetGrid pets={matches} />
             </section>
