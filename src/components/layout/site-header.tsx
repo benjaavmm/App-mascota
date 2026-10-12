@@ -9,8 +9,8 @@ import { ButtonLink } from "@/components/ui/button";
 import type { Profile } from "@/lib/auth";
 
 export const MAIN_LINKS = [
-  { href: "/perritos", label: "Adoptar" },
-  { href: "/perritos?tipo=perdidos", label: "Perdidos y encontrados" },
+  { href: "/mascotas", label: "Adoptar" },
+  { href: "/mascotas?tipo=perdidos", label: "Perdidos y encontrados" },
   { href: "/adoptados", label: "Finales felices" },
   { href: "/seguridad", label: "Seguridad" },
 ];

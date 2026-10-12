@@ -14,10 +14,10 @@ import { REPORT_REASON_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { ActionState } from "@/lib/validation";
 
-type Target = "dog" | "user" | "message";
+type Target = "pet" | "user" | "message";
 
 const TITLES: Record<Target, string> = {
-  dog: "Reportar publicación",
+  pet: "Reportar publicación",
   user: "Reportar a esta persona",
   message: "Reportar mensaje",
 };

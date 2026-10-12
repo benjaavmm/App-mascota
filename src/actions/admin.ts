@@ -30,14 +30,14 @@ export async function resolveReportAction(_prev: ActionState, formData: FormData
   return { ok: true };
 }
 
-export async function moderateDogAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const id = String(formData.get("dog_id") ?? "");
+export async function moderatePetAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const id = String(formData.get("pet_id") ?? "");
   const hide = formData.get("hide") === "1";
   if (!isUuid(id)) return { error: "Acción no válida." };
 
   const supabase = await createClient();
-  const { error } = await supabase.rpc("moderate_dog", {
-    p_dog_id: id,
+  const { error } = await supabase.rpc("moderate_pet", {
+    p_pet_id: id,
     p_hide: hide,
     p_reason: text(formData, "reason"),
   });

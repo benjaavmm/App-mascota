@@ -1,19 +1,19 @@
-import { setDogStatus } from "@/actions/dogs";
+import { setPetStatus } from "@/actions/pets";
 import { ConfirmAction } from "@/components/ui/confirm-action";
 import type { Enums } from "@/types/database";
 
-type Status = Enums<"dog_status">;
+type Status = Enums<"pet_status">;
 
 // Acciones de estado disponibles para quien publicó.
 export function StatusActions({
-  dogId,
+  petId,
   kind,
   status,
   name,
   hasApproved,
   size = "sm",
 }: {
-  dogId: string;
+  petId: string;
   kind: Enums<"listing_kind">;
   status: Status;
   name: string;
@@ -79,8 +79,8 @@ export function StatusActions({
       {actions.map((a) => (
         <ConfirmAction
           key={a.status}
-          action={setDogStatus}
-          fields={{ dog_id: dogId, status: a.status }}
+          action={setPetStatus}
+          fields={{ pet_id: petId, status: a.status }}
           label={a.label}
           title={a.title}
           description={a.description}

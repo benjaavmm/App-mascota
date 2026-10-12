@@ -34,7 +34,7 @@ export default async function AdoptionActPage({ params }: PageProps<"/solicitude
   const { data: app } = await supabase
     .from("applications")
     .select(
-      "id, status, completed_at, decided_at, applicant_id, publisher_id, dog:dogs!applications_dog_id_fkey(name, sex, size, birth_date_estimate, breed, color, sterilized, vaccinated, dewormed, microchipped, health_notes, commune_code), applicant:profiles!applications_applicant_id_fkey(display_name), publisher:profiles!applications_publisher_id_fkey(display_name)",
+      "id, status, completed_at, decided_at, applicant_id, publisher_id, pet:pets!applications_pet_id_fkey(name, sex, size, birth_date_estimate, breed, color, sterilized, vaccinated, dewormed, microchipped, health_notes, commune_code), applicant:profiles!applications_applicant_id_fkey(display_name), publisher:profiles!applications_publisher_id_fkey(display_name)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -48,7 +48,7 @@ export default async function AdoptionActPage({ params }: PageProps<"/solicitude
     );
   }
 
-  const dog = app.dog;
+  const pet = app.pet;
   const date = formatDate(app.completed_at ?? new Date());
   const yes = (v: boolean | undefined) => (v ? "Sí" : "No");
 
@@ -100,22 +100,22 @@ export default async function AdoptionActPage({ params }: PageProps<"/solicitude
           </div>
         </section>
 
-        {dog && (
+        {pet && (
           <section className="mt-8">
             <h2 className="mb-2 font-extrabold">Datos del perrito</h2>
             <table className="w-full text-sm">
               <tbody className="divide-y divide-stone-100">
                 {[
-                  ["Nombre", dog.name],
-                  ["Sexo", SEX_LABELS[dog.sex]],
-                  ["Edad aproximada", formatAge(dog.birth_date_estimate)],
-                  ["Tamaño", SIZE_SHORT[dog.size]],
-                  ["Raza / color", [dog.breed, dog.color].filter(Boolean).join(" · ")],
-                  ["Comuna de origen", placeLabel(dog.commune_code)],
-                  ["Vacunado / desparasitado", `${yes(dog.vaccinated)} / ${yes(dog.dewormed)}`],
-                  ["Esterilizado", yes(dog.sterilized)],
-                  ["Microchip", dog.microchipped ? "Sí — N°: ____________________" : "No"],
-                  ["Observaciones de salud", dog.health_notes ?? "—"],
+                  ["Nombre", pet.name],
+                  ["Sexo", SEX_LABELS[pet.sex]],
+                  ["Edad aproximada", formatAge(pet.birth_date_estimate)],
+                  ["Tamaño", SIZE_SHORT[pet.size]],
+                  ["Raza / color", [pet.breed, pet.color].filter(Boolean).join(" · ")],
+                  ["Comuna de origen", placeLabel(pet.commune_code)],
+                  ["Vacunado / desparasitado", `${yes(pet.vaccinated)} / ${yes(pet.dewormed)}`],
+                  ["Esterilizado", yes(pet.sterilized)],
+                  ["Microchip", pet.microchipped ? "Sí — N°: ____________________" : "No"],
+                  ["Observaciones de salud", pet.health_notes ?? "—"],
                 ].map(([label, value]) => (
                   <tr key={label}>
                     <td className="w-1/3 py-2 pr-4 text-stone-600">{label}</td>

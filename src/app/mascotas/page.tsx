@@ -1,8 +1,8 @@
 import { PawPrint, Plus } from "lucide-react";
 import type { Metadata } from "next";
 
-import { DogGrid } from "@/components/dogs/dog-card";
-import { DogFilters, type DogFilterValues } from "@/components/dogs/dog-filters";
+import { PetGrid } from "@/components/pets/pet-card";
+import { PetFilters, type PetFilterValues } from "@/components/pets/pet-filters";
 import { Alert } from "@/components/ui/alert";
 import { ButtonLink } from "@/components/ui/button";
 import { Container, EmptyState, PageHeader } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import { LinkTabs } from "@/components/ui/tabs";
 import { isValidCommune, isValidRegion } from "@/lib/chile";
 import { AGE_GROUPS, KIND_SLUGS, PAGE_SIZE, type AgeGroup } from "@/lib/constants";
 import { isoDateFromAge } from "@/lib/format";
-import { DOG_CARD_COLUMNS } from "@/lib/queries";
+import { PET_CARD_COLUMNS } from "@/lib/queries";
 import { normalizeText } from "@/lib/safety";
 import { createClient } from "@/lib/supabase/server";
 import { firstParam } from "@/lib/utils";
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description: "Perritos en adopción, perdidos y encontrados en todo Chile.",
 };
 
-const SIZES = Constants.public.Enums.dog_size as readonly string[];
+const SIZES = Constants.public.Enums.pet_size as readonly string[];
 const COPY = {
   adopcion: {
     title: "Perritos en adopción",
@@ -41,7 +41,7 @@ const COPY = {
   },
 } as const;
 
-export default async function DogsPage({ searchParams }: PageProps<"/perritos">) {
+export default async function PetsPage({ searchParams }: PageProps<"/mascotas">) {
   const params = await searchParams;
   const tipoParam = firstParam(params.tipo);
   const tipo = (tipoParam && tipoParam in KIND_SLUGS ? tipoParam : "adopcion") as keyof typeof COPY;
@@ -56,7 +56,7 @@ export default async function DogsPage({ searchParams }: PageProps<"/perritos">)
   const orden = firstParam(params.orden) ?? "recientes";
   const page = Math.max(1, Math.min(500, Number(firstParam(params.pagina)) || 1));
 
-  const filters: DogFilterValues = {
+  const filters: PetFilterValues = {
     tipo,
     q,
     region: isValidRegion(region) ? region : undefined,
@@ -74,8 +74,8 @@ export default async function DogsPage({ searchParams }: PageProps<"/perritos">)
 
   const supabase = await createClient();
   let query = supabase
-    .from("dogs")
-    .select(DOG_CARD_COLUMNS, { count: "exact" })
+    .from("pets")
+    .select(PET_CARD_COLUMNS, { count: "exact" })
     .eq("kind", kind)
     .eq("status", "available")
     .eq("hidden", false);
@@ -85,7 +85,7 @@ export default async function DogsPage({ searchParams }: PageProps<"/perritos">)
   }
   if (filters.comuna) query = query.eq("commune_code", filters.comuna);
   else if (filters.region) query = query.eq("region_code", filters.region);
-  if (filters.tamano) query = query.eq("size", filters.tamano as (typeof Constants.public.Enums.dog_size)[number]);
+  if (filters.tamano) query = query.eq("size", filters.tamano as (typeof Constants.public.Enums.pet_size)[number]);
   if (filters.sexo) query = query.eq("sex", filters.sexo as "male" | "female");
   if (kind === "adoption") {
     if (filters.edad) {
@@ -105,7 +105,7 @@ export default async function DogsPage({ searchParams }: PageProps<"/perritos">)
   query = query.order("created_at", { ascending: orden === "antiguos" });
 
   const from = (page - 1) * PAGE_SIZE;
-  const { data: dogs, count, error } = await query.range(from, from + PAGE_SIZE - 1);
+  const { data: pets, count, error } = await query.range(from, from + PAGE_SIZE - 1);
   const total = count ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -117,7 +117,7 @@ export default async function DogsPage({ searchParams }: PageProps<"/perritos">)
     });
     if (!next.has("tipo")) next.set("tipo", tipo);
     if (p > 1) next.set("pagina", String(p));
-    return `/perritos?${next.toString()}`;
+    return `/mascotas?${next.toString()}`;
   };
 
   const copy = COPY[tipo];
@@ -137,24 +137,24 @@ export default async function DogsPage({ searchParams }: PageProps<"/perritos">)
       <LinkTabs
         active={tipo}
         tabs={[
-          { key: "adopcion", href: "/perritos?tipo=adopcion", label: "En adopción" },
-          { key: "perdidos", href: "/perritos?tipo=perdidos", label: "Perdidos" },
-          { key: "encontrados", href: "/perritos?tipo=encontrados", label: "Encontrados" },
+          { key: "adopcion", href: "/mascotas?tipo=adopcion", label: "En adopción" },
+          { key: "perdidos", href: "/mascotas?tipo=perdidos", label: "Perdidos" },
+          { key: "encontrados", href: "/mascotas?tipo=encontrados", label: "Encontrados" },
         ]}
       />
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <DogFilters key={JSON.stringify(filters)} values={filters} />
+          <PetFilters key={JSON.stringify(filters)} values={filters} />
         </aside>
         <section aria-live="polite">
           {error ? (
             <Alert variant="danger">No pudimos cargar los resultados. Intenta nuevamente.</Alert>
-          ) : dogs && dogs.length > 0 ? (
+          ) : pets && pets.length > 0 ? (
             <>
               <p className="mb-4 text-sm font-semibold text-stone-500">
                 {total === 1 ? "1 resultado" : `${total.toLocaleString("es-CL")} resultados`}
               </p>
-              <DogGrid dogs={dogs} />
+              <PetGrid pets={pets} />
               <Pagination page={page} totalPages={totalPages} hrefFor={hrefFor} />
             </>
           ) : (
@@ -163,7 +163,7 @@ export default async function DogsPage({ searchParams }: PageProps<"/perritos">)
               title={copy.empty}
               description="Prueba ampliando la búsqueda a toda la región o quitando algunos filtros."
               action={
-                <ButtonLink href={`/perritos?tipo=${tipo}`} variant="secondary">
+                <ButtonLink href={`/mascotas?tipo=${tipo}`} variant="secondary">
                   Ver todos
                 </ButtonLink>
               }

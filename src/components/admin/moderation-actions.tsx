@@ -1,30 +1,30 @@
-import { moderateDogAction, setAccountStatusAction } from "@/actions/admin";
+import { moderatePetAction, setAccountStatusAction } from "@/actions/admin";
 import { ConfirmAction } from "@/components/ui/confirm-action";
 import { Field, Input } from "@/components/ui/field";
 import type { Enums } from "@/types/database";
 
-export function DogModerationAction({ dogId, dogName, hidden }: { dogId: string; dogName: string; hidden: boolean }) {
+export function PetModerationAction({ petId, petName, hidden }: { petId: string; petName: string; hidden: boolean }) {
   return hidden ? (
     <ConfirmAction
-      action={moderateDogAction}
-      fields={{ dog_id: dogId, hide: "0" }}
+      action={moderatePetAction}
+      fields={{ pet_id: petId, hide: "0" }}
       label="Restaurar publicación"
       variant="secondary"
       size="sm"
       confirmVariant="success"
-      title={`¿Restaurar la publicación de ${dogName}?`}
+      title={`¿Restaurar la publicación de ${petName}?`}
       description="Volverá a ser visible y se notificará a quien la publicó."
     />
   ) : (
     <ConfirmAction
-      action={moderateDogAction}
-      fields={{ dog_id: dogId, hide: "1" }}
+      action={moderatePetAction}
+      fields={{ pet_id: petId, hide: "1" }}
       label="Ocultar publicación"
       variant="danger-soft"
       size="sm"
       confirmVariant="danger"
       confirmLabel="Ocultar"
-      title={`¿Ocultar la publicación de ${dogName}?`}
+      title={`¿Ocultar la publicación de ${petName}?`}
       description="Dejará de ser visible. La persona recibirá el motivo."
       messageField={{ name: "reason", label: "Motivo (lo verá la persona)", required: true }}
     />

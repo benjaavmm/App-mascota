@@ -14,7 +14,7 @@ const CARDS = [
     href: "/admin/verificaciones",
     alert: true,
   },
-  { key: "hidden_dogs", label: "Publicaciones ocultas", href: "/admin/publicaciones?ocultas=1" },
+  { key: "hidden_pets", label: "Publicaciones ocultas", href: "/admin/publicaciones?ocultas=1" },
   { key: "overdue_followups", label: "Seguimientos atrasados (+14 días)" },
   {
     key: "suspended_users",
@@ -22,7 +22,7 @@ const CARDS = [
     href: "/admin/usuarios?estado=suspendidas",
   },
   { key: "users", label: "Personas registradas" },
-  { key: "dogs_available", label: "Perritos disponibles" },
+  { key: "pets_available", label: "Perritos disponibles" },
   { key: "adoptions_completed", label: "Adopciones concretadas" },
   { key: "applications_last_7d", label: "Solicitudes (últimos 7 días)" },
 ] as const;

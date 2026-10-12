@@ -20,10 +20,10 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export function ApplicationForm({
-  dogName,
+  petName,
   action,
 }: {
-  dogName: string;
+  petName: string;
   action: (state: ActionState, formData: FormData) => Promise<ActionState>;
 }) {
   const [state, dispatch] = useActionState(action, {});
@@ -121,7 +121,7 @@ export function ApplicationForm({
         >
           <Textarea id="other_pets" name="other_pets" maxLength={600} rows={3} defaultValue={v.other_pets ?? ""} />
         </Field>
-        <Field label={`¿Cuántas horas al día estaría solo/a ${dogName}?`} htmlFor="hours_alone" required errors={errors.hours_alone}>
+        <Field label={`¿Cuántas horas al día estaría solo/a ${petName}?`} htmlFor="hours_alone" required errors={errors.hours_alone}>
           <Input id="hours_alone" name="hours_alone" type="number" min={0} max={24} required className="max-w-32" defaultValue={v.hours_alone ?? ""} />
         </Field>
       </Section>
@@ -131,7 +131,7 @@ export function ApplicationForm({
           <Textarea id="experience" name="experience" required minLength={10} maxLength={1500} rows={3} defaultValue={v.experience ?? ""} />
         </Field>
         <Field
-          label={`¿Por qué quieres adoptar a ${dogName}?`}
+          label={`¿Por qué quieres adoptar a ${petName}?`}
           htmlFor="motivation"
           required
           errors={errors.motivation}
@@ -169,7 +169,7 @@ export function ApplicationForm({
       </Section>
 
       <Alert variant="info">
-        Solo quien publicó a {dogName} verá tus respuestas. Tu teléfono y correo no se comparten automáticamente.
+        Solo quien publicó a {petName} verá tus respuestas. Tu teléfono y correo no se comparten automáticamente.
       </Alert>
       <FormMessage state={state} />
       <div className="flex justify-end">

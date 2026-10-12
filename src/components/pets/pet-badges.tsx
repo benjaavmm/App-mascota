@@ -17,7 +17,7 @@ export function UrgentBadge() {
   );
 }
 
-export function StatusBadge({ status, kind }: { status: Enums<"dog_status">; kind: Enums<"listing_kind"> }) {
+export function StatusBadge({ status, kind }: { status: Enums<"pet_status">; kind: Enums<"listing_kind"> }) {
   if (status === "available") {
     return <Badge tone="teal">{kind === "adoption" ? "Disponible" : "Buscando"}</Badge>;
   }

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 
 import { completeOnboarding } from "@/actions/profile";
-import { RegionCommuneSelect } from "@/components/dogs/region-commune-select";
+import { RegionCommuneSelect } from "@/components/pets/region-commune-select";
 import { FormMessage } from "@/components/ui/alert";
 import { Checkbox, ChoiceGroup, Field, FieldError, Input } from "@/components/ui/field";
 import { SubmitButton } from "@/components/ui/submit-button";

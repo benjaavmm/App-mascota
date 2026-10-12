@@ -2,7 +2,7 @@ import { Flag, Siren } from "lucide-react";
 import Link from "next/link";
 
 import { resolveReportAction } from "@/actions/admin";
-import { AccountModerationActions, DogModerationAction } from "@/components/admin/moderation-actions";
+import { AccountModerationActions, PetModerationAction } from "@/components/admin/moderation-actions";
 import { Badge } from "@/components/ui/badge";
 import { Card, EmptyState } from "@/components/ui/card";
 import { ConfirmAction } from "@/components/ui/confirm-action";
@@ -14,7 +14,7 @@ import { createClient } from "@/lib/supabase/server";
 import { cn, firstParam } from "@/lib/utils";
 
 const URGENT = new Set(["animal_abuse", "animal_sale", "scam"]);
-const TARGET_LABELS = { dog: "Publicación", user: "Persona", message: "Mensaje" } as const;
+const TARGET_LABELS = { pet: "Publicación", user: "Persona", message: "Mensaje" } as const;
 
 export default async function AdminReportsPage({ searchParams }: PageProps<"/admin/reportes">) {
   const view = firstParam((await searchParams).estado) ?? "abiertos";
@@ -26,7 +26,7 @@ export default async function AdminReportsPage({ searchParams }: PageProps<"/adm
   let query = supabase
     .from("reports")
     .select(
-      "id, target_type, reason, details, message_snapshot, status, resolution_note, created_at, dog:dogs!reports_dog_id_fkey(id, name, hidden), reporter:profiles!reports_reporter_id_fkey(id, display_name), reported:profiles!reports_reported_user_id_fkey(id, display_name, account_status)",
+      "id, target_type, reason, details, message_snapshot, status, resolution_note, created_at, pet:pets!reports_pet_id_fkey(id, name, hidden), reporter:profiles!reports_reporter_id_fkey(id, display_name), reported:profiles!reports_reported_user_id_fkey(id, display_name, account_status)",
     )
     .order("created_at", { ascending: false })
     .limit(100);
@@ -80,17 +80,17 @@ export default async function AdminReportsPage({ searchParams }: PageProps<"/adm
                 </div>
                 <p className="mt-2 text-lg font-extrabold">{REPORT_REASON_LABELS[r.reason]}</p>
                 <dl className="mt-2 space-y-1 text-sm">
-                  {r.dog && (
+                  {r.pet && (
                     <div>
                       <dt className="inline text-stone-500">Publicación: </dt>
                       <dd className="inline">
                         <Link
-                          href={`/perritos/${r.dog.id}`}
+                          href={`/mascotas/${r.pet.id}`}
                           className="font-semibold text-brand-700 hover:underline"
                         >
-                          {r.dog.name}
+                          {r.pet.name}
                         </Link>
-                        {r.dog.hidden && (
+                        {r.pet.hidden && (
                           <span className="ml-2 text-xs font-bold text-rose-600">(oculta)</span>
                         )}
                       </dd>
@@ -167,8 +167,8 @@ export default async function AdminReportsPage({ searchParams }: PageProps<"/adm
                       />
                     </>
                   )}
-                  {r.dog && (
-                    <DogModerationAction dogId={r.dog.id} dogName={r.dog.name} hidden={r.dog.hidden} />
+                  {r.pet && (
+                    <PetModerationAction petId={r.pet.id} petName={r.pet.name} hidden={r.pet.hidden} />
                   )}
                   {r.reported && (
                     <AccountModerationActions

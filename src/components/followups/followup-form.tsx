@@ -13,7 +13,7 @@ import { WELLBEING_LABELS } from "@/lib/constants";
 import { uploadPrivateImage } from "@/lib/upload";
 import type { ActionState } from "@/lib/validation";
 
-export function FollowupForm({ followupId, userId, dogName }: { followupId: string; userId: string; dogName: string }) {
+export function FollowupForm({ followupId, userId, petName }: { followupId: string; userId: string; petName: string }) {
   const [photo, setPhoto] = useState<File | null>(null);
   const [pending, startTransition] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -45,7 +45,7 @@ export function FollowupForm({ followupId, userId, dogName }: { followupId: stri
   return (
     <form onSubmit={onSubmit} className="space-y-5">
       <ChoiceGroup
-        legend={`¿Cómo está ${dogName}?`}
+        legend={`¿Cómo está ${petName}?`}
         name="wellbeing"
         required
         errors={state.fieldErrors?.wellbeing}
@@ -89,7 +89,7 @@ export function FollowupForm({ followupId, userId, dogName }: { followupId: stri
           tabIndex={-1}
           onChange={(event) => setPhoto(event.target.files?.[0] ?? null)}
         />
-        <p className="mt-1.5 text-xs text-stone-500">Solo la verá quien te entregó a {dogName}. Le quitamos la ubicación GPS.</p>
+        <p className="mt-1.5 text-xs text-stone-500">Solo la verá quien te entregó a {petName}. Le quitamos la ubicación GPS.</p>
       </div>
       <FormMessage state={state.fieldErrors ? null : state} />
       <button type="submit" disabled={pending} className={buttonClasses({ size: "lg" })}>

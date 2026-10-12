@@ -102,7 +102,7 @@ export default function ResponsibleAdoptionPage() {
       </div>
 
       <div className="mt-10 flex flex-wrap gap-3">
-        <ButtonLink href="/perritos" size="lg">
+        <ButtonLink href="/mascotas" size="lg">
           Ver perritos en adopción
         </ButtonLink>
         <ButtonLink href="/seguridad" variant="secondary" size="lg">

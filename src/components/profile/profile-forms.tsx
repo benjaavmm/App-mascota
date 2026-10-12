@@ -12,7 +12,7 @@ import {
   updateProfile,
 } from "@/actions/profile";
 import { PasswordInput } from "@/components/auth/password-input";
-import { RegionCommuneSelect } from "@/components/dogs/region-commune-select";
+import { RegionCommuneSelect } from "@/components/pets/region-commune-select";
 import { Alert, FormMessage } from "@/components/ui/alert";
 import { Avatar } from "@/components/ui/avatar";
 import { buttonClasses } from "@/components/ui/button";

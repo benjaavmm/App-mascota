@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { DogForm } from "@/components/dogs/dog-form";
+import { PetForm } from "@/components/pets/pet-form";
 import { Alert } from "@/components/ui/alert";
 import { Container, PageHeader } from "@/components/ui/card";
 import { isAccountActive, requireProfile } from "@/lib/auth";
@@ -27,7 +27,7 @@ export default async function PublishPage({ searchParams }: PageProps<"/publicar
         </ul>
       </Alert>
       {isAccountActive(profile) ? (
-        <DogForm mode="create" userId={profile.id} defaultKind={defaultKind} defaultCommune={profile.commune_code} />
+        <PetForm mode="create" userId={profile.id} defaultKind={defaultKind} defaultCommune={profile.commune_code} />
       ) : (
         <Alert variant="danger" title="Tu cuenta está suspendida">
           Mientras dure la suspensión no puedes publicar. Revisa tus notificaciones para más detalles.

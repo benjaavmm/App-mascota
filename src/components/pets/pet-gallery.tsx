@@ -4,15 +4,15 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
-import { DogPhoto } from "@/components/dogs/dog-photo";
-import { dogPhotoUrl } from "@/lib/storage";
+import { PetPhoto } from "@/components/pets/pet-photo";
+import { petPhotoUrl } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
-export function DogGallery({ name, photos }: { name: string; photos: { id: string; storage_path: string }[] }) {
+export function PetGallery({ name, photos }: { name: string; photos: { id: string; storage_path: string }[] }) {
   const [index, setIndex] = useState(0);
 
   if (photos.length === 0) {
-    return <DogPhoto path={null} alt={name} className="aspect-[4/3] rounded-[var(--radius-card)]" />;
+    return <PetPhoto path={null} alt={name} className="aspect-[4/3] rounded-[var(--radius-card)]" />;
   }
 
   const current = photos[Math.min(index, photos.length - 1)];
@@ -23,7 +23,7 @@ export function DogGallery({ name, photos }: { name: string; photos: { id: strin
       <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-card)] bg-brand-50">
         <Image
           key={current.id}
-          src={dogPhotoUrl(current.storage_path)!}
+          src={petPhotoUrl(current.storage_path)!}
           alt={`Foto ${index + 1} de ${photos.length} de ${name}`}
           fill
           priority={index === 0}
@@ -68,7 +68,7 @@ export function DogGallery({ name, photos }: { name: string; photos: { id: strin
                 i === index ? "ring-brand-500" : "opacity-70 ring-transparent hover:opacity-100",
               )}
             >
-              <Image src={dogPhotoUrl(photo.storage_path)!} alt="" fill sizes="80px" className="object-cover" />
+              <Image src={petPhotoUrl(photo.storage_path)!} alt="" fill sizes="80px" className="object-cover" />
             </button>
           ))}
         </div>

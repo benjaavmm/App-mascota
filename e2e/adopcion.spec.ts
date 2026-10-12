@@ -7,13 +7,13 @@ test.describe.serial("Flujo completo de adopción", () => {
   const run = Date.now().toString(36);
   const adopterEmail = `adoptante-${run}@huellitas.test`;
   const adopterPassword = "Perritos2026";
-  const dogName = `Nala ${run}`;
-  const reportDogName = `Toby ${run}`;
+  const petName = `Nala ${run}`;
+  const reportPetName = `Toby ${run}`;
 
   let adopter: Page;
   let shelter: Page;
-  let dogUrl = "";
-  let reportDogUrl = "";
+  let petUrl = "";
+  let reportPetUrl = "";
   let applicationUrl = "";
   let chatUrl = "";
 
@@ -56,7 +56,7 @@ test.describe.serial("Flujo completo de adopción", () => {
     const photo = await makeTestPhoto(browser);
 
     await shelter.goto("/publicar");
-    await shelter.getByLabel("Nombre").fill(dogName);
+    await shelter.getByLabel("Nombre").fill(petName);
     await shelter.getByText("Hembra", { exact: true }).click();
     await shelter.getByLabel("Tamaño").selectOption("medium");
     await shelter.getByLabel("Años").fill("2");
@@ -71,31 +71,31 @@ test.describe.serial("Flujo completo de adopción", () => {
     await expect(shelter.getByText("Portada")).toBeVisible();
     await shelter.getByRole("button", { name: "Publicar", exact: true }).click();
 
-    await expect(shelter).toHaveURL(/\/perritos\/[0-9a-f-]{36}\?publicado=1/, { timeout: 30_000 });
-    dogUrl = shelter.url().split("?")[0];
-    await expect(shelter.getByRole("heading", { level: 1, name: dogName })).toBeVisible();
-    await expect(shelter.locator('img[src*="dog-photos"]').first()).toBeVisible();
+    await expect(shelter).toHaveURL(/\/mascotas\/[0-9a-f-]{36}\?publicado=1/, { timeout: 30_000 });
+    petUrl = shelter.url().split("?")[0];
+    await expect(shelter.getByRole("heading", { level: 1, name: petName })).toBeVisible();
+    await expect(shelter.locator('img[src*="pet-photos"]').first()).toBeVisible();
 
     // Segunda publicación, sin fotos (se usará para probar reportes y moderación).
     await shelter.goto("/publicar");
-    await shelter.getByLabel("Nombre").fill(reportDogName);
+    await shelter.getByLabel("Nombre").fill(reportPetName);
     await shelter.getByLabel("Tamaño").selectOption("small");
     await shelter.getByLabel("Descripción").fill("Toby es un perrito juguetón y sociable que busca una familia activa.");
     await shelter.getByLabel("Región").selectOption("13");
     await shelter.getByLabel("Comuna").selectOption("13101");
     await shelter.getByLabel("Publicar sin fotos por ahora").check();
     await shelter.getByRole("button", { name: "Publicar", exact: true }).click();
-    await expect(shelter).toHaveURL(/\/perritos\/[0-9a-f-]{36}\?publicado=1/, { timeout: 30_000 });
-    reportDogUrl = shelter.url().split("?")[0];
+    await expect(shelter).toHaveURL(/\/mascotas\/[0-9a-f-]{36}\?publicado=1/, { timeout: 30_000 });
+    reportPetUrl = shelter.url().split("?")[0];
   });
 
   test("la búsqueda encuentra la publicación (sin tildes)", async () => {
-    await adopter.goto(`/perritos?tipo=adopcion&q=${encodeURIComponent(`nala ${run}`)}&region=13`);
-    await expect(adopter.getByRole("link", { name: new RegExp(dogName) })).toBeVisible();
+    await adopter.goto(`/mascotas?tipo=adopcion&q=${encodeURIComponent(`nala ${run}`)}&region=13`);
+    await expect(adopter.getByRole("link", { name: new RegExp(petName) })).toBeVisible();
   });
 
   test("postular con el cuestionario de adopción", async () => {
-    await adopter.goto(dogUrl);
+    await adopter.goto(petUrl);
     await adopter.getByRole("link", { name: "Quiero adoptarlo" }).click();
     await expect(adopter).toHaveURL(/\/postular$/);
 
@@ -152,7 +152,7 @@ test.describe.serial("Flujo completo de adopción", () => {
 
     await shelter.getByRole("link", { name: "Acta de adopción" }).click();
     await expect(shelter.getByRole("heading", { name: "Acta de Adopción Responsable" })).toBeVisible();
-    await expect(shelter.getByText(dogName).first()).toBeVisible();
+    await expect(shelter.getByText(petName).first()).toBeVisible();
 
     await shelter.goto(applicationUrl);
     await shelter.getByRole("button", { name: "Confirmar adopción" }).click();
@@ -160,7 +160,7 @@ test.describe.serial("Flujo completo de adopción", () => {
     await confirmDialog(shelter, "Confirmar entrega");
     await expect(shelter.getByText("Adopción concretada", { exact: true }).first()).toBeVisible();
 
-    await adopter.goto(dogUrl);
+    await adopter.goto(petUrl);
     await expect(adopter.getByText(/ya encontró un hogar/)).toBeVisible();
   });
 
@@ -175,13 +175,13 @@ test.describe.serial("Flujo completo de adopción", () => {
     await expect(adopter.locator('img[src*="followup-photos"]')).toBeVisible();
 
     await shelter.goto("/seguimientos");
-    await shelter.getByRole("link", { name: new RegExp(`${dogName} · 1 semana`) }).click();
+    await shelter.getByRole("link", { name: new RegExp(`${petName} · 1 semana`) }).click();
     await expect(shelter.getByText("Se adaptó súper bien")).toBeVisible();
     await expect(shelter.locator('img[src*="followup-photos"]')).toBeVisible();
   });
 
   test("reporte confidencial y moderación", async ({ browser }) => {
-    await adopter.goto(reportDogUrl);
+    await adopter.goto(reportPetUrl);
     await adopter.getByRole("button", { name: "Reportar publicación" }).click();
     await adopter.getByRole("dialog").getByLabel("Motivo").selectOption("scam");
     await adopter.getByRole("dialog").getByLabel("Cuéntanos qué pasó").fill("Me pidió dinero para reservarlo.");
@@ -190,14 +190,14 @@ test.describe.serial("Flujo completo de adopción", () => {
 
     const admin = await newLoggedInPage(browser, SEED.admin);
     await admin.goto("/admin/reportes");
-    const card = admin.getByRole("article").filter({ has: admin.getByRole("link", { name: reportDogName }) });
+    const card = admin.getByRole("article").filter({ has: admin.getByRole("link", { name: reportPetName }) });
     await expect(card.getByText("Urgente")).toBeVisible();
     await card.getByRole("button", { name: "Ocultar publicación" }).click();
     await admin.getByRole("dialog").getByLabel(/Motivo/).fill("Posible estafa: en revisión.");
     await confirmDialog(admin, "Ocultar");
 
     const anonymous = await browser.newPage();
-    await anonymous.goto(reportDogUrl);
+    await anonymous.goto(reportPetUrl);
     await expect(anonymous.getByText("No encontramos esta página")).toBeVisible();
 
     await admin.goto("/admin/auditoria");

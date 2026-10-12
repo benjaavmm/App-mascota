@@ -2,7 +2,7 @@ import { ChevronRight, HeartHandshake } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { DogPhoto } from "@/components/dogs/dog-photo";
+import { PetPhoto } from "@/components/pets/pet-photo";
 import { Badge } from "@/components/ui/badge";
 import { CardSection, Container, EmptyState, PageHeader } from "@/components/ui/card";
 import { requireProfile } from "@/lib/auth";
@@ -24,7 +24,7 @@ type Row = {
   label: string;
   due_on: string;
   submitted_at: string | null;
-  dog: { id: string; name: string; cover_path: string | null } | null;
+  pet: { id: string; name: string; cover_path: string | null } | null;
 };
 
 function FollowupList({ rows }: { rows: Row[] }) {
@@ -35,10 +35,10 @@ function FollowupList({ rows }: { rows: Row[] }) {
         return (
           <li key={f.id}>
             <Link href={`/seguimientos/${f.id}`} className="flex items-center gap-3 py-3 hover:bg-stone-50">
-              <DogPhoto path={f.dog?.cover_path} alt={f.dog?.name ?? ""} className="h-12 w-12 shrink-0 rounded-xl" sizes="48px" />
+              <PetPhoto path={f.pet?.cover_path} alt={f.pet?.name ?? ""} className="h-12 w-12 shrink-0 rounded-xl" sizes="48px" />
               <div className="min-w-0 flex-1">
                 <p className="font-bold">
-                  {f.dog?.name} · {f.label}
+                  {f.pet?.name} · {f.label}
                 </p>
                 <p className="text-sm text-stone-500">
                   {f.submitted_at ? `Enviado el ${formatDate(f.submitted_at)}` : `Fecha: ${formatDate(f.due_on)}`}
@@ -57,7 +57,7 @@ function FollowupList({ rows }: { rows: Row[] }) {
 export default async function FollowupsPage() {
   const profile = await requireProfile("/seguimientos");
   const supabase = await createClient();
-  const columns = "id, label, due_on, submitted_at, dog:dogs!followups_dog_id_fkey(id, name, cover_path)";
+  const columns = "id, label, due_on, submitted_at, pet:pets!followups_pet_id_fkey(id, name, cover_path)";
 
   const [{ data: asAdopter }, { data: asPublisher }] = await Promise.all([
     supabase.from("followups").select(columns).eq("adopter_id", profile.id).order("due_on"),

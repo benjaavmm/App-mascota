@@ -4,13 +4,13 @@ import { SITE_URL } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticPages = ["", "/perritos", "/adoptados", "/seguridad", "/adopcion-responsable", "/terminos", "/privacidad"].map(
+  const staticPages = ["", "/mascotas", "/adoptados", "/seguridad", "/adopcion-responsable", "/terminos", "/privacidad"].map(
     (path) => ({ url: `${SITE_URL}${path}`, changeFrequency: "daily" as const }),
   );
 
   const supabase = await createClient();
-  const { data: dogs } = await supabase
-    .from("dogs")
+  const { data: pets } = await supabase
+    .from("pets")
     .select("id, updated_at")
     .eq("status", "available")
     .eq("hidden", false)
@@ -19,6 +19,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticPages,
-    ...(dogs ?? []).map((dog) => ({ url: `${SITE_URL}/perritos/${dog.id}`, lastModified: dog.updated_at })),
+    ...(pets ?? []).map((pet) => ({ url: `${SITE_URL}/mascotas/${pet.id}`, lastModified: pet.updated_at })),
   ];
 }

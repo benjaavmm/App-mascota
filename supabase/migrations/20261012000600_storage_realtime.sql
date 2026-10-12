@@ -6,7 +6,7 @@
 -- -----------------------------------------------------------------------------
 -- Buckets
 --   avatars            público   2 MB   fotos de perfil
---   dog-photos         público   5 MB   fotos de publicaciones
+--   pet-photos         público   5 MB   fotos de publicaciones
 --   followup-photos    privado   5 MB   fotos de seguimiento (solo adoptante y publicador)
 --   verification-docs  privado  10 MB   respaldos de verificación (solo dueño y moderación)
 -- Las imágenes se reducen y se les quitan metadatos (EXIF/GPS) en el navegador
@@ -14,7 +14,7 @@
 -- -----------------------------------------------------------------------------
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types) values
   ('avatars', 'avatars', true, 2097152, array['image/jpeg', 'image/png', 'image/webp']),
-  ('dog-photos', 'dog-photos', true, 5242880, array['image/jpeg', 'image/png', 'image/webp']),
+  ('pet-photos', 'pet-photos', true, 5242880, array['image/jpeg', 'image/png', 'image/webp']),
   ('followup-photos', 'followup-photos', false, 5242880, array['image/jpeg', 'image/png', 'image/webp']),
   ('verification-docs', 'verification-docs', false, 10485760,
     array['image/jpeg', 'image/png', 'image/webp', 'application/pdf'])
@@ -38,24 +38,24 @@ create policy "Avatar: borrar de mi carpeta" on storage.objects
   for delete to authenticated
   using (bucket_id = 'avatars' and (storage.foldername(name))[1] = (select auth.uid()::text));
 
--- Fotos de perritos: {uid}/{dog_id}/archivo, solo en publicaciones propias.
--- Ojo: dentro de los EXISTS se usa objects.name, porque "name" también es una columna de dogs.
-create policy "Fotos perrito: ver mi carpeta" on storage.objects
+-- Fotos de mascotas: {uid}/{pet_id}/archivo, solo en publicaciones propias.
+-- Ojo: dentro de los EXISTS se usa objects.name, porque "name" también es una columna de pets.
+create policy "Fotos mascota: ver mi carpeta" on storage.objects
   for select to authenticated
-  using (bucket_id = 'dog-photos' and (storage.foldername(name))[1] = (select auth.uid()::text));
-create policy "Fotos perrito: subir a mis publicaciones" on storage.objects
+  using (bucket_id = 'pet-photos' and (storage.foldername(name))[1] = (select auth.uid()::text));
+create policy "Fotos mascota: subir a mis publicaciones" on storage.objects
   for insert to authenticated
   with check (
-    bucket_id = 'dog-photos'
+    bucket_id = 'pet-photos'
     and (storage.foldername(name))[1] = (select auth.uid()::text)
     and exists (
-      select 1 from public.dogs d
+      select 1 from public.pets d
       where d.id::text = (storage.foldername(objects.name))[2] and d.owner_id = (select auth.uid())
     )
   );
-create policy "Fotos perrito: borrar de mi carpeta" on storage.objects
+create policy "Fotos mascota: borrar de mi carpeta" on storage.objects
   for delete to authenticated
-  using (bucket_id = 'dog-photos' and (storage.foldername(name))[1] = (select auth.uid()::text));
+  using (bucket_id = 'pet-photos' and (storage.foldername(name))[1] = (select auth.uid()::text));
 
 -- Fotos de seguimiento: {adoptante}/{followup_id}/archivo
 create policy "Seguimiento: ver si participo" on storage.objects
@@ -151,7 +151,7 @@ grant execute on function
   public.complete_adoption(uuid),
   public.submit_followup(uuid, smallint, text, text),
   public.comment_followup(uuid, text),
-  public.moderate_dog(uuid, boolean, text),
+  public.moderate_pet(uuid, boolean, text),
   public.resolve_report(uuid, public.report_status, text),
   public.set_account_status(uuid, public.account_status, text, integer),
   public.set_user_role(uuid, public.user_role),

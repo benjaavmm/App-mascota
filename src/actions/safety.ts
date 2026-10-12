@@ -21,7 +21,7 @@ export async function createReport(_prev: ActionState, formData: FormData): Prom
     target_type,
     reason,
     details,
-    dog_id: target_type === "dog" ? target_id : null,
+    pet_id: target_type === "pet" ? target_id : null,
     reported_user_id: target_type === "user" ? target_id : null,
     message_id: target_type === "message" ? target_id : null,
   });

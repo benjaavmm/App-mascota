@@ -8,7 +8,7 @@ create type public.message_kind as enum ('user', 'system');
 
 create table public.conversations (
   id uuid primary key default gen_random_uuid(),
-  dog_id uuid not null references public.dogs (id) on delete cascade,
+  pet_id uuid not null references public.pets (id) on delete cascade,
   starter_id uuid not null references public.profiles (id) on delete cascade,
   recipient_id uuid not null references public.profiles (id) on delete cascade,
   starter_last_read_at timestamptz,
@@ -19,7 +19,7 @@ create table public.conversations (
   last_message_preview text,
   last_message_sender_id uuid references public.profiles (id) on delete set null,
   created_at timestamptz not null default now(),
-  unique (dog_id, starter_id, recipient_id),
+  unique (pet_id, starter_id, recipient_id),
   check (starter_id <> recipient_id)
 );
 
@@ -206,8 +206,8 @@ grant insert (conversation_id, body) on public.messages to authenticated;
 -- Funciones de mensajería
 -- -----------------------------------------------------------------------------
 
--- Inicia (o recupera) la conversación con quien publicó un perrito.
-create function public.start_conversation(p_dog_id uuid)
+-- Inicia (o recupera) la conversación con quien publicó una mascota.
+create function public.start_conversation(p_pet_id uuid)
 returns uuid
 language plpgsql
 security definer
@@ -215,25 +215,25 @@ set search_path = ''
 as $$
 declare
   v_uid uuid := public.assert_can_act();
-  v_dog public.dogs%rowtype;
+  v_pet public.pets%rowtype;
   v_id uuid;
 begin
-  select * into v_dog from public.dogs d where d.id = p_dog_id;
+  select * into v_pet from public.pets d where d.id = p_pet_id;
   if not found
-     or v_dog.hidden
-     or v_dog.status not in ('available', 'in_process', 'adopted', 'reunited')
-     or not public.is_active_user(v_dog.owner_id) then
+     or v_pet.hidden
+     or v_pet.status not in ('available', 'in_process', 'adopted', 'reunited')
+     or not public.is_active_user(v_pet.owner_id) then
     raise exception 'Publicación no disponible.' using errcode = 'P0002';
   end if;
-  if v_dog.owner_id = v_uid then
+  if v_pet.owner_id = v_uid then
     raise exception 'Esta es tu propia publicación.' using errcode = '23514';
   end if;
-  if public.is_blocked_between(v_uid, v_dog.owner_id) then
+  if public.is_blocked_between(v_uid, v_pet.owner_id) then
     raise exception 'No es posible contactar a esta persona.' using errcode = '42501';
   end if;
 
   select c.id into v_id from public.conversations c
-  where c.dog_id = p_dog_id and c.starter_id = v_uid and c.recipient_id = v_dog.owner_id;
+  where c.pet_id = p_pet_id and c.starter_id = v_uid and c.recipient_id = v_pet.owner_id;
   if v_id is not null then
     return v_id;
   end if;
@@ -243,8 +243,8 @@ begin
     raise exception 'Alcanzaste el límite de conversaciones nuevas por hoy.' using errcode = '54000';
   end if;
 
-  insert into public.conversations (dog_id, starter_id, recipient_id)
-  values (p_dog_id, v_uid, v_dog.owner_id)
+  insert into public.conversations (pet_id, starter_id, recipient_id)
+  values (p_pet_id, v_uid, v_pet.owner_id)
   returning id into v_id;
   return v_id;
 end;
@@ -380,11 +380,11 @@ as $$
 $$;
 
 -- Quien participa en una conversación puede ver la publicación aunque esté pausada o cerrada.
-create policy "Participantes ven la publicación conversada" on public.dogs
+create policy "Participantes ven la publicación conversada" on public.pets
   for select to authenticated
   using (
     exists (
       select 1 from public.conversations c
-      where c.dog_id = dogs.id and c.starter_id = (select auth.uid())
+      where c.pet_id = pets.id and c.starter_id = (select auth.uid())
     )
   );

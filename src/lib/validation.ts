@@ -174,12 +174,12 @@ export const verificationSchema = z.object({
 // ---------------------------------------------------------------------------
 // Publicaciones
 // ---------------------------------------------------------------------------
-export const dogSchema = z
+export const petSchema = z
   .object({
     kind: z.enum(E.listing_kind, { error: "Elige el tipo de publicación." }),
     name: text(1, 40, "El nombre"),
-    sex: z.enum(E.dog_sex, { error: "Elige el sexo." }),
-    size: z.enum(E.dog_size, { error: "Elige el tamaño." }),
+    sex: z.enum(E.pet_sex, { error: "Elige el sexo." }),
+    size: z.enum(E.pet_size, { error: "Elige el tamaño." }),
     age_unknown: checkbox,
     age_years: z.coerce.number().int().min(0).max(25).optional().default(0),
     age_months: z.coerce.number().int().min(0).max(11).optional().default(0),
@@ -222,7 +222,7 @@ export const dogSchema = z
     error: "Indica la fecha en que se perdió o se encontró.",
   });
 
-export type DogInput = z.infer<typeof dogSchema>;
+export type PetInput = z.infer<typeof petSchema>;
 
 // ---------------------------------------------------------------------------
 // Solicitudes de adopción
@@ -273,7 +273,7 @@ export const decisionSchema = z.object({
 // Seguridad
 // ---------------------------------------------------------------------------
 export const reportSchema = z.object({
-  target_type: z.enum(["dog", "user", "message"]),
+  target_type: z.enum(["pet", "user", "message"]),
   target_id: z.uuid(),
   reason: z.enum(E.report_reason, { error: "Elige un motivo." }),
   details: optionalText(2000, "El detalle"),

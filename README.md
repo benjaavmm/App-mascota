@@ -109,7 +109,7 @@ La seguridad está implementada **en la base de datos**, no solo en la interfaz:
 ├── src/
 │   ├── proxy.ts                 # Sesión de Supabase, rutas protegidas y CSP con nonce
 │   ├── actions/                 # Server Actions (auth, perfil, perritos, solicitudes, chat, seguridad, moderación)
-│   ├── app/                     # Páginas (rutas en español: /perritos, /publicar, /solicitudes, /mensajes, /admin…)
+│   ├── app/                     # Páginas (rutas en español: /mascotas, /publicar, /solicitudes, /mensajes, /admin…)
 │   ├── components/              # UI reutilizable y componentes por dominio
 │   ├── lib/                     # Supabase, validaciones, utilidades, datos de Chile
 │   └── types/database.ts        # Tipos generados desde la base de datos
@@ -220,7 +220,7 @@ Los correos (confirmación de cuenta, recuperar contraseña) llegan a **Mailpit*
 | `regions`, `communes` | Regiones y comunas de Chile (Código Único Territorial). |
 | `profiles` | Perfil público: nombre, comuna, tipo de cuenta, verificación, rol y estado (campos protegidos). |
 | `profile_private` | Teléfono (privado). |
-| `dogs`, `dog_photos` | Publicaciones (adopción, perdido, encontrado) y sus fotos. |
+| `pets`, `pet_photos` | Publicaciones (adopción, perdido, encontrado) y sus fotos. |
 | `favorites` | Perritos guardados. |
 | `applications` | Solicitudes de adopción con el cuestionario. |
 | `followups` | Seguimientos post‑adopción. |
@@ -246,7 +246,7 @@ Al aprobar, el perrito pasa a “en proceso” y no recibe nuevas solicitudes. A
 | Bucket | Acceso | Límite |
 | --- | --- | --- |
 | `avatars` | Público | 2 MB |
-| `dog-photos` | Público | 5 MB |
+| `pet-photos` | Público | 5 MB |
 | `followup-photos` | Privado (adoptante y quien entregó) | 5 MB |
 | `verification-docs` | Privado (dueño y moderación) | 10 MB |
 

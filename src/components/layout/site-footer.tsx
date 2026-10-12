@@ -7,9 +7,9 @@ const COLUMNS = [
   {
     title: "Adoptar",
     links: [
-      { href: "/perritos", label: "Perritos en adopción" },
-      { href: "/perritos?tipo=perdidos", label: "Perdidos" },
-      { href: "/perritos?tipo=encontrados", label: "Encontrados" },
+      { href: "/mascotas", label: "Perritos en adopción" },
+      { href: "/mascotas?tipo=perdidos", label: "Perdidos" },
+      { href: "/mascotas?tipo=encontrados", label: "Encontrados" },
       { href: "/adoptados", label: "Finales felices" },
     ],
   },

@@ -20,11 +20,11 @@ import {
 const SESSION_EXPIRED: ActionState = { error: "Tu sesión expiró. Vuelve a ingresar." };
 
 export async function submitApplication(
-  dogId: string,
+  petId: string,
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  if (!isUuid(dogId)) return { error: "Publicación no válida." };
+  if (!isUuid(petId)) return { error: "Publicación no válida." };
   const user = await getCurrentUser();
   if (!user) return SESSION_EXPIRED;
 
@@ -36,12 +36,12 @@ export async function submitApplication(
   const { data, error } = await supabase
     .from("applications")
     // publisher_id, applicant_id y conversation_id los asigna un trigger de la base de datos.
-    .insert({ dog_id: dogId, ...parsed.data } as TablesInsert<"applications">)
+    .insert({ pet_id: petId, ...parsed.data } as TablesInsert<"applications">)
     .select("id")
     .single();
   if (error || !data) return { error: friendlyError(error), values };
 
-  revalidatePath(`/perritos/${dogId}`);
+  revalidatePath(`/mascotas/${petId}`);
   redirect(`/solicitudes/${data.id}?enviada=1`);
 }
 

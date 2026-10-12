@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { setUserRoleAction } from "@/actions/admin";
 import { AccountModerationActions } from "@/components/admin/moderation-actions";
-import { VerifiedBadge } from "@/components/dogs/dog-badges";
+import { VerifiedBadge } from "@/components/pets/pet-badges";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { buttonClasses } from "@/components/ui/button";

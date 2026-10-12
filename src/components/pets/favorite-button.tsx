@@ -4,16 +4,16 @@ import { Heart } from "lucide-react";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 
-import { toggleFavorite } from "@/actions/dogs";
+import { toggleFavorite } from "@/actions/pets";
 import { buttonClasses } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function FavoriteButton({
-  dogId,
+  petId,
   initial,
   signedIn,
 }: {
-  dogId: string;
+  petId: string;
   initial: boolean;
   signedIn: boolean;
 }) {
@@ -24,7 +24,7 @@ export function FavoriteButton({
   if (!signedIn) {
     return (
       <Link
-        href={`/ingresar?next=/perritos/${dogId}`}
+        href={`/ingresar?next=/mascotas/${petId}`}
         className={buttonClasses({ variant: "secondary", size: "icon" })}
         aria-label="Ingresa para guardar en favoritos"
       >
@@ -45,7 +45,7 @@ export function FavoriteButton({
           setError(null);
           setFavorite((v) => !v);
           startTransition(async () => {
-            const result = await toggleFavorite(dogId);
+            const result = await toggleFavorite(petId);
             if (result.error) {
               setFavorite((v) => !v);
               setError(result.error);

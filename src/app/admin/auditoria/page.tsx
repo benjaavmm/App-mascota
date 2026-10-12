@@ -6,9 +6,9 @@ import { requireModerator } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
 const ACTION_LABELS: Record<string, string> = {
-  hide_dog: "Ocultó una publicación",
-  unhide_dog: "Restauró una publicación",
-  auto_hide_dog: "Ocultamiento automático por reportes",
+  hide_pet: "Ocultó una publicación",
+  unhide_pet: "Restauró una publicación",
+  auto_hide_pet: "Ocultamiento automático por reportes",
   report_reviewing: "Tomó un reporte",
   report_resolved: "Resolvió un reporte",
   report_dismissed: "Descartó un reporte",
@@ -53,7 +53,7 @@ export default async function AdminAuditPage() {
           {entries.map((e) => {
             const details = (e.details ?? {}) as Record<string, unknown>;
             const detailText = [
-              details.dog_name,
+              details.pet_name,
               details.display_name,
               details.reason,
               details.note,

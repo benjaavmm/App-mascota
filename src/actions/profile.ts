@@ -174,7 +174,7 @@ export async function deleteAccount(_prev: ActionState, formData: FormData): Pro
   }
 
   // Borra los archivos de la persona en cada bucket (carpetas que comienzan con su id).
-  for (const bucket of ["avatars", "dog-photos", "followup-photos", "verification-docs"] as const) {
+  for (const bucket of ["avatars", "pet-photos", "followup-photos", "verification-docs"] as const) {
     const paths: string[] = [];
     const { data: entries } = await admin.storage.from(bucket).list(user.id, { limit: 1000 });
     for (const entry of entries ?? []) {

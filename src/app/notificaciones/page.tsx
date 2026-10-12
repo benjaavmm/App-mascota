@@ -27,7 +27,7 @@ function iconFor(type: string): { icon: LucideIcon; className: string } {
   if (type.startsWith("followup") || type === "adoption_completed") return { icon: HeartHandshake, className: "bg-violet-100 text-violet-700" };
   if (type === "message" || type === "contact_shared") return { icon: MessageCircle, className: "bg-sky-100 text-sky-700" };
   if (type === "possible_match") return { icon: Search, className: "bg-teal-100 text-teal-700" };
-  if (type.startsWith("report") || type.startsWith("dog_hidden") || type === "account_status")
+  if (type.startsWith("report") || type.startsWith("pet_hidden") || type === "account_status")
     return { icon: AlertTriangle, className: "bg-rose-100 text-rose-700" };
   if (type.startsWith("verification")) return { icon: ShieldCheck, className: "bg-teal-100 text-teal-700" };
   return { icon: Bell, className: "bg-stone-100 text-stone-600" };

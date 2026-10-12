@@ -19,7 +19,6 @@ export type Database = {
           created_at: string;
           decided_at: string | null;
           decision_message: string | null;
-          dog_id: string;
           experience: string;
           has_secure_yard: boolean;
           hours_alone: number;
@@ -30,6 +29,7 @@ export type Database = {
           landlord_allows_pets: boolean | null;
           motivation: string;
           other_pets: string | null;
+          pet_id: string;
           publisher_id: string;
           status: Database["public"]["Enums"]["application_status"];
           updated_at: string;
@@ -50,7 +50,6 @@ export type Database = {
           created_at?: string;
           decided_at?: string | null;
           decision_message?: string | null;
-          dog_id: string;
           experience: string;
           has_secure_yard: boolean;
           hours_alone: number;
@@ -61,6 +60,7 @@ export type Database = {
           landlord_allows_pets?: boolean | null;
           motivation: string;
           other_pets?: string | null;
+          pet_id: string;
           publisher_id: string;
           status?: Database["public"]["Enums"]["application_status"];
           updated_at?: string;
@@ -80,7 +80,6 @@ export type Database = {
           created_at?: string;
           decided_at?: string | null;
           decision_message?: string | null;
-          dog_id?: string;
           experience?: string;
           has_secure_yard?: boolean;
           hours_alone?: number;
@@ -91,6 +90,7 @@ export type Database = {
           landlord_allows_pets?: boolean | null;
           motivation?: string;
           other_pets?: string | null;
+          pet_id?: string;
           publisher_id?: string;
           status?: Database["public"]["Enums"]["application_status"];
           updated_at?: string;
@@ -111,10 +111,10 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "applications_dog_id_fkey";
-            columns: ["dog_id"];
+            foreignKeyName: "applications_pet_id_fkey";
+            columns: ["pet_id"];
             isOneToOne: false;
-            referencedRelation: "dogs";
+            referencedRelation: "pets";
             referencedColumns: ["id"];
           },
           {
@@ -229,11 +229,11 @@ export type Database = {
       conversations: {
         Row: {
           created_at: string;
-          dog_id: string;
           id: string;
           last_message_at: string | null;
           last_message_preview: string | null;
           last_message_sender_id: string | null;
+          pet_id: string;
           recipient_id: string;
           recipient_last_read_at: string | null;
           recipient_shared_contact_at: string | null;
@@ -244,11 +244,11 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           created_at?: string;
-          dog_id: string;
           id?: string;
           last_message_at?: string | null;
           last_message_preview?: string | null;
           last_message_sender_id?: string | null;
+          pet_id: string;
           recipient_id: string;
           recipient_last_read_at?: string | null;
           recipient_shared_contact_at?: string | null;
@@ -258,11 +258,11 @@ export type Database = {
         };
         Update: {
           created_at?: string;
-          dog_id?: string;
           id?: string;
           last_message_at?: string | null;
           last_message_preview?: string | null;
           last_message_sender_id?: string | null;
+          pet_id?: string;
           recipient_id?: string;
           recipient_last_read_at?: string | null;
           recipient_shared_contact_at?: string | null;
@@ -272,17 +272,17 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "conversations_dog_id_fkey";
-            columns: ["dog_id"];
-            isOneToOne: false;
-            referencedRelation: "dogs";
-            referencedColumns: ["id"];
-          },
-          {
             foreignKeyName: "conversations_last_message_sender_id_fkey";
             columns: ["last_message_sender_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversations_pet_id_fkey";
+            columns: ["pet_id"];
+            isOneToOne: false;
+            referencedRelation: "pets";
             referencedColumns: ["id"];
           },
           {
@@ -301,212 +301,29 @@ export type Database = {
           },
         ];
       };
-      dog_photos: {
-        Row: {
-          created_at: string;
-          dog_id: string;
-          id: string;
-          owner_id: string;
-          position: number;
-          storage_path: string;
-        };
-        ComputedFields: never;
-        Insert: {
-          created_at?: string;
-          dog_id: string;
-          id?: string;
-          owner_id?: string;
-          position?: number;
-          storage_path: string;
-        };
-        Update: {
-          created_at?: string;
-          dog_id?: string;
-          id?: string;
-          owner_id?: string;
-          position?: number;
-          storage_path?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "dog_photos_dog_id_fkey";
-            columns: ["dog_id"];
-            isOneToOne: false;
-            referencedRelation: "dogs";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "dog_photos_owner_id_fkey";
-            columns: ["owner_id"];
-            isOneToOne: false;
-            referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      dogs: {
-        Row: {
-          adopted_at: string | null;
-          birth_date_estimate: string | null;
-          breed: string;
-          color: string | null;
-          commune_code: string;
-          cover_path: string | null;
-          created_at: string;
-          description: string;
-          dewormed: boolean;
-          energy: Database["public"]["Enums"]["energy_level"] | null;
-          event_date: string | null;
-          good_with_cats: boolean | null;
-          good_with_dogs: boolean | null;
-          good_with_kids: boolean | null;
-          health_notes: string | null;
-          hidden: boolean;
-          hidden_at: string | null;
-          hidden_reason: string | null;
-          id: string;
-          is_urgent: boolean;
-          kind: Database["public"]["Enums"]["listing_kind"];
-          location_hint: string | null;
-          microchipped: boolean;
-          name: string;
-          owner_id: string;
-          region_code: string | null;
-          requirements: string | null;
-          search_vector: unknown;
-          sex: Database["public"]["Enums"]["dog_sex"];
-          size: Database["public"]["Enums"]["dog_size"];
-          special_needs: boolean;
-          status: Database["public"]["Enums"]["dog_status"];
-          sterilized: boolean;
-          updated_at: string;
-          vaccinated: boolean;
-          weight_kg: number | null;
-        };
-        ComputedFields: never;
-        Insert: {
-          adopted_at?: string | null;
-          birth_date_estimate?: string | null;
-          breed?: string;
-          color?: string | null;
-          commune_code: string;
-          cover_path?: string | null;
-          created_at?: string;
-          description: string;
-          dewormed?: boolean;
-          energy?: Database["public"]["Enums"]["energy_level"] | null;
-          event_date?: string | null;
-          good_with_cats?: boolean | null;
-          good_with_dogs?: boolean | null;
-          good_with_kids?: boolean | null;
-          health_notes?: string | null;
-          hidden?: boolean;
-          hidden_at?: string | null;
-          hidden_reason?: string | null;
-          id?: string;
-          is_urgent?: boolean;
-          kind?: Database["public"]["Enums"]["listing_kind"];
-          location_hint?: string | null;
-          microchipped?: boolean;
-          name: string;
-          owner_id?: string;
-          region_code?: never;
-          requirements?: string | null;
-          search_vector?: unknown;
-          sex?: Database["public"]["Enums"]["dog_sex"];
-          size: Database["public"]["Enums"]["dog_size"];
-          special_needs?: boolean;
-          status?: Database["public"]["Enums"]["dog_status"];
-          sterilized?: boolean;
-          updated_at?: string;
-          vaccinated?: boolean;
-          weight_kg?: number | null;
-        };
-        Update: {
-          adopted_at?: string | null;
-          birth_date_estimate?: string | null;
-          breed?: string;
-          color?: string | null;
-          commune_code?: string;
-          cover_path?: string | null;
-          created_at?: string;
-          description?: string;
-          dewormed?: boolean;
-          energy?: Database["public"]["Enums"]["energy_level"] | null;
-          event_date?: string | null;
-          good_with_cats?: boolean | null;
-          good_with_dogs?: boolean | null;
-          good_with_kids?: boolean | null;
-          health_notes?: string | null;
-          hidden?: boolean;
-          hidden_at?: string | null;
-          hidden_reason?: string | null;
-          id?: string;
-          is_urgent?: boolean;
-          kind?: Database["public"]["Enums"]["listing_kind"];
-          location_hint?: string | null;
-          microchipped?: boolean;
-          name?: string;
-          owner_id?: string;
-          region_code?: never;
-          requirements?: string | null;
-          search_vector?: unknown;
-          sex?: Database["public"]["Enums"]["dog_sex"];
-          size?: Database["public"]["Enums"]["dog_size"];
-          special_needs?: boolean;
-          status?: Database["public"]["Enums"]["dog_status"];
-          sterilized?: boolean;
-          updated_at?: string;
-          vaccinated?: boolean;
-          weight_kg?: number | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "dogs_commune_code_fkey";
-            columns: ["commune_code"];
-            isOneToOne: false;
-            referencedRelation: "communes";
-            referencedColumns: ["code"];
-          },
-          {
-            foreignKeyName: "dogs_owner_id_fkey";
-            columns: ["owner_id"];
-            isOneToOne: false;
-            referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "dogs_region_code_fkey";
-            columns: ["region_code"];
-            isOneToOne: false;
-            referencedRelation: "regions";
-            referencedColumns: ["code"];
-          },
-        ];
-      };
       favorites: {
         Row: {
           created_at: string;
-          dog_id: string;
+          pet_id: string;
           user_id: string;
         };
         ComputedFields: never;
         Insert: {
           created_at?: string;
-          dog_id: string;
+          pet_id: string;
           user_id?: string;
         };
         Update: {
           created_at?: string;
-          dog_id?: string;
+          pet_id?: string;
           user_id?: string;
         };
         Relationships: [
           {
-            foreignKeyName: "favorites_dog_id_fkey";
-            columns: ["dog_id"];
+            foreignKeyName: "favorites_pet_id_fkey";
+            columns: ["pet_id"];
             isOneToOne: false;
-            referencedRelation: "dogs";
+            referencedRelation: "pets";
             referencedColumns: ["id"];
           },
           {
@@ -523,12 +340,12 @@ export type Database = {
           adopter_id: string;
           application_id: string;
           created_at: string;
-          dog_id: string;
           due_on: string;
           id: string;
           label: string;
           notes: string | null;
           overdue_notified_at: string | null;
+          pet_id: string;
           photo_path: string | null;
           publisher_comment: string | null;
           publisher_id: string;
@@ -541,12 +358,12 @@ export type Database = {
           adopter_id: string;
           application_id: string;
           created_at?: string;
-          dog_id: string;
           due_on: string;
           id?: string;
           label: string;
           notes?: string | null;
           overdue_notified_at?: string | null;
+          pet_id: string;
           photo_path?: string | null;
           publisher_comment?: string | null;
           publisher_id: string;
@@ -558,12 +375,12 @@ export type Database = {
           adopter_id?: string;
           application_id?: string;
           created_at?: string;
-          dog_id?: string;
           due_on?: string;
           id?: string;
           label?: string;
           notes?: string | null;
           overdue_notified_at?: string | null;
+          pet_id?: string;
           photo_path?: string | null;
           publisher_comment?: string | null;
           publisher_id?: string;
@@ -587,10 +404,10 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "followups_dog_id_fkey";
-            columns: ["dog_id"];
+            foreignKeyName: "followups_pet_id_fkey";
+            columns: ["pet_id"];
             isOneToOne: false;
-            referencedRelation: "dogs";
+            referencedRelation: "pets";
             referencedColumns: ["id"];
           },
           {
@@ -687,6 +504,192 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
+          },
+        ];
+      };
+      pet_photos: {
+        Row: {
+          created_at: string;
+          id: string;
+          owner_id: string;
+          pet_id: string;
+          position: number;
+          storage_path: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: string;
+          owner_id?: string;
+          pet_id: string;
+          position?: number;
+          storage_path: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          owner_id?: string;
+          pet_id?: string;
+          position?: number;
+          storage_path?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "pet_photos_owner_id_fkey";
+            columns: ["owner_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "pet_photos_pet_id_fkey";
+            columns: ["pet_id"];
+            isOneToOne: false;
+            referencedRelation: "pets";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      pets: {
+        Row: {
+          adopted_at: string | null;
+          birth_date_estimate: string | null;
+          breed: string;
+          color: string | null;
+          commune_code: string;
+          cover_path: string | null;
+          created_at: string;
+          description: string;
+          dewormed: boolean;
+          energy: Database["public"]["Enums"]["energy_level"] | null;
+          event_date: string | null;
+          good_with_cats: boolean | null;
+          good_with_dogs: boolean | null;
+          good_with_kids: boolean | null;
+          health_notes: string | null;
+          hidden: boolean;
+          hidden_at: string | null;
+          hidden_reason: string | null;
+          id: string;
+          is_urgent: boolean;
+          kind: Database["public"]["Enums"]["listing_kind"];
+          location_hint: string | null;
+          microchipped: boolean;
+          name: string;
+          owner_id: string;
+          region_code: string | null;
+          requirements: string | null;
+          search_vector: unknown;
+          sex: Database["public"]["Enums"]["pet_sex"];
+          size: Database["public"]["Enums"]["pet_size"];
+          special_needs: boolean;
+          species: Database["public"]["Enums"]["species"];
+          status: Database["public"]["Enums"]["pet_status"];
+          sterilized: boolean;
+          updated_at: string;
+          vaccinated: boolean;
+          weight_kg: number | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          adopted_at?: string | null;
+          birth_date_estimate?: string | null;
+          breed?: string;
+          color?: string | null;
+          commune_code: string;
+          cover_path?: string | null;
+          created_at?: string;
+          description: string;
+          dewormed?: boolean;
+          energy?: Database["public"]["Enums"]["energy_level"] | null;
+          event_date?: string | null;
+          good_with_cats?: boolean | null;
+          good_with_dogs?: boolean | null;
+          good_with_kids?: boolean | null;
+          health_notes?: string | null;
+          hidden?: boolean;
+          hidden_at?: string | null;
+          hidden_reason?: string | null;
+          id?: string;
+          is_urgent?: boolean;
+          kind?: Database["public"]["Enums"]["listing_kind"];
+          location_hint?: string | null;
+          microchipped?: boolean;
+          name: string;
+          owner_id?: string;
+          region_code?: never;
+          requirements?: string | null;
+          search_vector?: unknown;
+          sex?: Database["public"]["Enums"]["pet_sex"];
+          size: Database["public"]["Enums"]["pet_size"];
+          special_needs?: boolean;
+          species?: Database["public"]["Enums"]["species"];
+          status?: Database["public"]["Enums"]["pet_status"];
+          sterilized?: boolean;
+          updated_at?: string;
+          vaccinated?: boolean;
+          weight_kg?: number | null;
+        };
+        Update: {
+          adopted_at?: string | null;
+          birth_date_estimate?: string | null;
+          breed?: string;
+          color?: string | null;
+          commune_code?: string;
+          cover_path?: string | null;
+          created_at?: string;
+          description?: string;
+          dewormed?: boolean;
+          energy?: Database["public"]["Enums"]["energy_level"] | null;
+          event_date?: string | null;
+          good_with_cats?: boolean | null;
+          good_with_dogs?: boolean | null;
+          good_with_kids?: boolean | null;
+          health_notes?: string | null;
+          hidden?: boolean;
+          hidden_at?: string | null;
+          hidden_reason?: string | null;
+          id?: string;
+          is_urgent?: boolean;
+          kind?: Database["public"]["Enums"]["listing_kind"];
+          location_hint?: string | null;
+          microchipped?: boolean;
+          name?: string;
+          owner_id?: string;
+          region_code?: never;
+          requirements?: string | null;
+          search_vector?: unknown;
+          sex?: Database["public"]["Enums"]["pet_sex"];
+          size?: Database["public"]["Enums"]["pet_size"];
+          special_needs?: boolean;
+          species?: Database["public"]["Enums"]["species"];
+          status?: Database["public"]["Enums"]["pet_status"];
+          sterilized?: boolean;
+          updated_at?: string;
+          vaccinated?: boolean;
+          weight_kg?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "pets_commune_code_fkey";
+            columns: ["commune_code"];
+            isOneToOne: false;
+            referencedRelation: "communes";
+            referencedColumns: ["code"];
+          },
+          {
+            foreignKeyName: "pets_owner_id_fkey";
+            columns: ["owner_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "pets_region_code_fkey";
+            columns: ["region_code"];
+            isOneToOne: false;
+            referencedRelation: "regions";
+            referencedColumns: ["code"];
           },
         ];
       };
@@ -812,10 +815,10 @@ export type Database = {
         Row: {
           created_at: string;
           details: string | null;
-          dog_id: string | null;
           id: string;
           message_id: string | null;
           message_snapshot: string | null;
+          pet_id: string | null;
           reason: Database["public"]["Enums"]["report_reason"];
           reported_user_id: string | null;
           reporter_id: string | null;
@@ -829,10 +832,10 @@ export type Database = {
         Insert: {
           created_at?: string;
           details?: string | null;
-          dog_id?: string | null;
           id?: string;
           message_id?: string | null;
           message_snapshot?: string | null;
+          pet_id?: string | null;
           reason: Database["public"]["Enums"]["report_reason"];
           reported_user_id?: string | null;
           reporter_id?: string | null;
@@ -845,10 +848,10 @@ export type Database = {
         Update: {
           created_at?: string;
           details?: string | null;
-          dog_id?: string | null;
           id?: string;
           message_id?: string | null;
           message_snapshot?: string | null;
+          pet_id?: string | null;
           reason?: Database["public"]["Enums"]["report_reason"];
           reported_user_id?: string | null;
           reporter_id?: string | null;
@@ -860,17 +863,17 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "reports_dog_id_fkey";
-            columns: ["dog_id"];
-            isOneToOne: false;
-            referencedRelation: "dogs";
-            referencedColumns: ["id"];
-          },
-          {
             foreignKeyName: "reports_message_id_fkey";
             columns: ["message_id"];
             isOneToOne: false;
             referencedRelation: "messages";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reports_pet_id_fkey";
+            columns: ["pet_id"];
+            isOneToOne: false;
+            referencedRelation: "pets";
             referencedColumns: ["id"];
           },
           {
@@ -990,7 +993,7 @@ export type Database = {
         Returns: undefined;
       };
       mark_conversation_read: { Args: { p_conversation_id: string }; Returns: undefined };
-      moderate_dog: { Args: { p_dog_id: string; p_hide: boolean; p_reason?: string }; Returns: undefined };
+      moderate_pet: { Args: { p_hide: boolean; p_pet_id: string; p_reason?: string }; Returns: undefined };
       my_unread_counts: { Args: Record<PropertyKey, never>; Returns: Json };
       normalize_text: { Args: { p_text: string }; Returns: string };
       notify: {
@@ -1036,7 +1039,7 @@ export type Database = {
         Returns: undefined;
       };
       share_contact: { Args: { p_conversation_id: string }; Returns: undefined };
-      start_conversation: { Args: { p_dog_id: string }; Returns: string };
+      start_conversation: { Args: { p_pet_id: string }; Returns: string };
       submit_followup: {
         Args: { p_followup_id: string; p_notes: string; p_photo_path?: string; p_wellbeing: number };
         Returns: undefined;
@@ -1048,14 +1051,14 @@ export type Database = {
       account_type: "person" | "rescuer" | "shelter";
       application_status:
         "pending" | "reviewing" | "approved" | "rejected" | "withdrawn" | "cancelled" | "completed";
-      dog_sex: "male" | "female" | "unknown";
-      dog_size: "small" | "medium" | "large" | "giant";
-      dog_status: "available" | "in_process" | "adopted" | "reunited" | "paused" | "archived";
       energy_level: "low" | "medium" | "high";
       housing_tenure: "owned" | "rented" | "family" | "other";
       housing_type: "house" | "apartment" | "rural" | "other";
       listing_kind: "adoption" | "lost" | "found";
       message_kind: "user" | "system";
+      pet_sex: "male" | "female" | "unknown";
+      pet_size: "small" | "medium" | "large" | "giant";
+      pet_status: "available" | "in_process" | "adopted" | "reunited" | "paused" | "archived";
       report_reason:
         | "animal_sale"
         | "animal_abuse"
@@ -1067,6 +1070,7 @@ export type Database = {
         | "impersonation"
         | "other";
       report_status: "open" | "reviewing" | "resolved" | "dismissed";
+      species: "dog" | "cat" | "rabbit" | "rodent" | "bird" | "horse" | "other";
       user_role: "user" | "moderator" | "admin";
       verification_status: "unverified" | "pending" | "verified" | "rejected";
     };
@@ -1190,14 +1194,14 @@ export const Constants = {
         "cancelled",
         "completed",
       ],
-      dog_sex: ["male", "female", "unknown"],
-      dog_size: ["small", "medium", "large", "giant"],
-      dog_status: ["available", "in_process", "adopted", "reunited", "paused", "archived"],
       energy_level: ["low", "medium", "high"],
       housing_tenure: ["owned", "rented", "family", "other"],
       housing_type: ["house", "apartment", "rural", "other"],
       listing_kind: ["adoption", "lost", "found"],
       message_kind: ["user", "system"],
+      pet_sex: ["male", "female", "unknown"],
+      pet_size: ["small", "medium", "large", "giant"],
+      pet_status: ["available", "in_process", "adopted", "reunited", "paused", "archived"],
       report_reason: [
         "animal_sale",
         "animal_abuse",
@@ -1210,6 +1214,7 @@ export const Constants = {
         "other",
       ],
       report_status: ["open", "reviewing", "resolved", "dismissed"],
+      species: ["dog", "cat", "rabbit", "rodent", "bird", "horse", "other"],
       user_role: ["user", "moderator", "admin"],
       verification_status: ["unverified", "pending", "verified", "rejected"],
     },

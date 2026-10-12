@@ -1,13 +1,13 @@
 import { SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 
-import { RegionCommuneSelect } from "@/components/dogs/region-commune-select";
+import { RegionCommuneSelect } from "@/components/pets/region-commune-select";
 import { buttonClasses } from "@/components/ui/button";
 import { CollapsiblePanel } from "@/components/ui/collapsible-panel";
 import { Checkbox, Field, Input, Select } from "@/components/ui/field";
 import { AGE_GROUPS, SEX_LABELS, SIZE_SHORT } from "@/lib/constants";
 
-export type DogFilterValues = {
+export type PetFilterValues = {
   tipo: string;
   q?: string;
   region?: string;
@@ -23,13 +23,13 @@ export type DogFilterValues = {
   orden?: string;
 };
 
-export function countActiveFilters(f: DogFilterValues) {
+export function countActiveFilters(f: PetFilterValues) {
   return [f.q, f.region, f.comuna, f.tamano, f.sexo, f.edad, f.esterilizado, f.ninos, f.perros, f.gatos, f.urgente].filter(
     Boolean,
   ).length;
 }
 
-export function DogFilters({ values }: { values: DogFilterValues }) {
+export function PetFilters({ values }: { values: PetFilterValues }) {
   const isAdoption = values.tipo === "adopcion";
   const active = countActiveFilters(values);
 
@@ -39,7 +39,7 @@ export function DogFilters({ values }: { values: DogFilterValues }) {
       icon={<SlidersHorizontal className="h-5 w-5 text-brand-600" />}
       badge={active > 0 ? <span className="rounded-full bg-brand-100 px-2 text-sm text-brand-800">{active}</span> : null}
     >
-      <form method="get" action="/perritos" className="space-y-4 p-4 lg:p-5">
+      <form method="get" action="/mascotas" className="space-y-4 p-4 lg:p-5">
         <input type="hidden" name="tipo" value={values.tipo} />
         <Field label="Buscar" htmlFor="f-q">
           <Input
@@ -93,7 +93,7 @@ export function DogFilters({ values }: { values: DogFilterValues }) {
               <legend className="mb-1.5 text-sm font-bold text-stone-800">Características</legend>
               <Checkbox id="f-ster" name="esterilizado" value="1" label="Esterilizado" defaultChecked={values.esterilizado} />
               <Checkbox id="f-kids" name="ninos" value="1" label="Se lleva bien con niños" defaultChecked={values.ninos} />
-              <Checkbox id="f-dogs" name="perros" value="1" label="Se lleva bien con perros" defaultChecked={values.perros} />
+              <Checkbox id="f-pets" name="perros" value="1" label="Se lleva bien con perros" defaultChecked={values.perros} />
               <Checkbox id="f-cats" name="gatos" value="1" label="Se lleva bien con gatos" defaultChecked={values.gatos} />
               <Checkbox id="f-urgent" name="urgente" value="1" label="Solo casos urgentes" defaultChecked={values.urgente} />
             </fieldset>
@@ -111,7 +111,7 @@ export function DogFilters({ values }: { values: DogFilterValues }) {
             Aplicar filtros
           </button>
           {active > 0 && (
-            <Link href={`/perritos?tipo=${values.tipo}`} className={buttonClasses({ variant: "ghost" })}>
+            <Link href={`/mascotas?tipo=${values.tipo}`} className={buttonClasses({ variant: "ghost" })}>
               Limpiar
             </Link>
           )}

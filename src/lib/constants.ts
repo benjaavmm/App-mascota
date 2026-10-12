@@ -20,7 +20,7 @@ export const KIND_SLUGS: Record<string, Enums<"listing_kind">> = {
   encontrados: "found",
 };
 
-export const STATUS_LABELS: Record<Enums<"dog_status">, string> = {
+export const STATUS_LABELS: Record<Enums<"pet_status">, string> = {
   available: "Disponible",
   in_process: "En proceso de adopción",
   adopted: "Adoptado",
@@ -29,24 +29,24 @@ export const STATUS_LABELS: Record<Enums<"dog_status">, string> = {
   archived: "Archivada",
 };
 
-export const LOST_FOUND_STATUS_LABELS: Partial<Record<Enums<"dog_status">, string>> = {
+export const LOST_FOUND_STATUS_LABELS: Partial<Record<Enums<"pet_status">, string>> = {
   available: "Buscando",
 };
 
-export const SEX_LABELS: Record<Enums<"dog_sex">, string> = {
+export const SEX_LABELS: Record<Enums<"pet_sex">, string> = {
   male: "Macho",
   female: "Hembra",
   unknown: "Sin confirmar",
 };
 
-export const SIZE_LABELS: Record<Enums<"dog_size">, string> = {
+export const SIZE_LABELS: Record<Enums<"pet_size">, string> = {
   small: "Pequeño (hasta 10 kg)",
   medium: "Mediano (10–25 kg)",
   large: "Grande (25–40 kg)",
   giant: "Gigante (más de 40 kg)",
 };
 
-export const SIZE_SHORT: Record<Enums<"dog_size">, string> = {
+export const SIZE_SHORT: Record<Enums<"pet_size">, string> = {
   small: "Pequeño",
   medium: "Mediano",
   large: "Grande",

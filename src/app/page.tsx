@@ -12,15 +12,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-import { DogGrid } from "@/components/dogs/dog-card";
-import { DogPhoto } from "@/components/dogs/dog-photo";
+import { PetGrid } from "@/components/pets/pet-card";
+import { PetPhoto } from "@/components/pets/pet-photo";
 import { PawIcon } from "@/components/layout/logo";
 import { Alert } from "@/components/ui/alert";
 import { ButtonLink, buttonClasses } from "@/components/ui/button";
 import { Container } from "@/components/ui/card";
 import { Select } from "@/components/ui/field";
 import { REGIONS } from "@/lib/chile";
-import { DOG_CARD_COLUMNS } from "@/lib/queries";
+import { PET_CARD_COLUMNS } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { firstParam } from "@/lib/utils";
 
@@ -61,8 +61,8 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
   const [{ data: stats }, { data: urgent }, { data: recent }, { data: lostFound }] = await Promise.all([
     supabase.rpc("get_public_stats"),
     supabase
-      .from("dogs")
-      .select(DOG_CARD_COLUMNS)
+      .from("pets")
+      .select(PET_CARD_COLUMNS)
       .eq("kind", "adoption")
       .eq("status", "available")
       .eq("hidden", false)
@@ -70,16 +70,16 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
       .order("created_at", { ascending: false })
       .limit(3),
     supabase
-      .from("dogs")
-      .select(DOG_CARD_COLUMNS)
+      .from("pets")
+      .select(PET_CARD_COLUMNS)
       .eq("kind", "adoption")
       .eq("status", "available")
       .eq("hidden", false)
       .order("created_at", { ascending: false })
       .limit(6),
     supabase
-      .from("dogs")
-      .select(DOG_CARD_COLUMNS)
+      .from("pets")
+      .select(PET_CARD_COLUMNS)
       .in("kind", ["lost", "found"])
       .eq("status", "available")
       .eq("hidden", false)
@@ -88,7 +88,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
   ]);
 
   const s = (stats ?? {}) as Record<string, number>;
-  const heroDogs = (recent ?? []).filter((d) => d.cover_path).slice(0, 3);
+  const heroPets = (recent ?? []).filter((d) => d.cover_path).slice(0, 3);
 
   return (
     <>
@@ -113,7 +113,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
               Conectamos perritos rescatados con familias responsables. Gratis, seguro y con acompañamiento después de
               la adopción.
             </p>
-            <form action="/perritos" method="get" className="mt-8 flex max-w-xl flex-col gap-2 rounded-2xl bg-white p-2 shadow-lg shadow-stone-200/60 sm:flex-row">
+            <form action="/mascotas" method="get" className="mt-8 flex max-w-xl flex-col gap-2 rounded-2xl bg-white p-2 shadow-lg shadow-stone-200/60 sm:flex-row">
               <input type="hidden" name="tipo" value="adopcion" />
               <label htmlFor="hero-region" className="sr-only">
                 Región
@@ -135,19 +135,19 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
               <ButtonLink href="/publicar" variant="secondary">
                 Publicar un perrito
               </ButtonLink>
-              <ButtonLink href="/perritos?tipo=perdidos" variant="ghost">
+              <ButtonLink href="/mascotas?tipo=perdidos" variant="ghost">
                 <Siren className="h-4 w-4 text-rose-600" />
                 Perdí a mi perrito
               </ButtonLink>
             </div>
           </div>
           <div className="relative hidden h-[420px] lg:block">
-            {heroDogs.length >= 2 ? (
+            {heroPets.length >= 2 ? (
               <>
-                <DogPhoto path={heroDogs[0].cover_path} alt={heroDogs[0].name} priority className="absolute top-0 right-8 h-72 w-60 rotate-3 rounded-3xl shadow-xl ring-4 ring-white" sizes="240px" />
-                <DogPhoto path={heroDogs[1].cover_path} alt={heroDogs[1].name} className="absolute bottom-0 left-4 h-64 w-56 -rotate-3 rounded-3xl shadow-xl ring-4 ring-white" sizes="224px" />
-                {heroDogs[2] && (
-                  <DogPhoto path={heroDogs[2].cover_path} alt={heroDogs[2].name} className="absolute right-0 bottom-6 h-40 w-36 rotate-6 rounded-3xl shadow-xl ring-4 ring-white" sizes="144px" />
+                <PetPhoto path={heroPets[0].cover_path} alt={heroPets[0].name} priority className="absolute top-0 right-8 h-72 w-60 rotate-3 rounded-3xl shadow-xl ring-4 ring-white" sizes="240px" />
+                <PetPhoto path={heroPets[1].cover_path} alt={heroPets[1].name} className="absolute bottom-0 left-4 h-64 w-56 -rotate-3 rounded-3xl shadow-xl ring-4 ring-white" sizes="224px" />
+                {heroPets[2] && (
+                  <PetPhoto path={heroPets[2].cover_path} alt={heroPets[2].name} className="absolute right-0 bottom-6 h-40 w-36 rotate-6 rounded-3xl shadow-xl ring-4 ring-white" sizes="144px" />
                 )}
               </>
             ) : (
@@ -177,20 +177,20 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
 
       {urgent && urgent.length > 0 && (
         <Container className="mt-16">
-          <SectionTitle title="Casos urgentes" description="Necesitan un hogar lo antes posible." href="/perritos?tipo=adopcion&urgente=1" linkLabel="Ver todos" />
-          <DogGrid dogs={urgent} />
+          <SectionTitle title="Casos urgentes" description="Necesitan un hogar lo antes posible." href="/mascotas?tipo=adopcion&urgente=1" linkLabel="Ver todos" />
+          <PetGrid pets={urgent} />
         </Container>
       )}
 
       <Container className="mt-16">
-        <SectionTitle title="Recién llegados" description="Perritos que acaban de publicarse." href="/perritos" linkLabel="Ver todos" />
+        <SectionTitle title="Recién llegados" description="Perritos que acaban de publicarse." href="/mascotas" linkLabel="Ver todos" />
         {recent && recent.length > 0 ? (
-          <DogGrid dogs={recent} />
+          <PetGrid pets={recent} />
         ) : (
           <p className="rounded-3xl bg-white p-8 text-center text-stone-600">Pronto verás perritos aquí. ¿Tienes uno que necesite hogar?</p>
         )}
         <div className="mt-6 text-center sm:hidden">
-          <ButtonLink href="/perritos" variant="secondary">
+          <ButtonLink href="/mascotas" variant="secondary">
             Ver todos los perritos
           </ButtonLink>
         </div>
@@ -216,8 +216,8 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
 
       {lostFound && lostFound.length > 0 && (
         <Container className="mt-16">
-          <SectionTitle title="Perdidos y encontrados" description="Comparte: cada visualización acerca a un perrito a su casa." href="/perritos?tipo=perdidos" linkLabel="Ver más" />
-          <DogGrid dogs={lostFound} />
+          <SectionTitle title="Perdidos y encontrados" description="Comparte: cada visualización acerca a un perrito a su casa." href="/mascotas?tipo=perdidos" linkLabel="Ver más" />
+          <PetGrid pets={lostFound} />
         </Container>
       )}
 

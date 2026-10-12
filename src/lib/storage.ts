@@ -1,6 +1,6 @@
 import { SUPABASE_URL } from "@/lib/env";
 
-export type PublicBucket = "avatars" | "dog-photos";
+export type PublicBucket = "avatars" | "pet-photos";
 
 // URL pública de un archivo en un bucket público.
 export function publicUrl(bucket: PublicBucket, path: string | null | undefined) {
@@ -9,8 +9,8 @@ export function publicUrl(bucket: PublicBucket, path: string | null | undefined)
   return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${encoded}`;
 }
 
-export function dogPhotoUrl(path: string | null | undefined) {
-  return publicUrl("dog-photos", path);
+export function petPhotoUrl(path: string | null | undefined) {
+  return publicUrl("pet-photos", path);
 }
 
 export function avatarUrl(path: string | null | undefined) {

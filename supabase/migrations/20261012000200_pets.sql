@@ -1,22 +1,25 @@
 -- =============================================================================
--- Huellitas · Publicaciones de perritos (adopción, perdidos y encontrados),
--- fotos y favoritos.
+-- Huellitas · Publicaciones de mascotas de cualquier especie (adopción,
+-- perdidas y encontradas), fotos y favoritos.
 -- =============================================================================
 
 create type public.listing_kind as enum ('adoption', 'lost', 'found');
-create type public.dog_status as enum ('available', 'in_process', 'adopted', 'reunited', 'paused', 'archived');
-create type public.dog_sex as enum ('male', 'female', 'unknown');
-create type public.dog_size as enum ('small', 'medium', 'large', 'giant');
+-- Especies domésticas. La fauna silvestre está prohibida (Ley de Caza N° 19.473).
+create type public.species as enum ('dog', 'cat', 'rabbit', 'rodent', 'bird', 'horse', 'other');
+create type public.pet_status as enum ('available', 'in_process', 'adopted', 'reunited', 'paused', 'archived');
+create type public.pet_sex as enum ('male', 'female', 'unknown');
+create type public.pet_size as enum ('small', 'medium', 'large', 'giant');
 create type public.energy_level as enum ('low', 'medium', 'high');
 
-create table public.dogs (
+create table public.pets (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null default auth.uid() references public.profiles (id) on delete cascade,
   kind public.listing_kind not null default 'adoption',
-  status public.dog_status not null default 'available',
+  species public.species not null default 'dog',
+  status public.pet_status not null default 'available',
   name text not null check (char_length(name) between 1 and 40),
-  sex public.dog_sex not null default 'unknown',
-  size public.dog_size not null,
+  sex public.pet_sex not null default 'unknown',
+  size public.pet_size not null,
   birth_date_estimate date,
   breed text not null default 'Mestizo' check (char_length(breed) between 1 and 60),
   color text check (char_length(color) <= 60),
@@ -50,22 +53,23 @@ create table public.dogs (
   updated_at timestamptz not null default now()
 );
 
-comment on column public.dogs.location_hint is
+comment on column public.pets.location_hint is
   'Referencia aproximada (sector, plaza). Nunca una dirección exacta.';
-comment on column public.dogs.event_date is
+comment on column public.pets.event_date is
   'Para perdidos/encontrados: fecha en que se perdió o se encontró.';
 
-create index dogs_feed_idx on public.dogs (created_at desc) where not hidden;
-create index dogs_status_kind_idx on public.dogs (status, kind);
-create index dogs_owner_idx on public.dogs (owner_id);
-create index dogs_commune_idx on public.dogs (commune_code);
-create index dogs_region_idx on public.dogs (region_code);
-create index dogs_search_idx on public.dogs using gin (search_vector);
+create index pets_feed_idx on public.pets (created_at desc) where not hidden;
+create index pets_status_kind_idx on public.pets (status, kind);
+create index pets_species_idx on public.pets (species);
+create index pets_owner_idx on public.pets (owner_id);
+create index pets_commune_idx on public.pets (commune_code);
+create index pets_region_idx on public.pets (region_code);
+create index pets_search_idx on public.pets using gin (search_vector);
 
 -- -----------------------------------------------------------------------------
 -- Validaciones y reglas de negocio de las publicaciones
 -- -----------------------------------------------------------------------------
-create function public.dogs_before_write()
+create function public.pets_before_write()
 returns trigger
 language plpgsql
 security definer
@@ -108,7 +112,17 @@ begin
 
   new.search_vector :=
     setweight(to_tsvector('spanish', public.normalize_text(new.name)), 'A')
-    || setweight(to_tsvector('spanish', public.normalize_text(concat_ws(' ', new.breed, new.color, v_commune_name))), 'B')
+    || setweight(to_tsvector('spanish', public.normalize_text(concat_ws(' ',
+         case new.species
+           when 'dog' then 'perro perrito perrita'
+           when 'cat' then 'gato gatito gatita'
+           when 'rabbit' then 'conejo conejito'
+           when 'rodent' then 'roedor cuy hamster cobayo'
+           when 'bird' then 'ave pajaro'
+           when 'horse' then 'caballo yegua equino'
+           else 'otro'
+         end,
+         new.breed, new.color, v_commune_name))), 'B')
     || setweight(to_tsvector('spanish', public.normalize_text(concat_ws(' ', new.description, new.location_hint))), 'C');
 
   -- Contexto confiable (SQL directo o service role): sin reglas de usuario.
@@ -131,13 +145,13 @@ begin
     new.cover_path := null;
 
     -- Límites anti-spam (más amplios para cuentas verificadas).
-    select count(*) into v_recent from public.dogs d
+    select count(*) into v_recent from public.pets d
     where d.owner_id = v_uid and d.created_at > now() - interval '24 hours';
     if v_recent >= (case when v_verified then 30 else 5 end) then
       raise exception 'Alcanzaste el límite de publicaciones por día. Intenta mañana.' using errcode = '54000';
     end if;
 
-    select count(*) into v_active from public.dogs d
+    select count(*) into v_active from public.pets d
     where d.owner_id = v_uid and d.status not in ('archived', 'adopted', 'reunited');
     if v_active >= (case when v_verified then 300 else 25 end) then
       raise exception 'Tienes demasiadas publicaciones activas. Archiva las que ya no correspondan.' using errcode = '54000';
@@ -152,12 +166,12 @@ begin
       raise exception 'Estado no válido para una adopción.' using errcode = '23514';
     end if;
     if old.kind in ('lost', 'found') and new.status in ('in_process', 'adopted') then
-      raise exception 'Estado no válido para un perrito perdido o encontrado.' using errcode = '23514';
+      raise exception 'Estado no válido para una mascota perdida o encontrada.' using errcode = '23514';
     end if;
     if new.status in ('available', 'paused', 'archived', 'adopted')
        and exists (
          select 1 from public.applications a
-         where a.dog_id = new.id and a.status = 'approved'
+         where a.pet_id = new.id and a.status = 'approved'
        ) then
       raise exception 'Hay una solicitud aprobada. Confirma la adopción o cancélala desde la solicitud.' using errcode = '23514';
     end if;
@@ -173,16 +187,16 @@ begin
 end;
 $$;
 
-create trigger dogs_before_write
-  before insert or update on public.dogs
-  for each row execute function public.dogs_before_write();
+create trigger pets_before_write
+  before insert or update on public.pets
+  for each row execute function public.pets_before_write();
 
-create trigger dogs_set_updated_at
-  before update on public.dogs
+create trigger pets_set_updated_at
+  before update on public.pets
   for each row execute function public.set_updated_at();
 
--- Al publicar un perrito encontrado, avisar a quienes buscan uno perdido parecido.
-create function public.dogs_after_insert_match()
+-- Al publicar una mascota encontrada, avisar a quienes buscan una perdida parecida (misma especie).
+create function public.pets_after_insert_match()
 returns trigger
 language plpgsql
 security definer
@@ -197,11 +211,12 @@ begin
 
   for v_lost in
     select d.id, d.owner_id, d.name
-    from public.dogs d
+    from public.pets d
     where d.kind = 'lost'
       and d.status = 'available'
       and not d.hidden
       and d.region_code = new.region_code
+      and d.species = new.species
       and d.size = new.size
       and (new.sex = 'unknown' or d.sex = 'unknown' or d.sex = new.sex)
       and d.owner_id <> new.owner_id
@@ -213,8 +228,8 @@ begin
       v_lost.owner_id,
       'possible_match',
       'Posible coincidencia para ' || v_lost.name,
-      'Publicaron un perrito encontrado con características parecidas en tu región. Revísalo con calma y pide pruebas antes de coordinar.',
-      '/perritos/' || new.id
+      'Publicaron una mascota encontrada con características parecidas en tu región. Revísalo con calma y pide pruebas antes de coordinar.',
+      '/mascotas/' || new.id
     );
   end loop;
 
@@ -222,16 +237,16 @@ begin
 end;
 $$;
 
-create trigger dogs_after_insert_match
-  after insert on public.dogs
-  for each row execute function public.dogs_after_insert_match();
+create trigger pets_after_insert_match
+  after insert on public.pets
+  for each row execute function public.pets_after_insert_match();
 
 -- -----------------------------------------------------------------------------
 -- Seguridad de filas (RLS)
 -- -----------------------------------------------------------------------------
-alter table public.dogs enable row level security;
+alter table public.pets enable row level security;
 
-create policy "Publicaciones visibles para todos" on public.dogs
+create policy "Publicaciones visibles para todos" on public.pets
   for select to anon, authenticated
   using (
     not hidden
@@ -239,53 +254,53 @@ create policy "Publicaciones visibles para todos" on public.dogs
     and public.is_active_user(owner_id)
   );
 
-create policy "Veo mis publicaciones" on public.dogs
+create policy "Veo mis publicaciones" on public.pets
   for select to authenticated
   using (owner_id = (select auth.uid()));
 
-create policy "Moderación ve todas las publicaciones" on public.dogs
+create policy "Moderación ve todas las publicaciones" on public.pets
   for select to authenticated
   using ((select public.is_moderator()));
 
-create policy "Publicar perritos" on public.dogs
+create policy "Publicar mascotas" on public.pets
   for insert to authenticated
   with check (owner_id = (select auth.uid()));
 
-create policy "Editar mis publicaciones" on public.dogs
+create policy "Editar mis publicaciones" on public.pets
   for update to authenticated
   using (owner_id = (select auth.uid()))
   with check (owner_id = (select auth.uid()));
 
-revoke all on public.dogs from anon, authenticated;
-grant select on public.dogs to anon, authenticated;
+revoke all on public.pets from anon, authenticated;
+grant select on public.pets to anon, authenticated;
 grant insert (
-  kind, name, sex, size, birth_date_estimate, breed, color, weight_kg, description, energy,
+  kind, species, name, sex, size, birth_date_estimate, breed, color, weight_kg, description, energy,
   good_with_kids, good_with_dogs, good_with_cats, vaccinated, dewormed, sterilized,
   microchipped, special_needs, health_notes, requirements, commune_code, location_hint,
   event_date, is_urgent
-) on public.dogs to authenticated;
+) on public.pets to authenticated;
 grant update (
-  name, sex, size, birth_date_estimate, breed, color, weight_kg, description, energy,
+  species, name, sex, size, birth_date_estimate, breed, color, weight_kg, description, energy,
   good_with_kids, good_with_dogs, good_with_cats, vaccinated, dewormed, sterilized,
   microchipped, special_needs, health_notes, requirements, commune_code, location_hint,
   event_date, is_urgent, status
-) on public.dogs to authenticated;
+) on public.pets to authenticated;
 
 -- -----------------------------------------------------------------------------
 -- Fotos
 -- -----------------------------------------------------------------------------
-create table public.dog_photos (
+create table public.pet_photos (
   id uuid primary key default gen_random_uuid(),
-  dog_id uuid not null references public.dogs (id) on delete cascade,
+  pet_id uuid not null references public.pets (id) on delete cascade,
   owner_id uuid not null default auth.uid() references public.profiles (id) on delete cascade,
   storage_path text not null unique check (char_length(storage_path) <= 300),
   position smallint not null default 0 check (position between 0 and 50),
   created_at timestamptz not null default now()
 );
 
-create index dog_photos_dog_idx on public.dog_photos (dog_id, position);
+create index pet_photos_pet_idx on public.pet_photos (pet_id, position);
 
-create function public.dog_photos_before_insert()
+create function public.pet_photos_before_insert()
 returns trigger
 language plpgsql
 security definer
@@ -295,7 +310,7 @@ declare
   v_uid uuid := auth.uid();
   v_owner uuid;
 begin
-  select d.owner_id into v_owner from public.dogs d where d.id = new.dog_id;
+  select d.owner_id into v_owner from public.pets d where d.id = new.pet_id;
   if v_owner is null then
     raise exception 'Publicación no encontrada.' using errcode = '23503';
   end if;
@@ -308,12 +323,12 @@ begin
     perform public.assert_can_act();
   end if;
 
-  -- Las fotos deben estar en la carpeta {dueño}/{perrito}/ del bucket.
-  if new.storage_path not like v_owner::text || '/' || new.dog_id::text || '/%' then
+  -- Las fotos deben estar en la carpeta {dueño}/{mascota}/ del bucket.
+  if new.storage_path not like v_owner::text || '/' || new.pet_id::text || '/%' then
     raise exception 'Ruta de foto no válida.' using errcode = '23514';
   end if;
 
-  if (select count(*) from public.dog_photos p where p.dog_id = new.dog_id) >= 8 then
+  if (select count(*) from public.pet_photos p where p.pet_id = new.pet_id) >= 8 then
     raise exception 'Máximo 8 fotos por publicación.' using errcode = '54000';
   end if;
 
@@ -321,74 +336,74 @@ begin
 end;
 $$;
 
-create trigger dog_photos_before_insert
-  before insert on public.dog_photos
-  for each row execute function public.dog_photos_before_insert();
+create trigger pet_photos_before_insert
+  before insert on public.pet_photos
+  for each row execute function public.pet_photos_before_insert();
 
 -- Mantiene la foto de portada (la de menor posición).
-create function public.dog_photos_refresh_cover()
+create function public.pet_photos_refresh_cover()
 returns trigger
 language plpgsql
 security definer
 set search_path = ''
 as $$
 declare
-  v_dog_id uuid := coalesce(new.dog_id, old.dog_id);
+  v_pet_id uuid := coalesce(new.pet_id, old.pet_id);
   v_cover text;
 begin
   select p.storage_path into v_cover
-  from public.dog_photos p
-  where p.dog_id = v_dog_id
+  from public.pet_photos p
+  where p.pet_id = v_pet_id
   order by p.position, p.created_at
   limit 1;
 
-  update public.dogs d set cover_path = v_cover
-  where d.id = v_dog_id and d.cover_path is distinct from v_cover;
+  update public.pets d set cover_path = v_cover
+  where d.id = v_pet_id and d.cover_path is distinct from v_cover;
   return null;
 end;
 $$;
 
-create trigger dog_photos_refresh_cover
-  after insert or update or delete on public.dog_photos
-  for each row execute function public.dog_photos_refresh_cover();
+create trigger pet_photos_refresh_cover
+  after insert or update or delete on public.pet_photos
+  for each row execute function public.pet_photos_refresh_cover();
 
-alter table public.dog_photos enable row level security;
+alter table public.pet_photos enable row level security;
 
 -- Una foto es visible si la publicación es visible para quien consulta.
-create policy "Fotos visibles si la publicación lo es" on public.dog_photos
+create policy "Fotos visibles si la publicación lo es" on public.pet_photos
   for select to anon, authenticated
-  using (exists (select 1 from public.dogs d where d.id = dog_photos.dog_id));
+  using (exists (select 1 from public.pets d where d.id = pet_photos.pet_id));
 
-create policy "Subir fotos a mis publicaciones" on public.dog_photos
+create policy "Subir fotos a mis publicaciones" on public.pet_photos
   for insert to authenticated
   with check (owner_id = (select auth.uid()));
 
-create policy "Ordenar mis fotos" on public.dog_photos
+create policy "Ordenar mis fotos" on public.pet_photos
   for update to authenticated
   using (owner_id = (select auth.uid()))
   with check (owner_id = (select auth.uid()));
 
-create policy "Borrar mis fotos" on public.dog_photos
+create policy "Borrar mis fotos" on public.pet_photos
   for delete to authenticated
   using (owner_id = (select auth.uid()));
 
-revoke all on public.dog_photos from anon, authenticated;
-grant select on public.dog_photos to anon, authenticated;
-grant insert (dog_id, storage_path, position) on public.dog_photos to authenticated;
-grant update (position) on public.dog_photos to authenticated;
-grant delete on public.dog_photos to authenticated;
+revoke all on public.pet_photos from anon, authenticated;
+grant select on public.pet_photos to anon, authenticated;
+grant insert (pet_id, storage_path, position) on public.pet_photos to authenticated;
+grant update (position) on public.pet_photos to authenticated;
+grant delete on public.pet_photos to authenticated;
 
 -- -----------------------------------------------------------------------------
 -- Favoritos
 -- -----------------------------------------------------------------------------
 create table public.favorites (
   user_id uuid not null default auth.uid() references public.profiles (id) on delete cascade,
-  dog_id uuid not null references public.dogs (id) on delete cascade,
+  pet_id uuid not null references public.pets (id) on delete cascade,
   created_at timestamptz not null default now(),
-  primary key (user_id, dog_id)
+  primary key (user_id, pet_id)
 );
 
-create index favorites_dog_idx on public.favorites (dog_id);
+create index favorites_pet_idx on public.favorites (pet_id);
 
 alter table public.favorites enable row level security;
 
@@ -401,4 +416,4 @@ create policy "Quitar favoritos" on public.favorites
 
 revoke all on public.favorites from anon, authenticated;
 grant select, delete on public.favorites to authenticated;
-grant insert (dog_id) on public.favorites to authenticated;
+grant insert (pet_id) on public.favorites to authenticated;

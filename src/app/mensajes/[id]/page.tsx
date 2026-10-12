@@ -7,8 +7,8 @@ import { blockUser, unblockUser } from "@/actions/safety";
 import { ApplicationStatusBadge } from "@/components/applications/application-status-badge";
 import { ChatRoom, type ChatMessage } from "@/components/chat/chat-room";
 import { ContactPanel } from "@/components/chat/contact-panel";
-import { VerifiedBadge } from "@/components/dogs/dog-badges";
-import { DogPhoto } from "@/components/dogs/dog-photo";
+import { VerifiedBadge } from "@/components/pets/pet-badges";
+import { PetPhoto } from "@/components/pets/pet-photo";
 import { ReportButton } from "@/components/safety/report-button";
 import { Avatar } from "@/components/ui/avatar";
 import { ConfirmAction } from "@/components/ui/confirm-action";
@@ -29,7 +29,7 @@ export default async function ConversationPage({ params }: PageProps<"/mensajes/
   const { data: conv } = await supabase
     .from("conversations")
     .select(
-      "id, starter_id, recipient_id, starter_shared_contact_at, recipient_shared_contact_at, dog:dogs!conversations_dog_id_fkey(id, name, cover_path, kind), starter:profiles!conversations_starter_id_fkey(id, display_name, avatar_path, verification_status, account_status), recipient:profiles!conversations_recipient_id_fkey(id, display_name, avatar_path, verification_status, account_status)",
+      "id, starter_id, recipient_id, starter_shared_contact_at, recipient_shared_contact_at, pet:pets!conversations_pet_id_fkey(id, name, cover_path, kind), starter:profiles!conversations_starter_id_fkey(id, display_name, avatar_path, verification_status, account_status), recipient:profiles!conversations_recipient_id_fkey(id, display_name, avatar_path, verification_status, account_status)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -91,12 +91,12 @@ export default async function ConversationPage({ params }: PageProps<"/mensajes/
               <span className="truncate">{otherName}</span>
               {other?.verification_status === "verified" && <VerifiedBadge compact />}
             </Link>
-            {conv.dog && (
+            {conv.pet && (
               <Link
-                href={`/perritos/${conv.dog.id}`}
+                href={`/mascotas/${conv.pet.id}`}
                 className="block truncate text-xs font-semibold text-brand-700 hover:underline"
               >
-                Sobre {conv.dog.name}
+                Sobre {conv.pet.name}
               </Link>
             )}
           </div>
@@ -178,13 +178,13 @@ export default async function ConversationPage({ params }: PageProps<"/mensajes/
       </section>
 
       <aside className="hidden w-80 shrink-0 space-y-5 overflow-y-auto lg:block">
-        {conv.dog && (
+        {conv.pet && (
           <Link
-            href={`/perritos/${conv.dog.id}`}
+            href={`/mascotas/${conv.pet.id}`}
             className="block overflow-hidden rounded-[var(--radius-card)] border border-stone-200 bg-white"
           >
-            <DogPhoto path={conv.dog.cover_path} alt={conv.dog.name} className="aspect-[4/3]" sizes="320px" />
-            <p className="p-4 font-extrabold">{conv.dog.name}</p>
+            <PetPhoto path={conv.pet.cover_path} alt={conv.pet.name} className="aspect-[4/3]" sizes="320px" />
+            <p className="p-4 font-extrabold">{conv.pet.name}</p>
           </Link>
         )}
         <div className="rounded-[var(--radius-card)] border border-stone-200 bg-white p-5">

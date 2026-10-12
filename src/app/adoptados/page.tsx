@@ -1,12 +1,12 @@
 import { PartyPopper } from "lucide-react";
 import type { Metadata } from "next";
 
-import { DogGrid } from "@/components/dogs/dog-card";
+import { PetGrid } from "@/components/pets/pet-card";
 import { ButtonLink } from "@/components/ui/button";
 import { Container, EmptyState, PageHeader } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { PAGE_SIZE } from "@/lib/constants";
-import { DOG_CARD_COLUMNS } from "@/lib/queries";
+import { PET_CARD_COLUMNS } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { firstParam } from "@/lib/utils";
 
@@ -19,9 +19,9 @@ export default async function HappyEndingsPage({ searchParams }: PageProps<"/ado
   const page = Math.max(1, Number(firstParam((await searchParams).pagina)) || 1);
   const supabase = await createClient();
   const from = (page - 1) * PAGE_SIZE;
-  const { data: dogs, count } = await supabase
-    .from("dogs")
-    .select(DOG_CARD_COLUMNS, { count: "exact" })
+  const { data: pets, count } = await supabase
+    .from("pets")
+    .select(PET_CARD_COLUMNS, { count: "exact" })
     .in("status", ["adopted", "reunited"])
     .eq("hidden", false)
     .order("updated_at", { ascending: false })
@@ -35,9 +35,9 @@ export default async function HappyEndingsPage({ searchParams }: PageProps<"/ado
         title="Finales felices 🎉"
         description="Cada uno de estos perritos encontró un hogar o volvió con su familia gracias a la comunidad."
       />
-      {dogs?.length ? (
+      {pets?.length ? (
         <>
-          <DogGrid dogs={dogs} showStatus />
+          <PetGrid pets={pets} showStatus />
           <Pagination page={page} totalPages={totalPages} hrefFor={(p) => (p > 1 ? `/adoptados?pagina=${p}` : "/adoptados")} />
         </>
       ) : (
@@ -45,7 +45,7 @@ export default async function HappyEndingsPage({ searchParams }: PageProps<"/ado
           icon={<PartyPopper className="h-12 w-12" />}
           title="Los primeros finales felices están por llegar"
           description="Cuando se concrete una adopción en Huellitas, la celebraremos aquí."
-          action={<ButtonLink href="/perritos">Ver perritos en adopción</ButtonLink>}
+          action={<ButtonLink href="/mascotas">Ver perritos en adopción</ButtonLink>}
         />
       )}
     </Container>

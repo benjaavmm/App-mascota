@@ -16,7 +16,7 @@ const PROTECTED = [
   /^\/bienvenida/,
   /^\/admin/,
   /^\/nueva-clave/,
-  /^\/perritos\/[^/]+\/postular/,
+  /^\/mascotas\/[^/]+\/postular/,
 ];
 
 // Rutas solo para visitantes sin sesión.

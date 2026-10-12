@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { DogPhoto } from "@/components/dogs/dog-photo";
+import { PetPhoto } from "@/components/pets/pet-photo";
 import { FollowupCommentForm, FollowupForm } from "@/components/followups/followup-form";
 import { ReportButton } from "@/components/safety/report-button";
 import { Alert } from "@/components/ui/alert";
@@ -29,7 +29,7 @@ export default async function FollowupPage({ params }: PageProps<"/seguimientos/
   const { data: f } = await supabase
     .from("followups")
     .select(
-      "*, dog:dogs!followups_dog_id_fkey(id, name, cover_path), application:applications!followups_application_id_fkey(id, conversation_id), adopter:profiles!followups_adopter_id_fkey(id, display_name), publisher:profiles!followups_publisher_id_fkey(id, display_name)",
+      "*, pet:pets!followups_pet_id_fkey(id, name, cover_path), application:applications!followups_application_id_fkey(id, conversation_id), adopter:profiles!followups_adopter_id_fkey(id, display_name), publisher:profiles!followups_publisher_id_fkey(id, display_name)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -38,7 +38,7 @@ export default async function FollowupPage({ params }: PageProps<"/seguimientos/
   const isAdopter = f.adopter_id === profile.id;
   const isPublisher = f.publisher_id === profile.id;
   const state = followupState(f);
-  const dogName = f.dog?.name ?? "el perrito";
+  const petName = f.pet?.name ?? "el perrito";
 
   let photoUrl: string | null = null;
   if (f.photo_path) {
@@ -54,10 +54,10 @@ export default async function FollowupPage({ params }: PageProps<"/seguimientos/
       </Link>
 
       <Card className="mb-6 flex items-center gap-4 p-4">
-        <DogPhoto path={f.dog?.cover_path} alt={dogName} className="h-20 w-24 shrink-0 rounded-2xl" sizes="96px" />
+        <PetPhoto path={f.pet?.cover_path} alt={petName} className="h-20 w-24 shrink-0 rounded-2xl" sizes="96px" />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold text-brand-700">Seguimiento · {f.label}</p>
-          <h1 className="text-2xl font-extrabold">{dogName}</h1>
+          <h1 className="text-2xl font-extrabold">{petName}</h1>
           <p className="text-sm text-stone-600">
             Adoptado por {f.adopter?.display_name} · Entregado por {f.publisher?.display_name}
           </p>
@@ -76,7 +76,7 @@ export default async function FollowupPage({ params }: PageProps<"/seguimientos/
               </p>
             )}
             <p className="leading-relaxed whitespace-pre-line text-stone-700">{f.notes}</p>
-            {photoUrl && <img src={photoUrl} alt={`Foto de ${dogName}`} className="mt-4 max-h-96 rounded-2xl object-cover" />}
+            {photoUrl && <img src={photoUrl} alt={`Foto de ${petName}`} className="mt-4 max-h-96 rounded-2xl object-cover" />}
           </CardSection>
           {f.publisher_comment ? (
             <Alert variant="info" title={`Respuesta de ${f.publisher?.display_name}`}>
@@ -101,7 +101,7 @@ export default async function FollowupPage({ params }: PageProps<"/seguimientos/
           <Alert variant="info">Podrás enviar este seguimiento a partir de una semana antes del {formatDate(f.due_on)}.</Alert>
         ) : (
           <CardSection title="Enviar seguimiento" description="Toma menos de 2 minutos y da mucha tranquilidad a quien lo rescató.">
-            <FollowupForm followupId={f.id} userId={profile.id} dogName={dogName} />
+            <FollowupForm followupId={f.id} userId={profile.id} petName={petName} />
           </CardSection>
         )
       ) : (

@@ -31,6 +31,13 @@ const nextConfig: NextConfig = {
         ]
       : [],
   },
+  // Las URLs antiguas (/perritos) llevan a la nueva sección de mascotas.
+  async redirects() {
+    return [
+      { source: "/perritos", destination: "/mascotas", permanent: true },
+      { source: "/perritos/:path*", destination: "/mascotas/:path*", permanent: true },
+    ];
+  },
   // Cabeceras de seguridad para todas las respuestas.
   // La Content-Security-Policy (con nonce) se agrega en src/proxy.ts.
   async headers() {

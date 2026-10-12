@@ -66,72 +66,72 @@ select is((select bio from public.profiles where id = :alice), null, 'no puedo e
 -- -----------------------------------------------------------------------------
 set local role authenticated;
 select set_config('request.jwt.claims', json_build_object('sub', :nuevo, 'role', 'authenticated')::text, true);
-select throws_ok($$ insert into public.dogs (name, size, description, commune_code)
+select throws_ok($$ insert into public.pets (name, size, description, commune_code)
   values ('Toby', 'small', 'Perrito encontrado en la plaza, muy dócil y tranquilo', '13101') $$,
   '42501', null, 'sin perfil completo no se puede publicar');
 
 select set_config('request.jwt.claims', json_build_object('sub', :alice, 'role', 'authenticated')::text, true);
-select lives_ok($$ insert into public.dogs (name, sex, size, description, commune_code, breed)
+select lives_ok($$ insert into public.pets (name, sex, size, description, commune_code, breed)
   values ('Canelita QA', 'female', 'medium', 'Perrita rescatada de la calle, muy cariñosa y tranquila.', '13120', 'Mestiza') $$,
   'una persona con perfil completo puede publicar');
-select throws_ok($$ insert into public.dogs (name, size, description, commune_code, hidden)
+select throws_ok($$ insert into public.pets (name, size, description, commune_code, hidden)
   values ('Rex', 'large', 'Perro grande y juguetón que busca un hogar responsable.', '13101', true) $$,
   '42501', null, 'no puedo crear publicaciones ocultas/moderadas');
-select lives_ok($$ insert into public.dogs (kind, name, size, description, commune_code)
+select lives_ok($$ insert into public.pets (kind, name, size, description, commune_code)
   values ('lost', 'Pelusa QA', 'small', 'Se perdió cerca del metro, tiene collar rojo y es asustadiza.', '13101') $$,
   'puedo publicar un perrito perdido');
 
 reset role;
-select id as dog1 from public.dogs where name = 'Canelita QA' \gset
-select id as lostdog from public.dogs where name = 'Pelusa QA' \gset
-select is((select owner_id from public.dogs where id = :'dog1'), :alice::uuid, 'el dueño se asigna automáticamente');
-select is((select region_code from public.dogs where id = :'dog1'), '13', 'la región se deriva de la comuna');
-select ok((select search_vector @@ websearch_to_tsquery('spanish', 'carinosa nunoa') from public.dogs where id = :'dog1'),
+select id as pet1 from public.pets where name = 'Canelita QA' \gset
+select id as lostpet from public.pets where name = 'Pelusa QA' \gset
+select is((select owner_id from public.pets where id = :'pet1'), :alice::uuid, 'el dueño se asigna automáticamente');
+select is((select region_code from public.pets where id = :'pet1'), '13', 'la región se deriva de la comuna');
+select ok((select search_vector @@ websearch_to_tsquery('spanish', 'carinosa nunoa') from public.pets where id = :'pet1'),
   'la búsqueda ignora tildes y encuentra por comuna');
 
 set local role anon;
 select set_config('request.jwt.claims', '', true);
-select is((select count(*)::int from public.dogs where id in (:'dog1', :'lostdog')), 2, 'visitantes ven publicaciones disponibles');
-select throws_ok($$ insert into public.dogs (name, size, description, commune_code)
+select is((select count(*)::int from public.pets where id in (:'pet1', :'lostpet')), 2, 'visitantes ven publicaciones disponibles');
+select throws_ok($$ insert into public.pets (name, size, description, commune_code)
   values ('Spam', 'small', 'Esto no debería poder publicarse sin una cuenta válida.', '13101') $$,
   '42501', null, 'visitantes no pueden publicar');
 
 set local role authenticated;
 select set_config('request.jwt.claims', json_build_object('sub', :carla, 'role', 'authenticated')::text, true);
-update public.dogs set name = 'Robado' where id = :'dog1';
+update public.pets set name = 'Robado' where id = :'pet1';
 select set_config('request.jwt.claims', json_build_object('sub', :alice, 'role', 'authenticated')::text, true);
-select throws_ok(format($$ update public.dogs set owner_id = %L where id = %L $$, :carla, :'dog1'),
+select throws_ok(format($$ update public.pets set owner_id = %L where id = %L $$, :carla, :'pet1'),
   '42501', null, 'no se puede traspasar la publicación');
-select throws_ok(format($$ update public.dogs set status = 'reunited' where id = %L $$, :'dog1'),
+select throws_ok(format($$ update public.pets set status = 'reunited' where id = %L $$, :'pet1'),
   '23514', null, 'una adopción no puede quedar como "reencontrado"');
-select lives_ok(format($$ update public.dogs set status = 'paused' where id = %L $$, :'dog1'),
+select lives_ok(format($$ update public.pets set status = 'paused' where id = %L $$, :'pet1'),
   'puedo pausar mi publicación');
 
 reset role;
-select is((select name from public.dogs where id = :'dog1'), 'Canelita QA', 'otra persona no puede editar mi publicación');
+select is((select name from public.pets where id = :'pet1'), 'Canelita QA', 'otra persona no puede editar mi publicación');
 
 set local role anon;
-select is((select count(*)::int from public.dogs where id = :'dog1'), 0, 'una publicación pausada no es pública');
+select is((select count(*)::int from public.pets where id = :'pet1'), 0, 'una publicación pausada no es pública');
 
 set local role authenticated;
 select set_config('request.jwt.claims', json_build_object('sub', :alice, 'role', 'authenticated')::text, true);
-update public.dogs set status = 'available' where id = :'dog1';
+update public.pets set status = 'available' where id = :'pet1';
 
 -- Fotos
-select throws_ok(format($$ insert into public.dog_photos (dog_id, storage_path) values (%L, 'otra/ruta/foto.jpg') $$, :'dog1'),
+select throws_ok(format($$ insert into public.pet_photos (pet_id, storage_path) values (%L, 'otra/ruta/foto.jpg') $$, :'pet1'),
   '23514', null, 'la ruta de la foto debe estar en mi carpeta');
-select lives_ok(format($$ insert into public.dog_photos (dog_id, storage_path, position) values (%L, %L, 0) $$,
-  :'dog1', :alice || '/' || :'dog1' || '/a.jpg'), 'puedo agregar fotos a mi publicación');
-select lives_ok(format($$ insert into storage.objects (bucket_id, name, owner_id) values ('dog-photos', %L, %L) $$,
-  :alice || '/' || :'dog1' || '/a.jpg', :alice), 'puedo subir el archivo de la foto a Storage');
+select lives_ok(format($$ insert into public.pet_photos (pet_id, storage_path, position) values (%L, %L, 0) $$,
+  :'pet1', :alice || '/' || :'pet1' || '/a.jpg'), 'puedo agregar fotos a mi publicación');
+select lives_ok(format($$ insert into storage.objects (bucket_id, name, owner_id) values ('pet-photos', %L, %L) $$,
+  :alice || '/' || :'pet1' || '/a.jpg', :alice), 'puedo subir el archivo de la foto a Storage');
 select set_config('request.jwt.claims', json_build_object('sub', :carla, 'role', 'authenticated')::text, true);
-select throws_ok(format($$ insert into public.dog_photos (dog_id, storage_path) values (%L, %L) $$,
-  :'dog1', :carla || '/' || :'dog1' || '/b.jpg'), '42501', null, 'no puedo agregar fotos a publicaciones ajenas');
-select throws_ok(format($$ insert into storage.objects (bucket_id, name, owner_id) values ('dog-photos', %L, %L) $$,
-  :carla || '/' || :'dog1' || '/b.jpg', :carla), '42501', null, 'no puedo subir archivos a carpetas de publicaciones ajenas');
+select throws_ok(format($$ insert into public.pet_photos (pet_id, storage_path) values (%L, %L) $$,
+  :'pet1', :carla || '/' || :'pet1' || '/b.jpg'), '42501', null, 'no puedo agregar fotos a publicaciones ajenas');
+select throws_ok(format($$ insert into storage.objects (bucket_id, name, owner_id) values ('pet-photos', %L, %L) $$,
+  :carla || '/' || :'pet1' || '/b.jpg', :carla), '42501', null, 'no puedo subir archivos a carpetas de publicaciones ajenas');
 
 reset role;
-select is((select cover_path from public.dogs where id = :'dog1'), :alice || '/' || :'dog1' || '/a.jpg',
+select is((select cover_path from public.pets where id = :'pet1'), :alice || '/' || :'pet1' || '/a.jpg',
   'la portada se actualiza con la primera foto');
 
 -- -----------------------------------------------------------------------------
@@ -139,12 +139,12 @@ select is((select cover_path from public.dogs where id = :'dog1'), :alice || '/'
 -- -----------------------------------------------------------------------------
 set local role authenticated;
 select set_config('request.jwt.claims', json_build_object('sub', :alice, 'role', 'authenticated')::text, true);
-select throws_ok(format($$ select public.start_conversation(%L) $$, :'dog1'), '23514', null,
+select throws_ok(format($$ select public.start_conversation(%L) $$, :'pet1'), '23514', null,
   'no puedo iniciar una conversación conmigo');
 
 select set_config('request.jwt.claims', json_build_object('sub', :bruno, 'role', 'authenticated')::text, true);
-select public.start_conversation(:'dog1') as conv1 \gset
-select is(public.start_conversation(:'dog1'), :'conv1'::uuid, 'la conversación se reutiliza');
+select public.start_conversation(:'pet1') as conv1 \gset
+select is(public.start_conversation(:'pet1'), :'conv1'::uuid, 'la conversación se reutiliza');
 select lives_ok(format($$ insert into public.messages (conversation_id, body) values (%L, 'Hola! Me interesa Canela') $$, :'conv1'),
   'puedo escribir en mi conversación');
 select lives_ok(format($$ insert into public.messages (conversation_id, body) values (%L, 'Te hago una transferencia de $20.000 para reservarla') $$, :'conv1'),
@@ -188,37 +188,37 @@ delete from public.blocks where blocked_id = :bruno;
 -- -----------------------------------------------------------------------------
 \set app_values '''house'', ''owned'', true, 2, 0, true, 4, ''Tuve perros toda mi vida'', ''Quiero darle un hogar definitivo, paseos diarios y mucho cariño a una perrita.'', ''Si viajo queda con mi familia'', true, true, true, true'
 
-select throws_ok(format($$ insert into public.applications (dog_id, housing_type, housing_tenure, has_secure_yard,
+select throws_ok(format($$ insert into public.applications (pet_id, housing_type, housing_tenure, has_secure_yard,
   adults_count, children_count, household_agrees, hours_alone, experience, motivation, care_plan, commits_vet_care,
-  commits_sterilization, accepts_followup, commits_return_not_abandon) values (%L, %s) $$, :'dog1', :'app_values'),
+  commits_sterilization, accepts_followup, commits_return_not_abandon) values (%L, %s) $$, :'pet1', :'app_values'),
   '23514', null, 'no puedo postular a mi propia publicación');
 
 select set_config('request.jwt.claims', json_build_object('sub', :bruno, 'role', 'authenticated')::text, true);
-select throws_ok(format($$ insert into public.applications (dog_id, housing_type, housing_tenure, has_secure_yard,
+select throws_ok(format($$ insert into public.applications (pet_id, housing_type, housing_tenure, has_secure_yard,
   adults_count, children_count, household_agrees, hours_alone, experience, motivation, care_plan, commits_vet_care,
-  commits_sterilization, accepts_followup, commits_return_not_abandon) values (%L, %s) $$, :'lostdog', :'app_values'),
+  commits_sterilization, accepts_followup, commits_return_not_abandon) values (%L, %s) $$, :'lostpet', :'app_values'),
   '23514', null, 'no se postula a perritos perdidos');
-select throws_ok(format($$ insert into public.applications (dog_id, housing_type, housing_tenure, has_secure_yard,
+select throws_ok(format($$ insert into public.applications (pet_id, housing_type, housing_tenure, has_secure_yard,
   adults_count, children_count, household_agrees, hours_alone, experience, motivation, care_plan, commits_vet_care,
   commits_sterilization, accepts_followup, commits_return_not_abandon) values (%L, 'house', 'owned', true, 2, 0, true, 4,
   'Tuve perros', 'Quiero darle un hogar definitivo, paseos diarios y mucho cariño a una perrita.', 'Si viajo queda con mi familia',
-  true, false, true, true) $$, :'dog1'),
+  true, false, true, true) $$, :'pet1'),
   '23514', null, 'los compromisos de esterilización son obligatorios');
-select lives_ok(format($$ insert into public.applications (dog_id, housing_type, housing_tenure, has_secure_yard,
+select lives_ok(format($$ insert into public.applications (pet_id, housing_type, housing_tenure, has_secure_yard,
   adults_count, children_count, household_agrees, hours_alone, experience, motivation, care_plan, commits_vet_care,
-  commits_sterilization, accepts_followup, commits_return_not_abandon) values (%L, %s) $$, :'dog1', :'app_values'),
+  commits_sterilization, accepts_followup, commits_return_not_abandon) values (%L, %s) $$, :'pet1', :'app_values'),
   'puedo postular');
-select throws_ok(format($$ insert into public.applications (dog_id, housing_type, housing_tenure, has_secure_yard,
+select throws_ok(format($$ insert into public.applications (pet_id, housing_type, housing_tenure, has_secure_yard,
   adults_count, children_count, household_agrees, hours_alone, experience, motivation, care_plan, commits_vet_care,
-  commits_sterilization, accepts_followup, commits_return_not_abandon) values (%L, %s) $$, :'dog1', :'app_values'),
+  commits_sterilization, accepts_followup, commits_return_not_abandon) values (%L, %s) $$, :'pet1', :'app_values'),
   '23505', null, 'no puedo postular dos veces al mismo perrito');
 
 select set_config('request.jwt.claims', json_build_object('sub', :carla, 'role', 'authenticated')::text, true);
-select lives_ok(format($$ insert into public.applications (dog_id, housing_type, housing_tenure, landlord_allows_pets, has_secure_yard,
+select lives_ok(format($$ insert into public.applications (pet_id, housing_type, housing_tenure, landlord_allows_pets, has_secure_yard,
   adults_count, children_count, household_agrees, hours_alone, experience, motivation, care_plan, commits_vet_care,
   commits_sterilization, accepts_followup, commits_return_not_abandon) values (%L, 'apartment', 'rented', true, false, 1, 0, true, 6,
   'Primera vez', 'Vivo sola y quiero compañía; tengo tiempo para pasearla todos los días.', 'Mi hermana me ayuda si viajo',
-  true, true, true, true) $$, :'dog1'), 'otra persona también puede postular');
+  true, true, true, true) $$, :'pet1'), 'otra persona también puede postular');
 
 reset role;
 select id as app_bruno from public.applications where applicant_id = :bruno \gset
@@ -235,16 +235,16 @@ select throws_ok(format($$ update public.applications set status = 'approved' wh
   '42501', null, 'no puedo cambiar estados directamente');
 
 select set_config('request.jwt.claims', json_build_object('sub', :alice, 'role', 'authenticated')::text, true);
-select is((select count(*)::int from public.applications where dog_id = :'dog1'), 2, 'quien publica ve todas las solicitudes');
+select is((select count(*)::int from public.applications where pet_id = :'pet1'), 2, 'quien publica ve todas las solicitudes');
 select lives_ok(format($$ select public.review_application(%L, 'approved', 'Coordinemos una visita') $$, :'app_bruno'),
   'puedo aprobar una solicitud');
-select is((select status::text from public.dogs where id = :'dog1'), 'in_process', 'al aprobar, el perrito queda en proceso');
+select is((select status::text from public.pets where id = :'pet1'), 'in_process', 'al aprobar, el perrito queda en proceso');
 select throws_ok(format($$ select public.review_application(%L, 'approved') $$, :'app_carla'),
   '23505', null, 'no se pueden aprobar dos solicitudes a la vez');
-select throws_ok(format($$ update public.dogs set status = 'available' where id = %L $$, :'dog1'),
+select throws_ok(format($$ update public.pets set status = 'available' where id = %L $$, :'pet1'),
   '23514', null, 'no puedo reabrir la publicación con una solicitud aprobada');
 select lives_ok(format($$ select public.complete_adoption(%L) $$, :'app_bruno'), 'puedo confirmar la adopción');
-select is((select status::text from public.dogs where id = :'dog1'), 'adopted', 'el perrito queda adoptado');
+select is((select status::text from public.pets where id = :'pet1'), 'adopted', 'el perrito queda adoptado');
 select is((select status::text from public.applications where id = :'app_carla'), 'cancelled',
   'las demás solicitudes se cierran automáticamente');
 select is((select count(*)::int from public.followups where application_id = :'app_bruno'), 4,
@@ -276,28 +276,28 @@ select is((select count(*)::int from storage.objects where bucket_id = 'followup
 -- -----------------------------------------------------------------------------
 set local role authenticated;
 select set_config('request.jwt.claims', json_build_object('sub', :bruno, 'role', 'authenticated')::text, true);
-select lives_ok(format($$ insert into public.reports (target_type, dog_id, reason, details) values ('dog', %L, 'scam', 'Pide dinero') $$, :'lostdog'),
+select lives_ok(format($$ insert into public.reports (target_type, pet_id, reason, details) values ('pet', %L, 'scam', 'Pide dinero') $$, :'lostpet'),
   'puedo reportar una publicación');
-select throws_ok(format($$ insert into public.reports (target_type, dog_id, reason) values ('dog', %L, 'scam') $$, :'lostdog'),
+select throws_ok(format($$ insert into public.reports (target_type, pet_id, reason) values ('pet', %L, 'scam') $$, :'lostpet'),
   '23505', null, 'no puedo duplicar un reporte abierto');
 select set_config('request.jwt.claims', json_build_object('sub', :carla, 'role', 'authenticated')::text, true);
-insert into public.reports (target_type, dog_id, reason) values ('dog', :'lostdog', 'animal_sale');
+insert into public.reports (target_type, pet_id, reason) values ('pet', :'lostpet', 'animal_sale');
 select set_config('request.jwt.claims', json_build_object('sub', :diego, 'role', 'authenticated')::text, true);
-insert into public.reports (target_type, dog_id, reason) values ('dog', :'lostdog', 'false_info');
+insert into public.reports (target_type, pet_id, reason) values ('pet', :'lostpet', 'false_info');
 select is((select count(*)::int from public.reports), 1, 'solo veo mis reportes');
 
 set local role anon;
-select is((select count(*)::int from public.dogs where id = :'lostdog'), 0, 'con 3 reportes la publicación se oculta');
+select is((select count(*)::int from public.pets where id = :'lostpet'), 0, 'con 3 reportes la publicación se oculta');
 
 set local role authenticated;
 select set_config('request.jwt.claims', json_build_object('sub', :alice, 'role', 'authenticated')::text, true);
-select is((select hidden from public.dogs where id = :'lostdog'), true, 'la persona dueña ve que su publicación fue ocultada');
-select throws_ok(format($$ select public.moderate_dog(%L, false) $$, :'lostdog'), '42501', null,
+select is((select hidden from public.pets where id = :'lostpet'), true, 'la persona dueña ve que su publicación fue ocultada');
+select throws_ok(format($$ select public.moderate_pet(%L, false) $$, :'lostpet'), '42501', null,
   'solo moderación puede restaurar publicaciones');
 
 select set_config('request.jwt.claims', json_build_object('sub', :mod, 'role', 'authenticated')::text, true);
 select is((select count(*)::int from public.reports), 3, 'moderación ve todos los reportes');
-select lives_ok(format($$ select public.moderate_dog(%L, false) $$, :'lostdog'), 'moderación restaura la publicación');
+select lives_ok(format($$ select public.moderate_pet(%L, false) $$, :'lostpet'), 'moderación restaura la publicación');
 select ok((select count(*) from public.audit_log) >= 2, 'las acciones quedan en auditoría');
 select lives_ok(format($$ select public.set_account_status(%L, 'banned', 'Estafas reiteradas') $$, :diego),
   'moderación puede bloquear cuentas');
@@ -305,11 +305,11 @@ select throws_ok(format($$ select public.set_account_status(%L, 'banned', 'x') $
   'moderación no puede bloquearse a sí misma');
 
 set local role anon;
-select is((select count(*)::int from public.dogs where id = :'lostdog'), 1, 'la publicación restaurada vuelve a ser pública');
+select is((select count(*)::int from public.pets where id = :'lostpet'), 1, 'la publicación restaurada vuelve a ser pública');
 
 set local role authenticated;
 select set_config('request.jwt.claims', json_build_object('sub', :diego, 'role', 'authenticated')::text, true);
-select throws_ok($$ select public.start_conversation((select id from public.dogs where name = 'Pelusa QA')) $$,
+select throws_ok($$ select public.start_conversation((select id from public.pets where name = 'Pelusa QA')) $$,
   '42501', null, 'una cuenta bloqueada no puede contactar');
 
 -- Verificación

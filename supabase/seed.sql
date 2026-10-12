@@ -64,7 +64,7 @@ where id = 'a0000000-0000-4000-8000-000000000004';
 
 update public.profile_private set phone = '+56 9 8765 4321' where user_id = 'a0000000-0000-4000-8000-000000000002';
 
-insert into public.dogs (
+insert into public.pets (
   owner_id, kind, name, sex, size, birth_date_estimate, breed, color, weight_kg, description, energy,
   good_with_kids, good_with_dogs, good_with_cats, vaccinated, dewormed, sterilized, microchipped,
   special_needs, health_notes, requirements, commune_code, location_hint, event_date, is_urgent
@@ -103,3 +103,17 @@ insert into public.dogs (
    'Encontrada deambulando, muy mansa y con signos de haber tenido hogar. Está en hogar temporal. Pide fotos antiguas como prueba si crees que es tuya.',
    null, null, null, null, false, false, false, false, false, null, null, '05101', 'Sector Plaza Victoria',
    current_date - 1, true);
+
+-- Otras especies
+insert into public.pets (
+  owner_id, kind, species, name, sex, size, birth_date_estimate, breed, color, description, energy,
+  good_with_kids, good_with_dogs, good_with_cats, vaccinated, dewormed, sterilized, microchipped, commune_code, is_urgent
+) values
+  ('a0000000-0000-4000-8000-000000000002', 'adoption', 'cat', 'Mostaza', 'female', 'small', current_date - 540, 'Mestiza',
+   'Naranja atigrada',
+   'Mostaza llegó a la fundación con su camada. Es curiosa, tranquila, usa su arenero y ama dormir en las ventanas al sol.',
+   'low', true, null, true, true, true, true, true, '13120', false),
+  ('a0000000-0000-4000-8000-000000000003', 'adoption', 'rabbit', 'Copito', 'male', 'small', current_date - 300, 'Mestizo',
+   'Blanco',
+   'Copito fue abandonado en un parque. Es dócil, come heno y verduras frescas y necesita un espacio seguro para saltar todos los días.',
+   'medium', true, null, null, false, true, true, false, '05109', false);

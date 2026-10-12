@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const ITEMS = [
   { href: "/", label: "Inicio", icon: Home, match: (p: string) => p === "/" },
-  { href: "/perritos", label: "Buscar", icon: Search, match: (p: string) => p.startsWith("/perritos") },
+  { href: "/mascotas", label: "Buscar", icon: Search, match: (p: string) => p.startsWith("/mascotas") },
   { href: "/publicar", label: "Publicar", icon: PlusCircle, match: (p: string) => p.startsWith("/publicar") },
   { href: "/mensajes", label: "Mensajes", icon: MessageCircle, match: (p: string) => p.startsWith("/mensajes") },
   {

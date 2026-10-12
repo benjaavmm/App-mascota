@@ -1,10 +1,10 @@
 import Image from "next/image";
 
 import { PawIcon } from "@/components/layout/logo";
-import { dogPhotoUrl } from "@/lib/storage";
+import { petPhotoUrl } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
-export function DogPhoto({
+export function PetPhoto({
   path,
   alt,
   className,
@@ -17,7 +17,7 @@ export function DogPhoto({
   sizes?: string;
   priority?: boolean;
 }) {
-  const url = dogPhotoUrl(path);
+  const url = petPhotoUrl(path);
   return (
     <div className={cn("relative overflow-hidden bg-brand-50", className)}>
       {url ? (

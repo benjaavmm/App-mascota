@@ -6,8 +6,8 @@ import type { ReactNode } from "react";
 
 import { completeAdoption, reviewApplication, withdrawApplication } from "@/actions/applications";
 import { ApplicationStatusBadge } from "@/components/applications/application-status-badge";
-import { VerifiedBadge } from "@/components/dogs/dog-badges";
-import { DogPhoto } from "@/components/dogs/dog-photo";
+import { VerifiedBadge } from "@/components/pets/pet-badges";
+import { PetPhoto } from "@/components/pets/pet-photo";
 import { ReportButton } from "@/components/safety/report-button";
 import { Alert } from "@/components/ui/alert";
 import { Avatar } from "@/components/ui/avatar";
@@ -50,7 +50,7 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
   const { data: app } = await supabase
     .from("applications")
     .select(
-      "*, dog:dogs!applications_dog_id_fkey(id, name, cover_path, status, commune_code), applicant:profiles!applications_applicant_id_fkey(id, display_name, avatar_path, account_type, verification_status, commune_code, created_at), publisher:profiles!applications_publisher_id_fkey(id, display_name, avatar_path, account_type, verification_status)",
+      "*, pet:pets!applications_pet_id_fkey(id, name, cover_path, status, commune_code), applicant:profiles!applications_applicant_id_fkey(id, display_name, avatar_path, account_type, verification_status, commune_code, created_at), publisher:profiles!applications_publisher_id_fkey(id, display_name, avatar_path, account_type, verification_status)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -59,7 +59,7 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
   const isPublisher = app.publisher_id === profile.id;
   const isApplicant = app.applicant_id === profile.id;
   const other = isPublisher ? app.applicant : app.publisher;
-  const dogName = app.dog?.name ?? "el perrito";
+  const petName = app.pet?.name ?? "el perrito";
 
   const [{ data: statsData }, { data: followups }] = await Promise.all([
     isPublisher
@@ -102,7 +102,7 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
 
       {justSent && (
         <Alert variant="success" title="¡Solicitud enviada!" className="mb-6">
-          Quien publicó a {dogName} revisará tus respuestas. Te avisaremos cada vez que cambie el estado.
+          Quien publicó a {petName} revisará tus respuestas. Te avisaremos cada vez que cambie el estado.
           Mientras tanto, puedes conversar por el chat.
         </Alert>
       )}
@@ -110,20 +110,20 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         <div className="min-w-0 space-y-6">
           <Card className="flex items-center gap-4 p-4 sm:p-5">
-            <DogPhoto
-              path={app.dog?.cover_path}
-              alt={dogName}
+            <PetPhoto
+              path={app.pet?.cover_path}
+              alt={petName}
               className="h-20 w-24 shrink-0 rounded-2xl"
               sizes="96px"
             />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl font-extrabold">Adopción de {dogName}</h1>
+                <h1 className="text-2xl font-extrabold">Adopción de {petName}</h1>
                 <ApplicationStatusBadge status={app.status} />
               </div>
-              {app.dog && (
+              {app.pet && (
                 <Link
-                  href={`/perritos/${app.dog.id}`}
+                  href={`/mascotas/${app.pet.id}`}
                   className="text-sm font-bold text-brand-700 hover:underline"
                 >
                   Ver publicación
@@ -299,7 +299,7 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
                     confirmVariant="success"
                     confirmLabel="Aprobar"
                     title={`¿Aprobar a ${other?.display_name ?? "esta persona"}?`}
-                    description={`${dogName} quedará “en proceso” y no recibirá nuevas solicitudes. Luego coordinen la entrega.`}
+                    description={`${petName} quedará “en proceso” y no recibirá nuevas solicitudes. Luego coordinen la entrega.`}
                     messageField={{
                       name: "message",
                       label: "Mensaje (opcional)",
@@ -330,7 +330,7 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
                     variant="success"
                     confirmVariant="success"
                     confirmLabel="Confirmar entrega"
-                    title={`Confirmar la adopción de ${dogName}`}
+                    title={`Confirmar la adopción de ${petName}`}
                     description="Haz esto solo cuando la entrega ya se haya realizado."
                     className="w-full"
                   >
@@ -357,7 +357,7 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
                     confirmVariant="danger"
                     confirmLabel="Cancelar aprobación"
                     title="¿Cancelar la aprobación?"
-                    description={`${dogName} volverá a estar disponible.`}
+                    description={`${petName} volverá a estar disponible.`}
                     messageField={{ name: "message", label: "Motivo", required: true }}
                     className="w-full"
                   />

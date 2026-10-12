@@ -4,9 +4,9 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useState, useTransition, type FormEvent } from "react";
 
-import { createDog, type CreateDogState } from "@/actions/dogs";
-import { PhotoPicker } from "@/components/dogs/photo-picker";
-import { RegionCommuneSelect } from "@/components/dogs/region-commune-select";
+import { createPet, type CreatePetState } from "@/actions/pets";
+import { PhotoPicker } from "@/components/pets/photo-picker";
+import { RegionCommuneSelect } from "@/components/pets/region-commune-select";
 import { Alert, FormMessage } from "@/components/ui/alert";
 import { buttonClasses } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,14 +14,14 @@ import { Checkbox, ChoiceGroup, Field, Input, Select, Textarea } from "@/compone
 import { ENERGY_LABELS, KIND_LABELS, SEX_LABELS, SIZE_LABELS } from "@/lib/constants";
 import { ageInMonths, todayIso } from "@/lib/format";
 import { personalDataWarning } from "@/lib/safety";
-import { uploadDogPhotos } from "@/lib/upload";
+import { uploadPetPhotos } from "@/lib/upload";
 import type { ActionState } from "@/lib/validation";
 import type { Enums, Tables } from "@/types/database";
 
 type Kind = Enums<"listing_kind">;
 
-export type EditableDog = Pick<
-  Tables<"dogs">,
+export type EditablePet = Pick<
+  Tables<"pets">,
   | "id"
   | "kind"
   | "name"
@@ -65,43 +65,43 @@ type Props =
   | { mode: "create"; userId: string; defaultKind: Kind; defaultCommune?: string | null }
   | {
       mode: "edit";
-      dog: EditableDog;
+      pet: EditablePet;
       action: (state: ActionState, formData: FormData) => Promise<ActionState>;
     };
 
-export function DogForm(props: Props) {
+export function PetForm(props: Props) {
   const router = useRouter();
-  const dog = props.mode === "edit" ? props.dog : null;
-  const [kind, setKind] = useState<Kind>(dog?.kind ?? (props.mode === "create" ? props.defaultKind : "adoption"));
+  const pet = props.mode === "edit" ? props.pet : null;
+  const [kind, setKind] = useState<Kind>(pet?.kind ?? (props.mode === "create" ? props.defaultKind : "adoption"));
   const [files, setFiles] = useState<File[]>([]);
-  const [description, setDescription] = useState(dog?.description ?? "");
-  const [ageUnknown, setAgeUnknown] = useState(dog ? !dog.birth_date_estimate : false);
+  const [description, setDescription] = useState(pet?.description ?? "");
+  const [ageUnknown, setAgeUnknown] = useState(pet ? !pet.birth_date_estimate : false);
   const [uploading, setUploading] = useState<{ done: number; total: number } | null>(null);
   const [uploadWarning, setUploadWarning] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const months = ageInMonths(dog?.birth_date_estimate);
+  const months = ageInMonths(pet?.birth_date_estimate);
   const isAdoption = kind === "adoption";
 
-  const [state, dispatch] = useActionState<CreateDogState, FormData>(async (previous, formData) => {
+  const [state, dispatch] = useActionState<CreatePetState, FormData>(async (previous, formData) => {
     if (props.mode === "edit") return props.action(previous, formData);
 
     if (files.length === 0 && !formData.get("confirm_no_photos")) {
       return { error: "Agrega al menos una foto: las publicaciones con fotos se adoptan mucho más rápido." };
     }
-    const result = await createDog(previous, formData);
+    const result = await createPet(previous, formData);
     if (!result.ok || !result.id) return result;
 
     if (files.length > 0) {
       setUploading({ done: 0, total: files.length });
-      const failed = await uploadDogPhotos(props.userId, result.id, files, 0, (done) =>
+      const failed = await uploadPetPhotos(props.userId, result.id, files, 0, (done) =>
         setUploading({ done, total: files.length }),
       );
       if (failed.length > 0) {
         setUploadWarning(`No pudimos subir ${failed.length} foto(s). Puedes agregarlas desde “Editar”.`);
       }
     }
-    router.push(`/perritos/${result.id}?publicado=1`);
+    router.push(`/mascotas/${result.id}?publicado=1`);
     return result;
   }, {});
 
@@ -150,10 +150,10 @@ export function DogForm(props: Props) {
       <Section title="Datos básicos">
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Nombre" htmlFor="name" required errors={errors.name} hint={kind === "found" ? "Si no lo sabes, escribe “Sin nombre”." : undefined}>
-            <Input id="name" name="name" required maxLength={40} defaultValue={v.name ?? dog?.name ?? (kind === "found" ? "Sin nombre" : "")} invalid={!!errors.name} />
+            <Input id="name" name="name" required maxLength={40} defaultValue={v.name ?? pet?.name ?? (kind === "found" ? "Sin nombre" : "")} invalid={!!errors.name} />
           </Field>
           <Field label="Raza" htmlFor="breed" required errors={errors.breed}>
-            <Input id="breed" name="breed" required maxLength={60} defaultValue={v.breed ?? dog?.breed ?? "Mestizo"} />
+            <Input id="breed" name="breed" required maxLength={60} defaultValue={v.breed ?? pet?.breed ?? "Mestizo"} />
           </Field>
         </div>
         <ChoiceGroup
@@ -161,11 +161,11 @@ export function DogForm(props: Props) {
           name="sex"
           required
           errors={errors.sex}
-          defaultValue={v.sex ?? dog?.sex ?? "unknown"}
+          defaultValue={v.sex ?? pet?.sex ?? "unknown"}
           options={Object.entries(SEX_LABELS).map(([value, label]) => ({ value, label }))}
         />
         <Field label="Tamaño" htmlFor="size" required errors={errors.size}>
-          <Select id="size" name="size" required defaultValue={v.size ?? dog?.size ?? ""} invalid={!!errors.size}>
+          <Select id="size" name="size" required defaultValue={v.size ?? pet?.size ?? ""} invalid={!!errors.size}>
             <option value="" disabled>
               Elige un tamaño
             </option>
@@ -215,10 +215,10 @@ export function DogForm(props: Props) {
         </fieldset>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Color" htmlFor="color" errors={errors.color}>
-            <Input id="color" name="color" maxLength={60} placeholder="Ej: café con pecho blanco" defaultValue={v.color ?? dog?.color ?? ""} />
+            <Input id="color" name="color" maxLength={60} placeholder="Ej: café con pecho blanco" defaultValue={v.color ?? pet?.color ?? ""} />
           </Field>
           <Field label="Peso aproximado (kg)" htmlFor="weight_kg" errors={errors.weight_kg}>
-            <Input id="weight_kg" name="weight_kg" inputMode="decimal" placeholder="Ej: 12,5" defaultValue={v.weight_kg ?? (dog?.weight_kg ? String(dog.weight_kg).replace(".", ",") : "")} />
+            <Input id="weight_kg" name="weight_kg" inputMode="decimal" placeholder="Ej: 12,5" defaultValue={v.weight_kg ?? (pet?.weight_kg ? String(pet.weight_kg).replace(".", ",") : "")} />
           </Field>
         </div>
         <Field
@@ -252,7 +252,7 @@ export function DogForm(props: Props) {
 
       <Section title="Personalidad" description="Si no lo sabes, deja “Sin información”.">
         <Field label="Nivel de energía" htmlFor="energy">
-          <Select id="energy" name="energy" defaultValue={v.energy ?? dog?.energy ?? ""}>
+          <Select id="energy" name="energy" defaultValue={v.energy ?? pet?.energy ?? ""}>
             <option value="">Sin información</option>
             {Object.entries(ENERGY_LABELS).map(([value, label]) => (
               <option key={value} value={value}>
@@ -263,9 +263,9 @@ export function DogForm(props: Props) {
         </Field>
         {(
           [
-            ["good_with_kids", "¿Se lleva bien con niños?", dog?.good_with_kids],
-            ["good_with_dogs", "¿Se lleva bien con otros perros?", dog?.good_with_dogs],
-            ["good_with_cats", "¿Se lleva bien con gatos?", dog?.good_with_cats],
+            ["good_with_kids", "¿Se lleva bien con niños?", pet?.good_with_kids],
+            ["good_with_dogs", "¿Se lleva bien con otros perros?", pet?.good_with_dogs],
+            ["good_with_cats", "¿Se lleva bien con gatos?", pet?.good_with_cats],
           ] as const
         ).map(([name, legend, value]) => (
           <ChoiceGroup
@@ -284,14 +284,14 @@ export function DogForm(props: Props) {
 
       <Section title="Salud">
         <div className="grid gap-3 sm:grid-cols-2">
-          <Checkbox id="vaccinated" name="vaccinated" label="Vacunas al día" defaultChecked={dog?.vaccinated} />
-          <Checkbox id="dewormed" name="dewormed" label="Desparasitado" defaultChecked={dog?.dewormed} />
-          <Checkbox id="sterilized" name="sterilized" label="Esterilizado" defaultChecked={dog?.sterilized} />
-          <Checkbox id="microchipped" name="microchipped" label="Tiene microchip" defaultChecked={dog?.microchipped} />
-          <Checkbox id="special_needs" name="special_needs" label="Tiene necesidades especiales" defaultChecked={dog?.special_needs} />
+          <Checkbox id="vaccinated" name="vaccinated" label="Vacunas al día" defaultChecked={pet?.vaccinated} />
+          <Checkbox id="dewormed" name="dewormed" label="Desparasitado" defaultChecked={pet?.dewormed} />
+          <Checkbox id="sterilized" name="sterilized" label="Esterilizado" defaultChecked={pet?.sterilized} />
+          <Checkbox id="microchipped" name="microchipped" label="Tiene microchip" defaultChecked={pet?.microchipped} />
+          <Checkbox id="special_needs" name="special_needs" label="Tiene necesidades especiales" defaultChecked={pet?.special_needs} />
         </div>
         <Field label="Notas de salud" htmlFor="health_notes" errors={errors.health_notes} hint="Tratamientos, alergias, condiciones o cuidados especiales.">
-          <Textarea id="health_notes" name="health_notes" maxLength={1500} rows={3} defaultValue={v.health_notes ?? dog?.health_notes ?? ""} />
+          <Textarea id="health_notes" name="health_notes" maxLength={1500} rows={3} defaultValue={v.health_notes ?? pet?.health_notes ?? ""} />
         </Field>
       </Section>
 
@@ -302,15 +302,15 @@ export function DogForm(props: Props) {
         <RegionCommuneSelect
           required
           errors={errors.commune_code}
-          defaultCommune={v.commune_code ?? dog?.commune_code ?? (props.mode === "create" ? props.defaultCommune : null)}
+          defaultCommune={v.commune_code ?? pet?.commune_code ?? (props.mode === "create" ? props.defaultCommune : null)}
         />
         {!isAdoption && (
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="Sector de referencia" htmlFor="location_hint" errors={errors.location_hint} hint="Ej: cerca de la plaza o del metro. Sin direcciones exactas.">
-              <Input id="location_hint" name="location_hint" maxLength={120} defaultValue={v.location_hint ?? dog?.location_hint ?? ""} />
+              <Input id="location_hint" name="location_hint" maxLength={120} defaultValue={v.location_hint ?? pet?.location_hint ?? ""} />
             </Field>
             <Field label={kind === "lost" ? "¿Cuándo se perdió?" : "¿Cuándo lo encontraste?"} htmlFor="event_date" required errors={errors.event_date}>
-              <Input id="event_date" name="event_date" type="date" required max={todayIso()} defaultValue={v.event_date ?? dog?.event_date ?? todayIso()} invalid={!!errors.event_date} />
+              <Input id="event_date" name="event_date" type="date" required max={todayIso()} defaultValue={v.event_date ?? pet?.event_date ?? todayIso()} invalid={!!errors.event_date} />
             </Field>
           </div>
         )}
@@ -319,7 +319,7 @@ export function DogForm(props: Props) {
       {isAdoption && (
         <Section title="Requisitos para adoptar" description="Opcional. Ej: patio cerrado, compromiso de esterilización, visitas de seguimiento.">
           <Field label="Requisitos" htmlFor="requirements" errors={errors.requirements}>
-            <Textarea id="requirements" name="requirements" maxLength={1500} rows={3} defaultValue={v.requirements ?? dog?.requirements ?? ""} />
+            <Textarea id="requirements" name="requirements" maxLength={1500} rows={3} defaultValue={v.requirements ?? pet?.requirements ?? ""} />
           </Field>
         </Section>
       )}
@@ -330,7 +330,7 @@ export function DogForm(props: Props) {
           name="is_urgent"
           label="Es un caso urgente"
           description="Por ejemplo: está en la calle herido, en peligro o debe dejar el hogar temporal pronto."
-          defaultChecked={dog?.is_urgent}
+          defaultChecked={pet?.is_urgent}
         />
       </Section>
 

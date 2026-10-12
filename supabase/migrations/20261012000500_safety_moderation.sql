@@ -20,8 +20,8 @@ create type public.report_status as enum ('open', 'reviewing', 'resolved', 'dism
 create table public.reports (
   id uuid primary key default gen_random_uuid(),
   reporter_id uuid default auth.uid() references public.profiles (id) on delete set null,
-  target_type text not null check (target_type in ('dog', 'user', 'message')),
-  dog_id uuid references public.dogs (id) on delete set null,
+  target_type text not null check (target_type in ('pet', 'user', 'message')),
+  pet_id uuid references public.pets (id) on delete set null,
   reported_user_id uuid references public.profiles (id) on delete set null,
   message_id uuid references public.messages (id) on delete set null,
   message_snapshot text,
@@ -35,7 +35,7 @@ create table public.reports (
 );
 
 create index reports_status_idx on public.reports (status, created_at desc);
-create index reports_dog_idx on public.reports (dog_id) where dog_id is not null;
+create index reports_pet_idx on public.reports (pet_id) where pet_id is not null;
 create index reports_user_idx on public.reports (reported_user_id) where reported_user_id is not null;
 create index reports_reporter_idx on public.reports (reporter_id, created_at desc);
 
@@ -65,8 +65,8 @@ begin
   new.message_snapshot := null;
   new.details := left(public.clean_text(new.details), 2000);
 
-  if new.target_type = 'dog' then
-    select d.owner_id into v_owner from public.dogs d where d.id = new.dog_id;
+  if new.target_type = 'pet' then
+    select d.owner_id into v_owner from public.pets d where d.id = new.pet_id;
     if v_owner is null then
       raise exception 'Publicación no encontrada.' using errcode = 'P0002';
     end if;
@@ -77,7 +77,7 @@ begin
     new.message_id := null;
 
   elsif new.target_type = 'message' then
-    select m.sender_id, m.body, m.kind, c.starter_id, c.recipient_id, c.dog_id into v_msg
+    select m.sender_id, m.body, m.kind, c.starter_id, c.recipient_id, c.pet_id into v_msg
     from public.messages m join public.conversations c on c.id = m.conversation_id
     where m.id = new.message_id;
     if not found or v_uid not in (v_msg.starter_id, v_msg.recipient_id) then
@@ -87,7 +87,7 @@ begin
       raise exception 'No puedes reportar este mensaje.' using errcode = '23514';
     end if;
     new.reported_user_id := v_msg.sender_id;
-    new.dog_id := v_msg.dog_id;
+    new.pet_id := v_msg.pet_id;
     new.message_snapshot := v_msg.body;
 
   else -- user
@@ -95,7 +95,7 @@ begin
        or not exists (select 1 from public.profiles p where p.id = new.reported_user_id) then
       raise exception 'Persona no válida.' using errcode = '23514';
     end if;
-    new.dog_id := null;
+    new.pet_id := null;
     new.message_id := null;
   end if;
 
@@ -109,7 +109,7 @@ begin
     where r.reporter_id = v_uid
       and r.status in ('open', 'reviewing')
       and r.target_type = new.target_type
-      and r.dog_id is not distinct from new.dog_id
+      and r.pet_id is not distinct from new.pet_id
       and r.message_id is not distinct from new.message_id
       and r.reported_user_id is not distinct from new.reported_user_id
   ) then
@@ -132,28 +132,28 @@ set search_path = ''
 as $$
 declare
   v_reporters integer;
-  v_dog public.dogs%rowtype;
+  v_pet public.pets%rowtype;
   v_urgent boolean := new.reason in ('animal_abuse', 'animal_sale', 'scam');
 begin
   -- Ocultar automáticamente publicaciones con varios reportes de personas distintas.
-  if new.target_type = 'dog' and new.dog_id is not null then
+  if new.target_type = 'pet' and new.pet_id is not null then
     select count(distinct r.reporter_id) into v_reporters
     from public.reports r
-    where r.dog_id = new.dog_id and r.target_type = 'dog' and r.status in ('open', 'reviewing');
+    where r.pet_id = new.pet_id and r.target_type = 'pet' and r.status in ('open', 'reviewing');
 
-    select * into v_dog from public.dogs d where d.id = new.dog_id;
-    if v_reporters >= 3 and not v_dog.hidden then
-      update public.dogs d set
+    select * into v_pet from public.pets d where d.id = new.pet_id;
+    if v_reporters >= 3 and not v_pet.hidden then
+      update public.pets d set
         hidden = true,
         hidden_reason = 'Oculta automáticamente por varios reportes. Moderación la está revisando.',
         hidden_at = now()
-      where d.id = new.dog_id;
+      where d.id = new.pet_id;
 
       insert into public.audit_log (actor_id, action, target_type, target_id, details)
-      values (null, 'auto_hide_dog', 'dog', new.dog_id::text, json_build_object('reporters', v_reporters)::jsonb);
+      values (null, 'auto_hide_pet', 'pet', new.pet_id::text, json_build_object('reporters', v_reporters)::jsonb);
 
-      perform public.notify(v_dog.owner_id, 'dog_hidden',
-        'Tu publicación de ' || v_dog.name || ' está en revisión',
+      perform public.notify(v_pet.owner_id, 'pet_hidden',
+        'Tu publicación de ' || v_pet.name || ' está en revisión',
         'Recibió varios reportes y quedó oculta mientras moderación la revisa.',
         '/mis-publicaciones');
     end if;
@@ -194,7 +194,7 @@ create policy "Reportar" on public.reports
 
 revoke all on public.reports from anon, authenticated;
 grant select on public.reports to authenticated;
-grant insert (target_type, dog_id, reported_user_id, message_id, reason, details) on public.reports to authenticated;
+grant insert (target_type, pet_id, reported_user_id, message_id, reason, details) on public.reports to authenticated;
 
 -- -----------------------------------------------------------------------------
 -- Solicitudes de verificación (rescatistas y fundaciones)
@@ -307,7 +307,7 @@ begin
 end;
 $$;
 
-create function public.moderate_dog(p_dog_id uuid, p_hide boolean, p_reason text default null)
+create function public.moderate_pet(p_pet_id uuid, p_hide boolean, p_reason text default null)
 returns void
 language plpgsql
 security definer
@@ -315,10 +315,10 @@ set search_path = ''
 as $$
 declare
   v_uid uuid := public.assert_moderator();
-  v_dog public.dogs%rowtype;
+  v_pet public.pets%rowtype;
   v_reason text := left(public.clean_text(p_reason), 500);
 begin
-  select * into v_dog from public.dogs d where d.id = p_dog_id for update;
+  select * into v_pet from public.pets d where d.id = p_pet_id for update;
   if not found then
     raise exception 'Publicación no encontrada.' using errcode = 'P0002';
   end if;
@@ -326,19 +326,19 @@ begin
     raise exception 'Indica el motivo para ocultar la publicación.' using errcode = '23514';
   end if;
 
-  update public.dogs d set
+  update public.pets d set
     hidden = p_hide,
     hidden_reason = case when p_hide then v_reason else null end,
     hidden_at = case when p_hide then now() else null end
-  where d.id = p_dog_id;
+  where d.id = p_pet_id;
 
-  perform public.log_action(case when p_hide then 'hide_dog' else 'unhide_dog' end, 'dog', p_dog_id::text,
-    jsonb_build_object('reason', v_reason, 'dog_name', v_dog.name));
+  perform public.log_action(case when p_hide then 'hide_pet' else 'unhide_pet' end, 'pet', p_pet_id::text,
+    jsonb_build_object('reason', v_reason, 'pet_name', v_pet.name));
 
-  perform public.notify(v_dog.owner_id,
-    case when p_hide then 'dog_hidden' else 'dog_restored' end,
-    case when p_hide then 'Tu publicación de ' || v_dog.name || ' fue ocultada'
-         else 'Tu publicación de ' || v_dog.name || ' volvió a estar visible' end,
+  perform public.notify(v_pet.owner_id,
+    case when p_hide then 'pet_hidden' else 'pet_restored' end,
+    case when p_hide then 'Tu publicación de ' || v_pet.name || ' fue ocultada'
+         else 'Tu publicación de ' || v_pet.name || ' volvió a estar visible' end,
     case when p_hide then 'Motivo: ' || v_reason else null end,
     '/mis-publicaciones');
 end;
@@ -517,10 +517,10 @@ begin
     'urgent_reports', (select count(*) from public.reports r
                        where r.status in ('open', 'reviewing') and r.reason in ('animal_abuse', 'animal_sale', 'scam')),
     'pending_verifications', (select count(*) from public.verification_requests v where v.status = 'pending'),
-    'hidden_dogs', (select count(*) from public.dogs d where d.hidden),
+    'hidden_pets', (select count(*) from public.pets d where d.hidden),
     'users', (select count(*) from public.profiles),
     'suspended_users', (select count(*) from public.profiles p where p.account_status <> 'active'),
-    'dogs_available', (select count(*) from public.dogs d where d.status = 'available' and not d.hidden),
+    'pets_available', (select count(*) from public.pets d where d.status = 'available' and not d.hidden),
     'adoptions_completed', (select count(*) from public.applications a where a.status = 'completed'),
     'applications_last_7d', (select count(*) from public.applications a where a.created_at > now() - interval '7 days'),
     'overdue_followups', (select count(*) from public.followups f
@@ -540,11 +540,11 @@ security definer
 set search_path = ''
 as $$
   select json_build_object(
-    'available', (select count(*) from public.dogs d
+    'available', (select count(*) from public.pets d
                   where d.kind = 'adoption' and d.status = 'available' and not d.hidden),
-    'adopted', (select count(*) from public.dogs d where d.status = 'adopted'),
-    'reunited', (select count(*) from public.dogs d where d.status = 'reunited'),
-    'lost_active', (select count(*) from public.dogs d
+    'adopted', (select count(*) from public.pets d where d.status = 'adopted'),
+    'reunited', (select count(*) from public.pets d where d.status = 'reunited'),
+    'lost_active', (select count(*) from public.pets d
                     where d.kind = 'lost' and d.status = 'available' and not d.hidden),
     'verified_orgs', (select count(*) from public.profiles p
                       where p.verification_status = 'verified' and p.account_type in ('rescuer', 'shelter'))
@@ -559,7 +559,7 @@ security definer
 set search_path = ''
 as $$
   select json_build_object(
-    'active_listings', (select count(*) from public.dogs d
+    'active_listings', (select count(*) from public.pets d
                         where d.owner_id = p_user_id and not d.hidden
                           and d.status in ('available', 'in_process')),
     'adoptions_given', (select count(*) from public.applications a

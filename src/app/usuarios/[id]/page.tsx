@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 
 import { blockUser } from "@/actions/safety";
-import { DogGrid } from "@/components/dogs/dog-card";
-import { VerifiedBadge } from "@/components/dogs/dog-badges";
+import { PetGrid } from "@/components/pets/pet-card";
+import { VerifiedBadge } from "@/components/pets/pet-badges";
 import { ReportButton } from "@/components/safety/report-button";
 import { Alert } from "@/components/ui/alert";
 import { Avatar } from "@/components/ui/avatar";
@@ -15,7 +15,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { placeLabel } from "@/lib/chile";
 import { ACCOUNT_TYPE_LABELS } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
-import { DOG_CARD_COLUMNS, PUBLIC_PROFILE_COLUMNS, toProfileStats } from "@/lib/queries";
+import { PET_CARD_COLUMNS, PUBLIC_PROFILE_COLUMNS, toProfileStats } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { isUuid } from "@/lib/utils";
 
@@ -40,11 +40,11 @@ export default async function PublicProfilePage({ params }: PageProps<"/usuarios
   const isMe = viewer?.id === profile.id;
   const supabase = await createClient();
 
-  const [{ data: stats }, { data: dogs }] = await Promise.all([
+  const [{ data: stats }, { data: pets }] = await Promise.all([
     supabase.rpc("get_profile_stats", { p_user_id: profile.id }),
     supabase
-      .from("dogs")
-      .select(DOG_CARD_COLUMNS)
+      .from("pets")
+      .select(PET_CARD_COLUMNS)
       .eq("owner_id", profile.id)
       .eq("hidden", false)
       .in("status", ["available", "in_process", "adopted", "reunited"])
@@ -52,8 +52,8 @@ export default async function PublicProfilePage({ params }: PageProps<"/usuarios
       .limit(24),
   ]);
   const s = toProfileStats(stats);
-  const active = (dogs ?? []).filter((d) => d.status === "available" || d.status === "in_process");
-  const happy = (dogs ?? []).filter((d) => d.status === "adopted" || d.status === "reunited");
+  const active = (pets ?? []).filter((d) => d.status === "available" || d.status === "in_process");
+  const happy = (pets ?? []).filter((d) => d.status === "adopted" || d.status === "reunited");
 
   return (
     <Container className="py-8 sm:py-10">
@@ -148,7 +148,7 @@ export default async function PublicProfilePage({ params }: PageProps<"/usuarios
       <section className="mt-10">
         <h2 className="mb-5 text-2xl font-extrabold">Buscando hogar</h2>
         {active.length ? (
-          <DogGrid dogs={active} />
+          <PetGrid pets={active} />
         ) : (
           <EmptyState icon={<PawPrint className="h-10 w-10" />} title="No tiene publicaciones activas" />
         )}
@@ -157,7 +157,7 @@ export default async function PublicProfilePage({ params }: PageProps<"/usuarios
       {happy.length > 0 && (
         <section className="mt-12">
           <h2 className="mb-5 text-2xl font-extrabold">Finales felices</h2>
-          <DogGrid dogs={happy} showStatus />
+          <PetGrid pets={happy} showStatus />
         </section>
       )}
     </Container>

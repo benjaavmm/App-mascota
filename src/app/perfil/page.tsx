@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { signOut } from "@/actions/auth";
 import { unblockUser } from "@/actions/safety";
-import { VerifiedBadge } from "@/components/dogs/dog-badges";
+import { VerifiedBadge } from "@/components/pets/pet-badges";
 import {
   AvatarUploader,
   ChangePasswordForm,

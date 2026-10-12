@@ -1,38 +1,38 @@
 import { MapPin } from "lucide-react";
 import Link from "next/link";
 
-import { KindBadge, StatusBadge, UrgentBadge } from "@/components/dogs/dog-badges";
-import { DogPhoto } from "@/components/dogs/dog-photo";
+import { KindBadge, StatusBadge, UrgentBadge } from "@/components/pets/pet-badges";
+import { PetPhoto } from "@/components/pets/pet-photo";
 import { SEX_LABELS, SIZE_SHORT } from "@/lib/constants";
 import { getCommune } from "@/lib/chile";
 import { formatAge, formatShortDate } from "@/lib/format";
-import type { DogCardData } from "@/lib/queries";
+import type { PetCardData } from "@/lib/queries";
 
-export function DogCard({ dog, showStatus = false }: { dog: DogCardData; showStatus?: boolean }) {
-  const commune = getCommune(dog.commune_code)?.name ?? "Chile";
-  const isLostFound = dog.kind !== "adoption";
+export function PetCard({ pet, showStatus = false }: { pet: PetCardData; showStatus?: boolean }) {
+  const commune = getCommune(pet.commune_code)?.name ?? "Chile";
+  const isLostFound = pet.kind !== "adoption";
 
   return (
     <Link
-      href={`/perritos/${dog.id}`}
+      href={`/mascotas/${pet.id}`}
       className="group flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-stone-200 bg-white shadow-xs transition hover:-translate-y-0.5 hover:shadow-lg"
     >
       <div className="relative">
-        <DogPhoto
-          path={dog.cover_path}
-          alt={`Foto de ${dog.name}`}
+        <PetPhoto
+          path={pet.cover_path}
+          alt={`Foto de ${pet.name}`}
           className="aspect-[4/3] transition-transform duration-300 group-hover:scale-[1.02]"
         />
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-          <KindBadge kind={dog.kind} />
-          {dog.is_urgent && dog.status === "available" && <UrgentBadge />}
-          {(showStatus || dog.status !== "available") && <StatusBadge status={dog.status} kind={dog.kind} />}
+          <KindBadge kind={pet.kind} />
+          {pet.is_urgent && pet.status === "available" && <UrgentBadge />}
+          {(showStatus || pet.status !== "available") && <StatusBadge status={pet.status} kind={pet.kind} />}
         </div>
       </div>
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="truncate text-lg font-extrabold text-stone-900">{dog.name}</h3>
+        <h3 className="truncate text-lg font-extrabold text-stone-900">{pet.name}</h3>
         <p className="mt-0.5 text-sm text-stone-600">
-          {[SEX_LABELS[dog.sex], isLostFound ? null : formatAge(dog.birth_date_estimate), SIZE_SHORT[dog.size]]
+          {[SEX_LABELS[pet.sex], isLostFound ? null : formatAge(pet.birth_date_estimate), SIZE_SHORT[pet.size]]
             .filter(Boolean)
             .join(" · ")}
         </p>
@@ -41,15 +41,15 @@ export function DogCard({ dog, showStatus = false }: { dog: DogCardData; showSta
             <MapPin className="h-4 w-4 shrink-0" aria-hidden />
             <span className="truncate">{commune}</span>
           </span>
-          {isLostFound && dog.event_date && (
+          {isLostFound && pet.event_date && (
             <span className="shrink-0 text-xs font-semibold">
-              {dog.kind === "lost" ? "Perdido el " : "Encontrado el "}
-              {formatShortDate(dog.event_date)}
+              {pet.kind === "lost" ? "Perdido el " : "Encontrado el "}
+              {formatShortDate(pet.event_date)}
             </span>
           )}
-          {!isLostFound && (dog.sterilized || dog.vaccinated) && (
+          {!isLostFound && (pet.sterilized || pet.vaccinated) && (
             <span className="shrink-0 text-xs font-semibold text-teal-700">
-              {dog.sterilized ? "Esterilizado" : "Vacunado"}
+              {pet.sterilized ? "Esterilizado" : "Vacunado"}
             </span>
           )}
         </div>
@@ -58,11 +58,11 @@ export function DogCard({ dog, showStatus = false }: { dog: DogCardData; showSta
   );
 }
 
-export function DogGrid({ dogs, showStatus }: { dogs: DogCardData[]; showStatus?: boolean }) {
+export function PetGrid({ pets, showStatus }: { pets: PetCardData[]; showStatus?: boolean }) {
   return (
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {dogs.map((dog) => (
-        <DogCard key={dog.id} dog={dog} showStatus={showStatus} />
+      {pets.map((pet) => (
+        <PetCard key={pet.id} pet={pet} showStatus={showStatus} />
       ))}
     </div>
   );

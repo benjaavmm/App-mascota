@@ -4,10 +4,10 @@ import { prepareImage, randomFileName } from "@/lib/images";
 import { createClient } from "@/lib/supabase/client";
 
 // Sube fotos de una publicación: procesa cada imagen (sin EXIF/GPS), la guarda en
-// Storage y registra la fila en dog_photos. Devuelve los nombres que fallaron.
-export async function uploadDogPhotos(
+// Storage y registra la fila en pet_photos. Devuelve los nombres que fallaron.
+export async function uploadPetPhotos(
   userId: string,
-  dogId: string,
+  petId: string,
   files: File[],
   startPosition = 0,
   onProgress?: (done: number) => void,
@@ -18,17 +18,17 @@ export async function uploadDogPhotos(
   for (const [index, file] of files.entries()) {
     try {
       const blob = await prepareImage(file);
-      const path = `${userId}/${dogId}/${randomFileName()}`;
+      const path = `${userId}/${petId}/${randomFileName()}`;
       const { error: uploadError } = await supabase.storage
-        .from("dog-photos")
+        .from("pet-photos")
         .upload(path, blob, { contentType: "image/jpeg", cacheControl: "31536000", upsert: false });
       if (uploadError) throw uploadError;
 
       const { error: rowError } = await supabase
-        .from("dog_photos")
-        .insert({ dog_id: dogId, storage_path: path, position: startPosition + index });
+        .from("pet_photos")
+        .insert({ pet_id: petId, storage_path: path, position: startPosition + index });
       if (rowError) {
-        await supabase.storage.from("dog-photos").remove([path]);
+        await supabase.storage.from("pet-photos").remove([path]);
         throw rowError;
       }
     } catch {
