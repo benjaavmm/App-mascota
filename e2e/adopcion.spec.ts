@@ -95,6 +95,13 @@ test.describe.serial("Flujo completo de adopción", () => {
     await expect(adopter.getByRole("link", { name: new RegExp(petName) })).toBeVisible();
   });
 
+  test("crear una alerta de gatos desde la búsqueda", async () => {
+    await adopter.goto("/mascotas?tipo=adopcion&especie=gatos&region=13&comuna=13120");
+    await expect(adopter.getByText("Gatos en adopción · Ñuñoa, Metropolitana")).toBeVisible();
+    await adopter.getByRole("button", { name: "Crear alerta" }).click();
+    await expect(adopter.getByText(/Alerta creada/)).toBeVisible();
+  });
+
   test("publicar un gato y filtrar por especie", async ({ browser }) => {
     await shelter.goto("/publicar?especie=gatos");
     const speciesGroup = shelter.getByRole("group", { name: /Especie/ });
@@ -115,6 +122,11 @@ test.describe.serial("Flujo completo de adopción", () => {
     await expect(shelter.getByRole("heading", { level: 1, name: catName })).toBeVisible();
     await expect(shelter.getByText("Gato", { exact: true }).first()).toBeVisible();
 
+    // La alerta avisa a la persona adoptante.
+    await adopter.goto("/notificaciones");
+    await expect(adopter.getByText("Nueva mascota en adopción para tu alerta").first()).toBeVisible();
+    await expect(adopter.getByText(new RegExp(`${catName} · Gato · Ñuñoa`))).toBeVisible();
+
     // Filtro por especie: aparece en gatos y no en perros.
     const q = encodeURIComponent(`michi ${run}`);
     await adopter.goto(`/mascotas?especie=gatos&q=${q}`);
@@ -131,6 +143,21 @@ test.describe.serial("Flujo completo de adopción", () => {
       .click();
     await expect(adopter).toHaveURL(/especie=gatos/);
     await expect(adopter.getByRole("link", { name: new RegExp(catName) })).toBeVisible();
+  });
+
+  test("gestionar mis alertas", async () => {
+    await adopter.goto("/alertas");
+    const item = adopter.getByRole("listitem").filter({ hasText: "Gatos en adopción · Ñuñoa, Metropolitana" });
+    await expect(item).toBeVisible();
+    await item.getByRole("button", { name: /Eliminar alerta/ }).click();
+    await expect(adopter.getByText("Aún no tienes alertas")).toBeVisible();
+
+    // Alerta para quien perdió a su mascota, desde el formulario.
+    await adopter.getByLabel("¿Qué quieres que te avisemos?").selectOption("encontrados");
+    await adopter.getByLabel("Especie").selectOption("perros");
+    await adopter.getByRole("button", { name: "Crear alerta" }).click();
+    await expect(adopter.getByText(/Alerta creada/)).toBeVisible();
+    await expect(adopter.getByText("Perros encontrados · Región Metropolitana de Santiago")).toBeVisible();
   });
 
   test("las URL antiguas de /perritos redirigen a /mascotas", async ({ page }) => {

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  BellRing,
   ClipboardList,
   Heart,
   HeartHandshake,
@@ -23,6 +24,7 @@ export const ACCOUNT_LINKS: { href: string; label: string; icon: LucideIcon }[] 
   { href: "/solicitudes", label: "Solicitudes de adopción", icon: ClipboardList },
   { href: "/seguimientos", label: "Seguimientos", icon: HeartHandshake },
   { href: "/favoritos", label: "Favoritos", icon: Heart },
+  { href: "/alertas", label: "Mis alertas", icon: BellRing },
 ];
 
 export function UserMenu({

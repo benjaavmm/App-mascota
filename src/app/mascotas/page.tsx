@@ -1,6 +1,7 @@
 import { PawPrint, Plus } from "lucide-react";
 import type { Metadata } from "next";
 
+import { CreateAlertCard } from "@/components/alerts/create-alert-card";
 import { PetGrid } from "@/components/pets/pet-card";
 import { SpeciesChips } from "@/components/pets/species-chips";
 import { PetFilters, type PetFilterValues } from "@/components/pets/pet-filters";
@@ -9,13 +10,15 @@ import { ButtonLink } from "@/components/ui/button";
 import { Container, EmptyState, PageHeader } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { LinkTabs } from "@/components/ui/tabs";
+import { alertSearchParams, alertSummary, parseAlertCriteria } from "@/lib/alerts";
+import { getCurrentUser } from "@/lib/auth";
 import { isValidCommune, isValidRegion } from "@/lib/chile";
 import {
   AGE_GROUPS,
   KIND_SLUGS,
   PAGE_SIZE,
-  SPECIES_PLURAL,
   SPECIES_SLUGS,
+  listingTitle,
   type AgeGroup,
 } from "@/lib/constants";
 import { isoDateFromAge } from "@/lib/format";
@@ -137,19 +140,26 @@ export default async function PetsPage({ searchParams }: PageProps<"/mascotas">)
   };
 
   const copy = COPY[tipo];
-  const feminine = !species || species === "bird";
-  const status =
-    tipo === "adopcion"
-      ? "en adopción"
-      : tipo === "perdidos"
-        ? feminine
-          ? "perdidas"
-          : "perdidos"
-        : feminine
-          ? "encontradas"
-          : "encontrados";
-  const noun = !species ? "Mascotas" : species === "other" ? "Otros animales" : SPECIES_PLURAL[species];
-  const title = `${noun} ${status}`;
+  const title = listingTitle(kind, species);
+
+  // Alerta con la búsqueda actual (tipo, especie, ubicación y tamaño).
+  const user = await getCurrentUser();
+  const alertCriteria = parseAlertCriteria({
+    tipo,
+    especie: filters.especie,
+    region: filters.region,
+    comuna: filters.comuna,
+    tamano: filters.tamano,
+  });
+  const alertCard = (
+    <CreateAlertCard
+      params={Object.fromEntries(alertSearchParams(alertCriteria))}
+      summary={alertSummary(alertCriteria)}
+      signedIn={Boolean(user)}
+      loginNext={hrefFor(1)}
+      lost={kind === "found"}
+    />
+  );
   const speciesSuffix = species ? `&especie=${especie}` : "";
 
   // Enlaces de especie: conservan los demás filtros y vuelven a la página 1.
@@ -194,6 +204,7 @@ export default async function PetsPage({ searchParams }: PageProps<"/mascotas">)
           <PetFilters key={JSON.stringify(filters)} values={filters} />
         </aside>
         <section aria-live="polite">
+          {kind === "found" && <div className="mb-6">{alertCard}</div>}
           {error ? (
             <Alert variant="danger">No pudimos cargar los resultados. Intenta nuevamente.</Alert>
           ) : pets && pets.length > 0 ? (
@@ -216,6 +227,7 @@ export default async function PetsPage({ searchParams }: PageProps<"/mascotas">)
               }
             />
           )}
+          {kind !== "found" && <div className="mt-8">{alertCard}</div>}
         </section>
       </div>
     </Container>

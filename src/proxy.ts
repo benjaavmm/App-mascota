@@ -11,6 +11,7 @@ const PROTECTED = [
   /^\/mensajes/,
   /^\/seguimientos/,
   /^\/favoritos/,
+  /^\/alertas/,
   /^\/notificaciones/,
   /^\/perfil/,
   /^\/bienvenida/,

@@ -16,7 +16,7 @@ const ITEMS = [
     href: "/perfil",
     label: "Cuenta",
     icon: User,
-    match: (p: string) => ["/perfil", "/mis-publicaciones", "/solicitudes", "/seguimientos", "/favoritos"].some((x) => p.startsWith(x)),
+    match: (p: string) => ["/perfil", "/mis-publicaciones", "/solicitudes", "/seguimientos", "/favoritos", "/alertas"].some((x) => p.startsWith(x)),
   },
 ];
 

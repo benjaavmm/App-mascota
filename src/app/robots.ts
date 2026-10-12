@@ -14,6 +14,7 @@ export default function robots(): MetadataRoute.Robots {
         "/seguimientos",
         "/perfil",
         "/favoritos",
+        "/alertas",
         "/notificaciones",
         "/mis-publicaciones",
         "/auth",

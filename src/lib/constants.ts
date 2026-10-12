@@ -185,6 +185,23 @@ export const WELLBEING_LABELS: Record<number, string> = {
   5: "¡Feliz!",
 };
 
+// Título de un listado: "Gatos en adopción", "Mascotas perdidas", "Otros animales encontrados".
+export function listingTitle(kind: Enums<"listing_kind">, species?: Enums<"species"> | null) {
+  const noun = !species ? "Mascotas" : species === "other" ? "Otros animales" : SPECIES_PLURAL[species];
+  const feminine = !species || species === "bird";
+  const status =
+    kind === "adoption"
+      ? "en adopción"
+      : kind === "lost"
+        ? feminine
+          ? "perdidas"
+          : "perdidos"
+        : feminine
+          ? "encontradas"
+          : "encontrados";
+  return `${noun} ${status}`;
+}
+
 // Los rangos de peso solo tienen sentido para perros.
 export function sizeLabel(species: Enums<"species">, size: Enums<"pet_size">) {
   return species === "dog" ? SIZE_LABELS[size] : SIZE_SHORT[size];
