@@ -24,6 +24,7 @@ Construida con **Next.js 16 + TypeScript + Tailwind CSS 4** y **Supabase** (Post
 ## Funcionalidades
 
 ### Para todas las personas
+
 - **Búsqueda de mascotas** en `/mascotas`: en adopción, **perdidas** y **encontradas**, con **filtro por especie** (perros, gatos, conejos, roedores, aves, caballos y otros; enlazable, por ejemplo `/mascotas?especie=gatos`) y filtros por región/comuna (las 16 regiones y 346 comunas de Chile), tamaño, sexo, edad, esterilización, compatibilidad con niños/perros/gatos y casos urgentes. Búsqueda de texto que ignora tildes (“ñuñoa” = “Ñuñoa”).
 - **Ficha completa de cada mascota** (`/mascotas/[id]`): especie, galería de fotos, salud (vacunas, desparasitación, esterilización, microchip), personalidad, requisitos y datos de quien publica (con insignia de verificación y número de adopciones logradas).
 - **Finales felices**: mascotas adoptadas o que volvieron a casa.
@@ -31,26 +32,30 @@ Construida con **Next.js 16 + TypeScript + Tailwind CSS 4** y **Supabase** (Post
 - **PWA**: se puede instalar en el celular; diseño “mobile first” con barra de navegación inferior.
 
 ### Para quienes publican (personas, rescatistas y fundaciones)
+
 - Publicar mascotas de cualquier especie doméstica **en adopción, perdidas o encontradas** con hasta 8 fotos.
 - Panel **Mis publicaciones**: editar, cambiar portada, pausar, archivar, marcar “adoptado” o “volvió a casa”.
-- **Solicitudes recibidas** con todas las respuestas del cuestionario, historial de la persona postulante y acciones: *en revisión*, *aprobar*, *no aceptar* (con mensaje), *cancelar aprobación* y *confirmar adopción*.
+- **Solicitudes recibidas** con todas las respuestas del cuestionario, historial de la persona postulante y acciones: _en revisión_, _aprobar_, _no aceptar_ (con mensaje), _cancelar aprobación_ y _confirmar adopción_.
 - **Acta de adopción imprimible** (PDF desde el navegador) con los compromisos legales.
 - **Seguimientos post‑adopción** automáticos: 1 semana, 1 mes, 3 meses y 6 meses.
 - **Coincidencias perdidos/encontrados**: al publicar una mascota encontrada, se avisa a quienes buscan una parecida en la misma región.
 - **Verificación** de rescatistas y fundaciones (con documento de respaldo opcional y privado).
 
 ### Para quienes adoptan
+
 - **Cuestionario de adopción responsable** (vivienda, familia, rutina, experiencia, motivación y compromisos obligatorios: veterinario, esterilización, seguimientos y no abandono).
 - Estado de cada solicitud en tiempo real y notificaciones.
 - Envío de seguimientos con foto privada.
 - Favoritos.
 
 ### Comunicación
+
 - **Chat interno en tiempo real** (Supabase Realtime), con historial, mensajes del sistema y contador de no leídos.
 - **Contacto protegido**: el teléfono y el correo nunca se publican; cada persona decide si los comparte en una conversación.
 - **Notificaciones** dentro de la app (solicitudes, mensajes, seguimientos, moderación, coincidencias).
 
 ### Moderación
+
 - Panel con **resumen**, **reportes** (los de maltrato, venta de animales y estafas se marcan como urgentes), **verificaciones**, **publicaciones**, **usuarios** (suspender por días, bloquear, reactivar, cambiar rol) y **auditoría** de todas las acciones.
 
 ---
@@ -60,6 +65,7 @@ Construida con **Next.js 16 + TypeScript + Tailwind CSS 4** y **Supabase** (Post
 La seguridad está implementada **en la base de datos**, no solo en la interfaz: aunque alguien llame directamente a la API de Supabase, las reglas se cumplen.
 
 **Protección de personas**
+
 - **Row Level Security (RLS)** en todas las tablas y **permisos por columna** (nadie puede auto‑asignarse un rol, verificarse, levantar una suspensión ni “des‑ocultar” una publicación).
 - Datos privados separados (`profile_private`): el teléfono solo lo ve su dueño, o quien recibe el contacto cuando la persona decide compartirlo.
 - Solo se muestra la **comuna**, nunca direcciones. Advertencias automáticas si alguien escribe un teléfono, correo o dirección en una publicación.
@@ -74,14 +80,17 @@ La seguridad está implementada **en la base de datos**, no solo en la interfaz:
 - Eliminar la cuenta y cambiar la contraseña exigen la contraseña actual.
 
 **Protección de los animales**
-- **Prohibida la venta** y la publicación de fauna silvestre o exótica: normas explícitas, advertencias y motivo de reporte específico.
+
+- **Prohibida la venta**: normas explícitas, advertencias y motivo de reporte específico.
+- **Solo animales domésticos**: los términos prohíben publicar fauna silvestre o exótica (regulada por la Ley de Caza N° 19.473 y fiscalizada por el SAG).
 - Proceso de adopción ordenado (cuestionario → aprobación → acta → confirmación) controlado por una **máquina de estados en SQL**.
 - Compromisos obligatorios y **seguimientos** con recordatorios diarios (pg_cron) y alertas por seguimientos atrasados.
 - Reportes de **maltrato** priorizados e información sobre cómo denunciar a Carabineros (133), PDI (134), Fiscalía o municipalidad.
 
 **Aplicación web**
-- **Content Security Policy** estricta con *nonce* por petición, `frame-ancestors 'none'`, HSTS, `X-Content-Type-Options`, `Referrer-Policy` y `Permissions-Policy`.
-- Validación en el servidor con **zod** en todas las Server Actions; redirecciones solo internas (sin *open redirects*).
+
+- **Content Security Policy** estricta con _nonce_ por petición, `frame-ancestors 'none'`, HSTS, `X-Content-Type-Options`, `Referrer-Policy` y `Permissions-Policy`.
+- Validación en el servidor con **zod** en todas las Server Actions; redirecciones solo internas (sin _open redirects_).
 - Errores de base de datos traducidos a mensajes seguros (no se filtran detalles internos).
 - Enlaces de correo con `token_hash` (funcionan aunque se abran en otro dispositivo) y plantillas en español.
 - Buckets de Storage con tipos y tamaños permitidos; documentos y fotos de seguimiento en **buckets privados** con URLs firmadas temporales.
@@ -91,13 +100,13 @@ La seguridad está implementada **en la base de datos**, no solo en la interfaz:
 
 ## Tecnologías y estructura
 
-| Capa | Tecnología |
-| --- | --- |
+| Capa                | Tecnología                                                                                   |
+| ------------------- | -------------------------------------------------------------------------------------------- |
 | Frontend y servidor | Next.js 16 (App Router, Server Components, Server Actions, `proxy.ts`), React 19, TypeScript |
-| Estilos | Tailwind CSS 4, íconos `lucide-react`, tipografía Nunito |
-| Validación | zod 4 |
-| Backend | Supabase: Postgres 17, Auth, Storage, Realtime, pg_cron |
-| Pruebas | pgTAP (95 pruebas de seguridad), Playwright (flujo completo E2E) |
+| Estilos             | Tailwind CSS 4, íconos `lucide-react`, tipografía Nunito                                     |
+| Validación          | zod 4                                                                                        |
+| Backend             | Supabase: Postgres 17, Auth, Storage, Realtime, pg_cron                                      |
+| Pruebas             | pgTAP (95 pruebas de seguridad), Playwright (flujo completo E2E)                             |
 
 ```
 ├── supabase/
@@ -147,12 +156,12 @@ Abre http://localhost:3000.
 
 **Cuentas de prueba** (contraseña `Huellitas2026`, solo en local):
 
-| Correo | Rol |
-| --- | --- |
-| `admin@huellitas.test` | Administración (acceso a `/admin`) |
-| `fundacion@huellitas.test` | Fundación verificada |
-| `rescatista@huellitas.test` | Rescatista independiente |
-| `adoptante@huellitas.test` | Persona que quiere adoptar |
+| Correo                      | Rol                                |
+| --------------------------- | ---------------------------------- |
+| `admin@huellitas.test`      | Administración (acceso a `/admin`) |
+| `fundacion@huellitas.test`  | Fundación verificada               |
+| `rescatista@huellitas.test` | Rescatista independiente           |
+| `adoptante@huellitas.test`  | Persona que quiere adoptar         |
 
 Los correos (confirmación de cuenta, recuperar contraseña) llegan a **Mailpit**: http://127.0.0.1:54324.
 
@@ -163,37 +172,43 @@ Los correos (confirmación de cuenta, recuperar contraseña) llegan a **Mailpit*
 1. **Crea un proyecto** en https://supabase.com (región sugerida: São Paulo, `sa-east-1`, la más cercana a Chile).
 
 2. **Aplica el esquema** con la CLI:
+
    ```bash
    npx supabase login
    npx supabase link --project-ref TU_PROJECT_REF
    npx supabase db push
    ```
+
    Esto crea tablas, políticas RLS, funciones, buckets de Storage, la publicación de Realtime y la tarea diaria de pg_cron.
+
    > ⚠️ No ejecutes `supabase/seed.sql` en producción.
 
-   *Alternativa sin CLI:* copia el contenido de cada archivo de `supabase/migrations/` (en orden) en **SQL Editor** y ejecútalo.
+   _Alternativa sin CLI:_ copia el contenido de cada archivo de `supabase/migrations/` (en orden) en **SQL Editor** y ejecútalo.
 
 3. **Autenticación** (Dashboard → Authentication):
-   - **URL Configuration** → *Site URL*: `https://tu-dominio.cl`. *Redirect URLs*: `https://tu-dominio.cl/**` (y `http://localhost:3000/**` para desarrollo).
+   - **URL Configuration** → _Site URL_: `https://tu-dominio.cl`. _Redirect URLs_: `https://tu-dominio.cl/**` (y `http://localhost:3000/**` para desarrollo).
    - **Sign In / Providers → Email**: activa **Confirm email**. Contraseña mínima **8** caracteres con letras y números. Activa **Secure password change**.
    - **Attack Protection**: activa **Leaked password protection** (si tu plan lo permite) y, recomendado, **CAPTCHA** (hCaptcha o Turnstile).
    - **Emails → Templates**: copia el contenido de `supabase/templates/confirmation.html`, `recovery.html`, `email_change.html` y `magic_link.html` en las plantillas correspondientes (usan `token_hash`, necesario para que los enlaces funcionen).
    - **Emails → SMTP Settings**: configura un SMTP propio (Resend, Brevo, SendGrid…). El SMTP de prueba de Supabase tiene un límite muy bajo de correos por hora.
 
 4. **pg_cron** (recordatorios de seguimientos): la migración intenta activarlo automáticamente. Si no quedó activo, ve a **Database → Extensions**, activa `pg_cron` y ejecuta:
+
    ```sql
    select cron.schedule('huellitas-seguimientos', '0 13 * * *', 'select public.notify_due_followups()');
    ```
 
 5. **Crea la primera cuenta de administración**: regístrate en la app y luego, en **SQL Editor**:
+
    ```sql
    update public.profiles
    set role = 'admin'
    where id = (select id from auth.users where email = 'tu-correo@ejemplo.cl');
    ```
+
    Desde el panel `/admin` → Usuarios podrás nombrar a más moderadores.
 
-6. **Claves**: en **Project Settings → API Keys** copia la *Publishable key* y la *Secret key*. La secret key solo va en el servidor (se usa para que una persona pueda eliminar su cuenta).
+6. **Claves**: en **Project Settings → API Keys** copia la _Publishable key_ y la _Secret key_. La secret key solo va en el servidor (se usa para que una persona pueda eliminar su cuenta).
 
 ---
 
@@ -202,34 +217,34 @@ Los correos (confirmación de cuenta, recuperar contraseña) llegan a **Mailpit*
 1. Importa el repositorio en https://vercel.com.
 2. Agrega las variables de entorno:
 
-   | Variable | Valor |
-   | --- | --- |
-   | `NEXT_PUBLIC_SUPABASE_URL` | `https://TU_PROJECT_REF.supabase.co` |
-   | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_…` |
-   | `NEXT_PUBLIC_SITE_URL` | `https://tu-dominio.cl` |
-   | `SUPABASE_SECRET_KEY` | `sb_secret_…` (**sin** prefijo `NEXT_PUBLIC_`) |
+   | Variable                               | Valor                                          |
+   | -------------------------------------- | ---------------------------------------------- |
+   | `NEXT_PUBLIC_SUPABASE_URL`             | `https://TU_PROJECT_REF.supabase.co`           |
+   | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_…`                             |
+   | `NEXT_PUBLIC_SITE_URL`                 | `https://tu-dominio.cl`                        |
+   | `SUPABASE_SECRET_KEY`                  | `sb_secret_…` (**sin** prefijo `NEXT_PUBLIC_`) |
 
-3. Despliega y actualiza la *Site URL* de Supabase con tu dominio final.
+3. Despliega y actualiza la _Site URL_ de Supabase con tu dominio final.
 
 ---
 
 ## Modelo de datos
 
-| Tabla | Para qué sirve |
-| --- | --- |
-| `regions`, `communes` | Regiones y comunas de Chile (Código Único Territorial). |
-| `profiles` | Perfil público: nombre, comuna, tipo de cuenta, verificación, rol y estado (campos protegidos). |
-| `profile_private` | Teléfono (privado). |
-| `pets`, `pet_photos` | Publicaciones de mascotas de cualquier especie (adopción, perdido, encontrado) y sus fotos. |
-| `favorites` | Mascotas guardadas. |
-| `applications` | Solicitudes de adopción con el cuestionario. |
-| `followups` | Seguimientos post‑adopción. |
-| `conversations`, `messages` | Chat interno y consentimiento para compartir contacto. |
-| `blocks` | Bloqueos entre personas. |
-| `reports` | Reportes de publicaciones, personas y mensajes. |
-| `verification_requests` | Solicitudes de verificación de rescatistas y fundaciones. |
-| `notifications` | Notificaciones dentro de la app. |
-| `audit_log` | Registro de acciones de moderación. |
+| Tabla                       | Para qué sirve                                                                                  |
+| --------------------------- | ----------------------------------------------------------------------------------------------- |
+| `regions`, `communes`       | Regiones y comunas de Chile (Código Único Territorial).                                         |
+| `profiles`                  | Perfil público: nombre, comuna, tipo de cuenta, verificación, rol y estado (campos protegidos). |
+| `profile_private`           | Teléfono (privado).                                                                             |
+| `pets`, `pet_photos`        | Publicaciones de mascotas de cualquier especie (adopción, perdido, encontrado) y sus fotos.     |
+| `favorites`                 | Mascotas guardadas.                                                                             |
+| `applications`              | Solicitudes de adopción con el cuestionario.                                                    |
+| `followups`                 | Seguimientos post‑adopción.                                                                     |
+| `conversations`, `messages` | Chat interno y consentimiento para compartir contacto.                                          |
+| `blocks`                    | Bloqueos entre personas.                                                                        |
+| `reports`                   | Reportes de publicaciones, personas y mensajes.                                                 |
+| `verification_requests`     | Solicitudes de verificación de rescatistas y fundaciones.                                       |
+| `notifications`             | Notificaciones dentro de la app.                                                                |
+| `audit_log`                 | Registro de acciones de moderación.                                                             |
 
 **Flujo de una solicitud de adopción** (controlado por funciones SQL):
 
@@ -243,12 +258,12 @@ Al aprobar, la mascota pasa a “en proceso” y no recibe nuevas solicitudes. A
 
 **Buckets de Storage**
 
-| Bucket | Acceso | Límite |
-| --- | --- | --- |
-| `avatars` | Público | 2 MB |
-| `pet-photos` | Público | 5 MB |
-| `followup-photos` | Privado (adoptante y quien entregó) | 5 MB |
-| `verification-docs` | Privado (dueño y moderación) | 10 MB |
+| Bucket              | Acceso                              | Límite |
+| ------------------- | ----------------------------------- | ------ |
+| `avatars`           | Público                             | 2 MB   |
+| `pet-photos`        | Público                             | 5 MB   |
+| `followup-photos`   | Privado (adoptante y quien entregó) | 5 MB   |
+| `verification-docs` | Privado (dueño y moderación)        | 10 MB  |
 
 ---
 
@@ -265,23 +280,23 @@ npm run test:e2e
 
 La prueba E2E recorre el flujo completo: registro con confirmación por correo → bienvenida → una fundación publica con foto → búsqueda sin tildes → postulación → chat en tiempo real con advertencia de estafa → aprobación → acta → adopción concretada → seguimiento con foto privada → reporte → moderación y auditoría. También verifica rutas protegidas y que la CSP no bloquee la app.
 
-GitHub Actions (`.github/workflows/ci.yml`) ejecuta lint, verificación de tipos, build y las pruebas de base de datos en cada *pull request*.
+GitHub Actions (`.github/workflows/ci.yml`) ejecuta lint, verificación de tipos, build y las pruebas de base de datos en cada _pull request_.
 
 ---
 
 ## Scripts
 
-| Script | Descripción |
-| --- | --- |
-| `npm run dev` | Servidor de desarrollo |
-| `npm run build` / `npm start` | Build y servidor de producción |
-| `npm run lint` | ESLint |
-| `npm run typecheck` | Verificación de tipos |
-| `npm run db:start` / `db:stop` | Levantar / detener Supabase local |
-| `npm run db:reset` | Recrear la base local con migraciones y datos de ejemplo |
-| `npm run db:test` | Pruebas pgTAP |
-| `npm run db:types` | Regenerar `src/types/database.ts` desde la base local |
-| `npm run test:e2e` | Pruebas Playwright |
+| Script                         | Descripción                                              |
+| ------------------------------ | -------------------------------------------------------- |
+| `npm run dev`                  | Servidor de desarrollo                                   |
+| `npm run build` / `npm start`  | Build y servidor de producción                           |
+| `npm run lint`                 | ESLint                                                   |
+| `npm run typecheck`            | Verificación de tipos                                    |
+| `npm run db:start` / `db:stop` | Levantar / detener Supabase local                        |
+| `npm run db:reset`             | Recrear la base local con migraciones y datos de ejemplo |
+| `npm run db:test`              | Pruebas pgTAP                                            |
+| `npm run db:types`             | Regenerar `src/types/database.ts` desde la base local    |
+| `npm run test:e2e`             | Pruebas Playwright                                       |
 
 ---
 
@@ -293,4 +308,4 @@ GitHub Actions (`.github/workflows/ci.yml`) ejecuta lint, verificación de tipos
 - CAPTCHA en registro e ingreso (Turnstile) y MFA para cuentas de moderación.
 - App móvil nativa (React Native/Expo) reutilizando el mismo backend de Supabase.
 
-> **Aviso:** los textos de *Términos* y *Privacidad* son una base. Si vas a operar la plataforma públicamente, revísalos con asesoría legal.
+> **Aviso:** los textos de _Términos_ y _Privacidad_ son una base. Si vas a operar la plataforma públicamente, revísalos con asesoría legal.

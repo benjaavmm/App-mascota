@@ -24,8 +24,8 @@ export default function ResponsibleAdoptionPage() {
       <p className="text-sm font-bold text-brand-700">Guía</p>
       <h1 className="mt-1 text-3xl font-extrabold tracking-tight sm:text-4xl">Adopción responsable</h1>
       <p className="mt-3 text-lg text-stone-600">
-        Adoptar cambia una vida… y la tuya también. Esta guía te ayuda a preparar todo para que la llegada de tu nuevo
-        compañero sea un éxito.
+        Adoptar cambia una vida… y la tuya también. Esta guía te ayuda a preparar todo para que la llegada de
+        tu nuevo compañero sea un éxito.
       </p>
 
       <Card className="mt-8 p-6">
@@ -44,8 +44,8 @@ export default function ResponsibleAdoptionPage() {
         <h2>Antes de que llegue</h2>
         <ul>
           <li>
-            Prepara lo básico según su especie: cama o refugio, agua, comida y un espacio seguro. Si es un perro, suma correa,
-            arnés y un collar con placa de identificación.
+            Prepara lo básico según su especie: cama o refugio, agua, comida y un espacio seguro. Si es un
+            perro, suma correa, arnés y un collar con placa de identificación.
           </li>
           <li>Pregunta qué alimento come para hacer cualquier cambio de forma gradual.</li>
           <li>Busca un veterinario de confianza cerca de tu casa que atienda a su especie.</li>
@@ -63,72 +63,79 @@ export default function ResponsibleAdoptionPage() {
           <li>Mantén horarios fijos de comida, juego y, si es un perro, de paseo.</li>
           <li>Usa refuerzo positivo: premia lo que hace bien. Nunca castigos físicos.</li>
           <li>
-            Presenta con calma y de a poco a otros animales del hogar, siempre con supervisión (si es un perro, en un lugar
-            neutral y con correa).
+            Presenta con calma y de a poco a otros animales del hogar, siempre con supervisión (si es un
+            perro, en un lugar neutral y con correa).
           </li>
         </ul>
 
         <h2>Salud</h2>
         <ul>
           <li>
-            <strong>Vacunas:</strong> mantén al día las vacunas que correspondan a su especie, según indique tu veterinario (en
-            perros y gatos, incluida la antirrábica anual).
+            <strong>Vacunas:</strong> mantén al día las vacunas que correspondan a su especie, según indique
+            tu veterinario (en perros y gatos, incluida la antirrábica anual).
           </li>
           <li>
             <strong>Desparasitación:</strong> interna y externa, de forma periódica.
           </li>
           <li>
-            <strong>Esterilización:</strong> previene camadas no deseadas (la principal causa de animales en la calle) y
-            reduce enfermedades. Muchas municipalidades ofrecen operativos gratuitos o de bajo costo para perros y gatos.
+            <strong>Esterilización:</strong> previene camadas no deseadas (la principal causa de animales en
+            la calle) y reduce enfermedades. Muchas municipalidades ofrecen operativos gratuitos o de bajo
+            costo para perros y gatos.
           </li>
           <li>
-            <strong>Microchip y registro:</strong> la Ley N° 21.020 exige identificar a perros y gatos con microchip e
-            inscribirlos en el Registro Nacional de Mascotas (registratumascota.cl).
+            <strong>Microchip y registro:</strong> la Ley N° 21.020 exige identificar a perros y gatos con
+            microchip e inscribirlos en el Registro Nacional de Mascotas (registratumascota.cl).
           </li>
         </ul>
 
         <h2>Según la especie</h2>
         <ul>
           <li>
-            <strong>Perros:</strong> necesitan paseos diarios con correa, socialización y educación con refuerzo positivo.
+            <strong>Perros:</strong> necesitan paseos diarios con correa, socialización y educación con
+            refuerzo positivo.
           </li>
           <li>
-            <strong>Gatos:</strong> arenero limpio y lejos de su comida, rascador y mallas en ventanas y balcones: las caídas
-            son muy frecuentes.
+            <strong>Gatos:</strong> arenero limpio y lejos de su comida, rascador y mallas en ventanas y
+            balcones: las caídas son muy frecuentes.
           </li>
           <li>
-            <strong>Conejos y roedores:</strong> espacio para moverse todos los días (no solo una jaula pequeña), alimentación
-            específica para su especie (conejos, cuyes y chinchillas necesitan heno fresco a diario) y un veterinario de
-            exóticos.
+            <strong>Conejos y roedores:</strong> espacio para moverse todos los días (no solo una jaula
+            pequeña), alimentación específica para su especie (conejos, cuyes y chinchillas necesitan heno
+            fresco a diario) y un veterinario de exóticos.
           </li>
           <li>
-            <strong>Aves domésticas:</strong> una jaula amplia donde puedan abrir las alas, compañía y estímulo diario. Adopta
-            solo aves domésticas: nunca aves silvestres.
+            <strong>Aves domésticas:</strong> una jaula amplia donde puedan abrir las alas, compañía y
+            estímulo diario. Adopta solo aves domésticas: nunca aves silvestres.
           </li>
           <li>
-            <strong>Caballos:</strong> necesitan terreno y refugio adecuados, herrador y veterinario equino. Su alimentación y
-            cuidados tienen costos altos: evalúalos bien antes de adoptar.
+            <strong>Caballos:</strong> necesitan terreno y refugio adecuados, herrador y veterinario equino.
+            Su alimentación y cuidados tienen costos altos: evalúalos bien antes de adoptar.
           </li>
         </ul>
 
         <h2>Lo que dice la ley (Ley N° 21.020 “Ley Cholito”)</h2>
         <p>
-          La Ley de Tenencia Responsable de Mascotas establece que quien cuida a un animal de compañía debe, entre otras
-          cosas:
+          La Ley de Tenencia Responsable de Mascotas establece que quien cuida a un animal de compañía debe,
+          entre otras cosas:
         </p>
         <ul>
-          <li>Darle alimento, albergue y buen trato, y brindarle los cuidados veterinarios indispensables.</li>
+          <li>
+            Darle alimento, albergue y buen trato, y brindarle los cuidados veterinarios indispensables.
+          </li>
           <li>Inscribirlo en el registro e identificarlo (obligatorio para perros y gatos).</li>
           <li>No abandonarlo: el abandono está sancionado.</li>
           <li>Hacerse responsable de los daños que pueda causar.</li>
         </ul>
-        <p>Consulta en tu municipalidad las ordenanzas locales y los programas de tenencia responsable disponibles.</p>
+        <p>
+          Consulta en tu municipalidad las ordenanzas locales y los programas de tenencia responsable
+          disponibles.
+        </p>
 
         <h2>Seguimiento</h2>
         <p>
-          En Huellitas, cada adopción incluye seguimientos breves a la semana, al mes, a los 3 y a los 6 meses. Son una forma
-          de dar tranquilidad a quien rescató a la mascota y de detectar a tiempo cualquier problema. ¡Y también de compartir
-          fotos felices!
+          En Huellitas, cada adopción incluye seguimientos breves a la semana, al mes, a los 3 y a los 6
+          meses. Son una forma de dar tranquilidad a quien rescató a la mascota y de detectar a tiempo
+          cualquier problema. ¡Y también de compartir fotos felices!
         </p>
       </div>
 
