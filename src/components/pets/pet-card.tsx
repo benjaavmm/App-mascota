@@ -3,7 +3,8 @@ import Link from "next/link";
 
 import { KindBadge, StatusBadge, UrgentBadge } from "@/components/pets/pet-badges";
 import { PetPhoto } from "@/components/pets/pet-photo";
-import { SEX_LABELS, SIZE_SHORT } from "@/lib/constants";
+import { SpeciesIcon } from "@/components/pets/species-icon";
+import { SEX_LABELS, SIZE_SHORT, SPECIES_LABELS } from "@/lib/constants";
 import { getCommune } from "@/lib/chile";
 import { formatAge, formatShortDate } from "@/lib/format";
 import type { PetCardData } from "@/lib/queries";
@@ -30,9 +31,17 @@ export function PetCard({ pet, showStatus = false }: { pet: PetCardData; showSta
         </div>
       </div>
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="truncate text-lg font-extrabold text-stone-900">{pet.name}</h3>
+        <h3 className="flex items-center gap-1.5 text-lg font-extrabold text-stone-900">
+          <SpeciesIcon species={pet.species} className="h-5 w-5 shrink-0 text-brand-600" />
+          <span className="truncate">{pet.name}</span>
+          <span className="sr-only">({SPECIES_LABELS[pet.species]})</span>
+        </h3>
         <p className="mt-0.5 text-sm text-stone-600">
-          {[SEX_LABELS[pet.sex], isLostFound ? null : formatAge(pet.birth_date_estimate), SIZE_SHORT[pet.size]]
+          {[
+            SEX_LABELS[pet.sex],
+            isLostFound ? null : formatAge(pet.birth_date_estimate),
+            SIZE_SHORT[pet.size],
+          ]
             .filter(Boolean)
             .join(" · ")}
         </p>

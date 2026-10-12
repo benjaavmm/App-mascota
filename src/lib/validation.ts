@@ -177,6 +177,7 @@ export const verificationSchema = z.object({
 export const petSchema = z
   .object({
     kind: z.enum(E.listing_kind, { error: "Elige el tipo de publicación." }),
+    species: z.enum(E.species, { error: "Elige la especie." }),
     name: text(1, 40, "El nombre"),
     sex: z.enum(E.pet_sex, { error: "Elige el sexo." }),
     size: z.enum(E.pet_size, { error: "Elige el tamaño." }),

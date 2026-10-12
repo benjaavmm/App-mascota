@@ -6,12 +6,22 @@ import { useActionState, useState, useTransition, type FormEvent } from "react";
 
 import { createPet, type CreatePetState } from "@/actions/pets";
 import { PhotoPicker } from "@/components/pets/photo-picker";
+import { SpeciesIcon } from "@/components/pets/species-icon";
 import { RegionCommuneSelect } from "@/components/pets/region-commune-select";
 import { Alert, FormMessage } from "@/components/ui/alert";
 import { buttonClasses } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox, ChoiceGroup, Field, Input, Select, Textarea } from "@/components/ui/field";
-import { ENERGY_LABELS, KIND_LABELS, SEX_LABELS, SIZE_LABELS } from "@/lib/constants";
+import {
+  ENERGY_LABELS,
+  KIND_LABELS,
+  SEX_LABELS,
+  SIZE_LABELS,
+  SPECIES_HINTS,
+  SPECIES_LABELS,
+  defaultBreed,
+  sizeLabel,
+} from "@/lib/constants";
 import { ageInMonths, todayIso } from "@/lib/format";
 import { personalDataWarning } from "@/lib/safety";
 import { uploadPetPhotos } from "@/lib/upload";
@@ -19,11 +29,13 @@ import type { ActionState } from "@/lib/validation";
 import type { Enums, Tables } from "@/types/database";
 
 type Kind = Enums<"listing_kind">;
+type Species = Enums<"species">;
 
 export type EditablePet = Pick<
   Tables<"pets">,
   | "id"
   | "kind"
+  | "species"
   | "name"
   | "sex"
   | "size"
@@ -51,7 +63,15 @@ export type EditablePet = Pick<
 
 const tri = (value: boolean | null | undefined) => (value === true ? "si" : value === false ? "no" : "");
 
-function Section({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
+function Section({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
   return (
     <Card className="p-5 sm:p-6">
       <h2 className="text-lg font-extrabold">{title}</h2>
@@ -62,7 +82,13 @@ function Section({ title, description, children }: { title: string; description?
 }
 
 type Props =
-  | { mode: "create"; userId: string; defaultKind: Kind; defaultCommune?: string | null }
+  | {
+      mode: "create";
+      userId: string;
+      defaultKind: Kind;
+      defaultSpecies: Species;
+      defaultCommune?: string | null;
+    }
   | {
       mode: "edit";
       pet: EditablePet;
@@ -72,7 +98,13 @@ type Props =
 export function PetForm(props: Props) {
   const router = useRouter();
   const pet = props.mode === "edit" ? props.pet : null;
-  const [kind, setKind] = useState<Kind>(pet?.kind ?? (props.mode === "create" ? props.defaultKind : "adoption"));
+  const [kind, setKind] = useState<Kind>(
+    pet?.kind ?? (props.mode === "create" ? props.defaultKind : "adoption"),
+  );
+  const [species, setSpecies] = useState<Species>(
+    pet?.species ?? (props.mode === "create" ? props.defaultSpecies : "dog"),
+  );
+  const [breed, setBreed] = useState(pet?.breed ?? defaultBreed(species));
   const [files, setFiles] = useState<File[]>([]);
   const [description, setDescription] = useState(pet?.description ?? "");
   const [ageUnknown, setAgeUnknown] = useState(pet ? !pet.birth_date_estimate : false);
@@ -132,14 +164,19 @@ export function PetForm(props: Props) {
               defaultValue={kind}
               options={(Object.keys(KIND_LABELS) as Kind[]).map((k) => ({
                 value: k,
-                label: k === "adoption" ? "Dar en adopción" : k === "lost" ? "Se me perdió" : "Encontré un perrito",
+                label:
+                  k === "adoption"
+                    ? "Dar en adopción"
+                    : k === "lost"
+                      ? "Se me perdió"
+                      : "Encontré una mascota",
               }))}
             />
           </div>
           {kind === "found" && (
             <Alert variant="info">
-              Si encontraste un perrito, primero llévalo a una veterinaria o municipalidad para revisar si tiene microchip.
-              Puede que su familia lo esté buscando.
+              Si encontraste una mascota, primero llévala a una veterinaria o a tu municipalidad para revisar
+              si tiene microchip. Puede que su familia la esté buscando.
             </Alert>
           )}
         </Section>
@@ -148,12 +185,60 @@ export function PetForm(props: Props) {
       )}
 
       <Section title="Datos básicos">
+        <div
+          onChange={(event) => {
+            const target = event.target as HTMLInputElement;
+            if (target.name !== "species") return;
+            const next = target.value as Species;
+            // Si la raza era la sugerida por defecto, se actualiza a la de la nueva especie.
+            if (!breed.trim() || breed === defaultBreed(species)) setBreed(defaultBreed(next));
+            setSpecies(next);
+          }}
+        >
+          <ChoiceGroup
+            legend="Especie"
+            name="species"
+            required
+            errors={errors.species}
+            defaultValue={species}
+            options={(Object.keys(SPECIES_LABELS) as Species[]).map((value) => ({
+              value,
+              label: (
+                <span className="flex items-center gap-1.5">
+                  <SpeciesIcon species={value} className="h-4 w-4" />
+                  {SPECIES_LABELS[value]}
+                </span>
+              ),
+            }))}
+          />
+          {SPECIES_HINTS[species] && <p className="mt-2 text-xs text-stone-500">{SPECIES_HINTS[species]}</p>}
+        </div>
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Nombre" htmlFor="name" required errors={errors.name} hint={kind === "found" ? "Si no lo sabes, escribe “Sin nombre”." : undefined}>
-            <Input id="name" name="name" required maxLength={40} defaultValue={v.name ?? pet?.name ?? (kind === "found" ? "Sin nombre" : "")} invalid={!!errors.name} />
+          <Field
+            label="Nombre"
+            htmlFor="name"
+            required
+            errors={errors.name}
+            hint={kind === "found" ? "Si no lo sabes, escribe “Sin nombre”." : undefined}
+          >
+            <Input
+              id="name"
+              name="name"
+              required
+              maxLength={40}
+              defaultValue={v.name ?? pet?.name ?? (kind === "found" ? "Sin nombre" : "")}
+              invalid={!!errors.name}
+            />
           </Field>
           <Field label="Raza" htmlFor="breed" required errors={errors.breed}>
-            <Input id="breed" name="breed" required maxLength={60} defaultValue={v.breed ?? pet?.breed ?? "Mestizo"} />
+            <Input
+              id="breed"
+              name="breed"
+              required
+              maxLength={60}
+              value={breed}
+              onChange={(event) => setBreed(event.target.value)}
+            />
           </Field>
         </div>
         <ChoiceGroup
@@ -165,13 +250,19 @@ export function PetForm(props: Props) {
           options={Object.entries(SEX_LABELS).map(([value, label]) => ({ value, label }))}
         />
         <Field label="Tamaño" htmlFor="size" required errors={errors.size}>
-          <Select id="size" name="size" required defaultValue={v.size ?? pet?.size ?? ""} invalid={!!errors.size}>
+          <Select
+            id="size"
+            name="size"
+            required
+            defaultValue={v.size ?? pet?.size ?? ""}
+            invalid={!!errors.size}
+          >
             <option value="" disabled>
               Elige un tamaño
             </option>
-            {Object.entries(SIZE_LABELS).map(([value, label]) => (
+            {(Object.keys(SIZE_LABELS) as (keyof typeof SIZE_LABELS)[]).map((value) => (
               <option key={value} value={value}>
-                {label}
+                {sizeLabel(species, value)}
               </option>
             ))}
           </Select>
@@ -215,10 +306,22 @@ export function PetForm(props: Props) {
         </fieldset>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Color" htmlFor="color" errors={errors.color}>
-            <Input id="color" name="color" maxLength={60} placeholder="Ej: café con pecho blanco" defaultValue={v.color ?? pet?.color ?? ""} />
+            <Input
+              id="color"
+              name="color"
+              maxLength={60}
+              placeholder="Ej: café con pecho blanco"
+              defaultValue={v.color ?? pet?.color ?? ""}
+            />
           </Field>
           <Field label="Peso aproximado (kg)" htmlFor="weight_kg" errors={errors.weight_kg}>
-            <Input id="weight_kg" name="weight_kg" inputMode="decimal" placeholder="Ej: 12,5" defaultValue={v.weight_kg ?? (pet?.weight_kg ? String(pet.weight_kg).replace(".", ",") : "")} />
+            <Input
+              id="weight_kg"
+              name="weight_kg"
+              inputMode="decimal"
+              placeholder="Ej: 12,5"
+              defaultValue={v.weight_kg ?? (pet?.weight_kg ? String(pet.weight_kg).replace(".", ",") : "")}
+            />
           </Field>
         </div>
         <Field
@@ -284,14 +387,40 @@ export function PetForm(props: Props) {
 
       <Section title="Salud">
         <div className="grid gap-3 sm:grid-cols-2">
-          <Checkbox id="vaccinated" name="vaccinated" label="Vacunas al día" defaultChecked={pet?.vaccinated} />
+          <Checkbox
+            id="vaccinated"
+            name="vaccinated"
+            label="Vacunas al día"
+            defaultChecked={pet?.vaccinated}
+          />
           <Checkbox id="dewormed" name="dewormed" label="Desparasitado" defaultChecked={pet?.dewormed} />
           <Checkbox id="sterilized" name="sterilized" label="Esterilizado" defaultChecked={pet?.sterilized} />
-          <Checkbox id="microchipped" name="microchipped" label="Tiene microchip" defaultChecked={pet?.microchipped} />
-          <Checkbox id="special_needs" name="special_needs" label="Tiene necesidades especiales" defaultChecked={pet?.special_needs} />
+          <Checkbox
+            id="microchipped"
+            name="microchipped"
+            label="Tiene microchip"
+            defaultChecked={pet?.microchipped}
+          />
+          <Checkbox
+            id="special_needs"
+            name="special_needs"
+            label="Tiene necesidades especiales"
+            defaultChecked={pet?.special_needs}
+          />
         </div>
-        <Field label="Notas de salud" htmlFor="health_notes" errors={errors.health_notes} hint="Tratamientos, alergias, condiciones o cuidados especiales.">
-          <Textarea id="health_notes" name="health_notes" maxLength={1500} rows={3} defaultValue={v.health_notes ?? pet?.health_notes ?? ""} />
+        <Field
+          label="Notas de salud"
+          htmlFor="health_notes"
+          errors={errors.health_notes}
+          hint="Tratamientos, alergias, condiciones o cuidados especiales."
+        >
+          <Textarea
+            id="health_notes"
+            name="health_notes"
+            maxLength={1500}
+            rows={3}
+            defaultValue={v.health_notes ?? pet?.health_notes ?? ""}
+          />
         </Field>
       </Section>
 
@@ -302,24 +431,58 @@ export function PetForm(props: Props) {
         <RegionCommuneSelect
           required
           errors={errors.commune_code}
-          defaultCommune={v.commune_code ?? pet?.commune_code ?? (props.mode === "create" ? props.defaultCommune : null)}
+          defaultCommune={
+            v.commune_code ?? pet?.commune_code ?? (props.mode === "create" ? props.defaultCommune : null)
+          }
         />
         {!isAdoption && (
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field label="Sector de referencia" htmlFor="location_hint" errors={errors.location_hint} hint="Ej: cerca de la plaza o del metro. Sin direcciones exactas.">
-              <Input id="location_hint" name="location_hint" maxLength={120} defaultValue={v.location_hint ?? pet?.location_hint ?? ""} />
+            <Field
+              label="Sector de referencia"
+              htmlFor="location_hint"
+              errors={errors.location_hint}
+              hint="Ej: cerca de la plaza o del metro. Sin direcciones exactas."
+            >
+              <Input
+                id="location_hint"
+                name="location_hint"
+                maxLength={120}
+                defaultValue={v.location_hint ?? pet?.location_hint ?? ""}
+              />
             </Field>
-            <Field label={kind === "lost" ? "¿Cuándo se perdió?" : "¿Cuándo lo encontraste?"} htmlFor="event_date" required errors={errors.event_date}>
-              <Input id="event_date" name="event_date" type="date" required max={todayIso()} defaultValue={v.event_date ?? pet?.event_date ?? todayIso()} invalid={!!errors.event_date} />
+            <Field
+              label={kind === "lost" ? "¿Cuándo se perdió?" : "¿Cuándo lo encontraste?"}
+              htmlFor="event_date"
+              required
+              errors={errors.event_date}
+            >
+              <Input
+                id="event_date"
+                name="event_date"
+                type="date"
+                required
+                max={todayIso()}
+                defaultValue={v.event_date ?? pet?.event_date ?? todayIso()}
+                invalid={!!errors.event_date}
+              />
             </Field>
           </div>
         )}
       </Section>
 
       {isAdoption && (
-        <Section title="Requisitos para adoptar" description="Opcional. Ej: patio cerrado, compromiso de esterilización, visitas de seguimiento.">
+        <Section
+          title="Requisitos para adoptar"
+          description="Opcional. Ej: patio cerrado, compromiso de esterilización, visitas de seguimiento."
+        >
           <Field label="Requisitos" htmlFor="requirements" errors={errors.requirements}>
-            <Textarea id="requirements" name="requirements" maxLength={1500} rows={3} defaultValue={v.requirements ?? pet?.requirements ?? ""} />
+            <Textarea
+              id="requirements"
+              name="requirements"
+              maxLength={1500}
+              rows={3}
+              defaultValue={v.requirements ?? pet?.requirements ?? ""}
+            />
           </Field>
         </Section>
       )}
@@ -335,7 +498,10 @@ export function PetForm(props: Props) {
       </Section>
 
       {props.mode === "create" && (
-        <Section title="Fotos" description="Fotos claras, con buena luz y de cuerpo completo ayudan muchísimo.">
+        <Section
+          title="Fotos"
+          description="Fotos claras, con buena luz y de cuerpo completo ayudan muchísimo."
+        >
           <PhotoPicker files={files} onChange={setFiles} />
           {files.length === 0 && (
             <Checkbox
@@ -352,7 +518,11 @@ export function PetForm(props: Props) {
       <FormMessage state={state.ok && props.mode === "create" ? null : state} />
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <button type="button" onClick={() => router.back()} className={buttonClasses({ variant: "ghost", size: "lg" })}>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className={buttonClasses({ variant: "ghost", size: "lg" })}
+        >
           Cancelar
         </button>
         <button type="submit" disabled={busy} className={buttonClasses({ size: "lg" })}>
@@ -367,7 +537,11 @@ export function PetForm(props: Props) {
         </button>
       </div>
       <p className="text-center text-xs text-stone-500 sm:text-right">
-        Al publicar aceptas las <a href="/terminos" className="underline">normas de la comunidad</a>: está prohibido vender o cobrar por animales.
+        Al publicar aceptas las{" "}
+        <a href="/terminos" className="underline">
+          normas de la comunidad
+        </a>
+        : está prohibido vender o cobrar por animales.
       </p>
     </form>
   );

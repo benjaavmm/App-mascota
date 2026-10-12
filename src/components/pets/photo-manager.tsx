@@ -31,7 +31,8 @@ export function PhotoManager({ userId, petId, photos }: { userId: string; petId:
     const failed = await uploadPetPhotos(userId, petId, files, nextPosition, (done) =>
       setBusy(`Subiendo ${done}/${files.length}…`),
     );
-    if (failed.length) setError(`No pudimos subir ${failed.length} foto(s). Revisa que sean imágenes válidas.`);
+    if (failed.length)
+      setError(`No pudimos subir ${failed.length} foto(s). Revisa que sean imágenes válidas.`);
     setBusy(null);
     router.refresh();
   }
@@ -68,7 +69,13 @@ export function PhotoManager({ userId, petId, photos }: { userId: string; petId:
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
         {photos.map((photo, index) => (
           <div key={photo.id} className="relative aspect-square overflow-hidden rounded-2xl bg-stone-100">
-            <Image src={petPhotoUrl(photo.storage_path)!} alt={`Foto ${index + 1}`} fill sizes="200px" className="object-cover" />
+            <Image
+              src={petPhotoUrl(photo.storage_path)!}
+              alt={`Foto ${index + 1}`}
+              fill
+              sizes="200px"
+              className="object-cover"
+            />
             {index === 0 && (
               <span className="absolute top-2 left-2 rounded-full bg-brand-600 px-2 py-0.5 text-[11px] font-bold text-white">
                 Portada

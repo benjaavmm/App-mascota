@@ -8,7 +8,13 @@ import { PetPhoto } from "@/components/pets/pet-photo";
 import { petPhotoUrl } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
-export function PetGallery({ name, photos }: { name: string; photos: { id: string; storage_path: string }[] }) {
+export function PetGallery({
+  name,
+  photos,
+}: {
+  name: string;
+  photos: { id: string; storage_path: string }[];
+}) {
   const [index, setIndex] = useState(0);
 
   if (photos.length === 0) {
@@ -68,7 +74,13 @@ export function PetGallery({ name, photos }: { name: string; photos: { id: strin
                 i === index ? "ring-brand-500" : "opacity-70 ring-transparent hover:opacity-100",
               )}
             >
-              <Image src={petPhotoUrl(photo.storage_path)!} alt="" fill sizes="80px" className="object-cover" />
+              <Image
+                src={petPhotoUrl(photo.storage_path)!}
+                alt=""
+                fill
+                sizes="80px"
+                className="object-cover"
+              />
             </button>
           ))}
         </div>

@@ -66,7 +66,9 @@ export function RegionCommuneSelect({
           invalid={Boolean(errors?.length)}
           onChange={(event) => setCommune(event.target.value)}
         >
-          <option value="">{allowAll ? "Todas las comunas" : region ? "Elige una comuna" : "Primero elige región"}</option>
+          <option value="">
+            {allowAll ? "Todas las comunas" : region ? "Elige una comuna" : "Primero elige región"}
+          </option>
           {communes.map((c) => (
             <option key={c.code} value={c.code}>
               {c.name}

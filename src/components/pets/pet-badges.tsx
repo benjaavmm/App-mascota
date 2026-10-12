@@ -21,7 +21,8 @@ export function StatusBadge({ status, kind }: { status: Enums<"pet_status">; kin
   if (status === "available") {
     return <Badge tone="teal">{kind === "adoption" ? "Disponible" : "Buscando"}</Badge>;
   }
-  const tone = status === "adopted" || status === "reunited" ? "violet" : status === "in_process" ? "amber" : "neutral";
+  const tone =
+    status === "adopted" || status === "reunited" ? "violet" : status === "in_process" ? "amber" : "neutral";
   const icon = status === "in_process" ? <Clock className="h-3 w-3" /> : undefined;
   return (
     <Badge tone={tone} icon={icon}>

@@ -32,7 +32,10 @@ export function PhotoPicker({
     <div>
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
         {files.map((file, index) => (
-          <div key={`${file.name}-${index}`} className="group relative aspect-square overflow-hidden rounded-2xl bg-stone-100">
+          <div
+            key={`${file.name}-${index}`}
+            className="group relative aspect-square overflow-hidden rounded-2xl bg-stone-100"
+          >
             <img src={previews[index]} alt={`Foto ${index + 1}`} className="h-full w-full object-cover" />
             {index === 0 && (
               <span className="absolute top-2 left-2 rounded-full bg-brand-600 px-2 py-0.5 text-[11px] font-bold text-white">

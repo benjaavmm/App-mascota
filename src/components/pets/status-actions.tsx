@@ -20,7 +20,13 @@ export function StatusActions({
   hasApproved?: boolean;
   size?: "sm" | "md";
 }) {
-  const actions: { status: Status; label: string; title: string; description: string; variant?: "secondary" | "success" | "danger-soft" }[] = [];
+  const actions: {
+    status: Status;
+    label: string;
+    title: string;
+    description: string;
+    variant?: "secondary" | "success" | "danger-soft";
+  }[] = [];
 
   if (status === "in_process" || hasApproved) {
     return (

@@ -25,7 +25,7 @@ export default async function EditListingPage({ params }: PageProps<"/mis-public
   const { data: pet } = await supabase
     .from("pets")
     .select(
-      "id, owner_id, kind, status, hidden, hidden_reason, name, sex, size, birth_date_estimate, breed, color, weight_kg, description, energy, good_with_kids, good_with_dogs, good_with_cats, vaccinated, dewormed, sterilized, microchipped, special_needs, health_notes, requirements, commune_code, location_hint, event_date, is_urgent, pet_photos(id, storage_path, position, created_at)",
+      "id, owner_id, kind, species, status, hidden, hidden_reason, name, sex, size, birth_date_estimate, breed, color, weight_kg, description, energy, good_with_kids, good_with_dogs, good_with_cats, vaccinated, dewormed, sterilized, microchipped, special_needs, health_notes, requirements, commune_code, location_hint, event_date, is_urgent, pet_photos(id, storage_path, position, created_at)",
     )
     .eq("id", id)
     .eq("owner_id", profile.id)

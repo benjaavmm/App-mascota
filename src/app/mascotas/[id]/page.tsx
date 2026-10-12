@@ -25,6 +25,7 @@ import {
   VerifiedBadge,
 } from "@/components/pets/pet-badges";
 import { PetGallery } from "@/components/pets/pet-gallery";
+import { SpeciesIcon } from "@/components/pets/species-icon";
 import { FavoriteButton } from "@/components/pets/favorite-button";
 import { ShareButton } from "@/components/pets/share-button";
 import { ReportButton } from "@/components/safety/report-button";
@@ -35,7 +36,7 @@ import { ButtonLink } from "@/components/ui/button";
 import { Card, Container } from "@/components/ui/card";
 import { getCurrentProfile, isModerator, isOnboarded } from "@/lib/auth";
 import { placeLabel } from "@/lib/chile";
-import { ACCOUNT_TYPE_LABELS, ENERGY_LABELS, SEX_LABELS, SIZE_LABELS } from "@/lib/constants";
+import { ACCOUNT_TYPE_LABELS, ENERGY_LABELS, SEX_LABELS, SPECIES_LABELS, sizeLabel } from "@/lib/constants";
 import { daysAgoIso, formatAge, formatDate } from "@/lib/format";
 import { PET_CARD_COLUMNS, PET_DETAIL_COLUMNS, toProfileStats } from "@/lib/queries";
 import { petPhotoUrl } from "@/lib/storage";
@@ -355,13 +356,22 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
             <h2 className="text-xl font-extrabold">Sobre {pet.name}</h2>
             <p className="mt-3 leading-relaxed whitespace-pre-line text-stone-700">{pet.description}</p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <Fact
+                icon={<SpeciesIcon species={pet.species} className="h-5 w-5" />}
+                label="Especie"
+                value={SPECIES_LABELS[pet.species]}
+              />
               <Fact icon={<HeartHandshake className="h-5 w-5" />} label="Sexo" value={SEX_LABELS[pet.sex]} />
               <Fact
                 icon={<CalendarDays className="h-5 w-5" />}
                 label="Edad aproximada"
                 value={formatAge(pet.birth_date_estimate)}
               />
-              <Fact icon={<Ruler className="h-5 w-5" />} label="Tamaño" value={SIZE_LABELS[pet.size]} />
+              <Fact
+                icon={<Ruler className="h-5 w-5" />}
+                label="Tamaño"
+                value={sizeLabel(pet.species, pet.size)}
+              />
               {pet.weight_kg && (
                 <Fact
                   icon={<Scale className="h-5 w-5" />}

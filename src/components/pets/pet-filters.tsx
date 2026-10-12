@@ -9,6 +9,7 @@ import { AGE_GROUPS, SEX_LABELS, SIZE_SHORT } from "@/lib/constants";
 
 export type PetFilterValues = {
   tipo: string;
+  especie?: string;
   q?: string;
   region?: string;
   comuna?: string;
@@ -24,9 +25,19 @@ export type PetFilterValues = {
 };
 
 export function countActiveFilters(f: PetFilterValues) {
-  return [f.q, f.region, f.comuna, f.tamano, f.sexo, f.edad, f.esterilizado, f.ninos, f.perros, f.gatos, f.urgente].filter(
-    Boolean,
-  ).length;
+  return [
+    f.q,
+    f.region,
+    f.comuna,
+    f.tamano,
+    f.sexo,
+    f.edad,
+    f.esterilizado,
+    f.ninos,
+    f.perros,
+    f.gatos,
+    f.urgente,
+  ].filter(Boolean).length;
 }
 
 export function PetFilters({ values }: { values: PetFilterValues }) {
@@ -37,10 +48,15 @@ export function PetFilters({ values }: { values: PetFilterValues }) {
     <CollapsiblePanel
       title="Filtros"
       icon={<SlidersHorizontal className="h-5 w-5 text-brand-600" />}
-      badge={active > 0 ? <span className="rounded-full bg-brand-100 px-2 text-sm text-brand-800">{active}</span> : null}
+      badge={
+        active > 0 ? (
+          <span className="rounded-full bg-brand-100 px-2 text-sm text-brand-800">{active}</span>
+        ) : null
+      }
     >
       <form method="get" action="/mascotas" className="space-y-4 p-4 lg:p-5">
         <input type="hidden" name="tipo" value={values.tipo} />
+        {values.especie && <input type="hidden" name="especie" value={values.especie} />}
         <Field label="Buscar" htmlFor="f-q">
           <Input
             id="f-q"
@@ -91,11 +107,41 @@ export function PetFilters({ values }: { values: PetFilterValues }) {
             </Field>
             <fieldset className="space-y-2.5">
               <legend className="mb-1.5 text-sm font-bold text-stone-800">Características</legend>
-              <Checkbox id="f-ster" name="esterilizado" value="1" label="Esterilizado" defaultChecked={values.esterilizado} />
-              <Checkbox id="f-kids" name="ninos" value="1" label="Se lleva bien con niños" defaultChecked={values.ninos} />
-              <Checkbox id="f-pets" name="perros" value="1" label="Se lleva bien con perros" defaultChecked={values.perros} />
-              <Checkbox id="f-cats" name="gatos" value="1" label="Se lleva bien con gatos" defaultChecked={values.gatos} />
-              <Checkbox id="f-urgent" name="urgente" value="1" label="Solo casos urgentes" defaultChecked={values.urgente} />
+              <Checkbox
+                id="f-ster"
+                name="esterilizado"
+                value="1"
+                label="Esterilizado"
+                defaultChecked={values.esterilizado}
+              />
+              <Checkbox
+                id="f-kids"
+                name="ninos"
+                value="1"
+                label="Se lleva bien con niños"
+                defaultChecked={values.ninos}
+              />
+              <Checkbox
+                id="f-pets"
+                name="perros"
+                value="1"
+                label="Se lleva bien con perros"
+                defaultChecked={values.perros}
+              />
+              <Checkbox
+                id="f-cats"
+                name="gatos"
+                value="1"
+                label="Se lleva bien con gatos"
+                defaultChecked={values.gatos}
+              />
+              <Checkbox
+                id="f-urgent"
+                name="urgente"
+                value="1"
+                label="Solo casos urgentes"
+                defaultChecked={values.urgente}
+              />
             </fieldset>
           </>
         )}
@@ -111,7 +157,10 @@ export function PetFilters({ values }: { values: PetFilterValues }) {
             Aplicar filtros
           </button>
           {active > 0 && (
-            <Link href={`/mascotas?tipo=${values.tipo}`} className={buttonClasses({ variant: "ghost" })}>
+            <Link
+              href={`/mascotas?tipo=${values.tipo}${values.especie ? `&especie=${values.especie}` : ""}`}
+              className={buttonClasses({ variant: "ghost" })}
+            >
               Limpiar
             </Link>
           )}

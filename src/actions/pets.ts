@@ -14,6 +14,7 @@ import { Constants, type TablesUpdate } from "@/types/database";
 function toPetRow(d: PetInput) {
   const isAdoption = d.kind === "adoption";
   return {
+    species: d.species,
     name: d.name,
     sex: d.sex,
     size: d.size,

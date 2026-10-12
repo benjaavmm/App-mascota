@@ -8,6 +8,48 @@ export const APP_DESCRIPTION =
 export const MAX_PHOTOS = 8;
 export const PAGE_SIZE = 12;
 
+export const SPECIES_LABELS: Record<Enums<"species">, string> = {
+  dog: "Perro",
+  cat: "Gato",
+  rabbit: "Conejo",
+  rodent: "Roedor",
+  bird: "Ave",
+  horse: "Caballo",
+  other: "Otro",
+};
+
+export const SPECIES_PLURAL: Record<Enums<"species">, string> = {
+  dog: "Perros",
+  cat: "Gatos",
+  rabbit: "Conejos",
+  rodent: "Roedores",
+  bird: "Aves",
+  horse: "Caballos",
+  other: "Otros",
+};
+
+// Ayudas por especie para el formulario.
+export const SPECIES_HINTS: Record<Enums<"species">, string> = {
+  dog: "",
+  cat: "",
+  rabbit: "",
+  rodent: "Cuyes, hámsters, ratitas, chinchillas…",
+  bird: "Solo aves domésticas (canarios, periquitos, gallinas…). La fauna silvestre está prohibida.",
+  horse: "Caballos, ponis o burros rescatados.",
+  other: "Otros animales domésticos o de granja. No se permite fauna silvestre ni exótica.",
+};
+
+// Slugs en español para la URL (?especie=gatos).
+export const SPECIES_SLUGS: Record<string, Enums<"species">> = {
+  perros: "dog",
+  gatos: "cat",
+  conejos: "rabbit",
+  roedores: "rodent",
+  aves: "bird",
+  caballos: "horse",
+  otros: "other",
+};
+
 export const KIND_LABELS: Record<Enums<"listing_kind">, string> = {
   adoption: "En adopción",
   lost: "Perdido",
@@ -60,7 +102,7 @@ export const ENERGY_LABELS: Record<Enums<"energy_level">, string> = {
 };
 
 export const AGE_GROUPS = {
-  cachorro: { label: "Cachorro (menos de 1 año)", minYears: 0, maxYears: 1 },
+  cachorro: { label: "Cría o cachorro (menos de 1 año)", minYears: 0, maxYears: 1 },
   joven: { label: "Joven (1 a 3 años)", minYears: 1, maxYears: 3 },
   adulto: { label: "Adulto (3 a 8 años)", minYears: 3, maxYears: 8 },
   senior: { label: "Senior (más de 8 años)", minYears: 8, maxYears: 30 },
@@ -142,3 +184,13 @@ export const WELLBEING_LABELS: Record<number, string> = {
   4: "Bien",
   5: "¡Feliz!",
 };
+
+// Los rangos de peso solo tienen sentido para perros.
+export function sizeLabel(species: Enums<"species">, size: Enums<"pet_size">) {
+  return species === "dog" ? SIZE_LABELS[size] : SIZE_SHORT[size];
+}
+
+// Raza sugerida al publicar, según la especie.
+export function defaultBreed(species: Enums<"species">) {
+  return species === "dog" || species === "cat" || species === "rabbit" ? "Mestizo" : "Sin especificar";
+}

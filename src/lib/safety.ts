@@ -5,7 +5,10 @@ const RISKY =
   /\b(transferenci\w*|transfier\w*|deposit\w*|cuenta ?rut|cuenta corriente|cuenta vista|numero de cuenta|pag(o|os|ar|as|ues|ue|ame)|abon(o|ar|as)|cobr(o|ar|as)|precio|vend(o|emos|er)|venta|lucas|pesos|clp|western union|paypal|mercado ?pago|webpay|tarjeta|clave|codigo|cvv|flete|reserva\w*)\b|\$ ?\d/i;
 
 export function normalizeText(text: string) {
-  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 }
 
 export function looksRisky(text: string) {
