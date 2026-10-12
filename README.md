@@ -195,7 +195,7 @@ Los correos (confirmación de cuenta, recuperar contraseña) llegan a **Mailpit*
 
    > ⚠️ No ejecutes `supabase/seed.sql` en producción.
 
-   _Alternativa sin CLI:_ copia el contenido de cada archivo de `supabase/migrations/` (en orden) en **SQL Editor** y ejecútalo.
+   _Alternativa sin computador (desde el celular):_ abre `supabase/instalar_todo.sql` en GitHub, toca **Raw**, copia todo y pégalo en **SQL Editor → New query → Run** de un proyecto **nuevo**. Es la unión de todas las migraciones en orden (se regenera con `npm run db:bundle`).
 
 3. **Autenticación** (Dashboard → Authentication):
    - **URL Configuration** → _Site URL_: `https://tu-dominio.cl`. _Redirect URLs_: `https://tu-dominio.cl/**` (y `http://localhost:3000/**` para desarrollo).
