@@ -1,0 +1,484 @@
+import {
+  ArrowLeft,
+  CalendarDays,
+  Check,
+  ClipboardList,
+  HeartHandshake,
+  MapPin,
+  Pencil,
+  Ruler,
+  Scale,
+  X,
+} from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { cache, type ReactNode } from "react";
+
+import { ContactButton } from "@/components/dogs/contact-button";
+import { DogGrid } from "@/components/dogs/dog-card";
+import {
+  HiddenBadge,
+  KindBadge,
+  StatusBadge,
+  UrgentBadge,
+  VerifiedBadge,
+} from "@/components/dogs/dog-badges";
+import { DogGallery } from "@/components/dogs/dog-gallery";
+import { FavoriteButton } from "@/components/dogs/favorite-button";
+import { ShareButton } from "@/components/dogs/share-button";
+import { ReportButton } from "@/components/safety/report-button";
+import { SafetyTips } from "@/components/safety/safety-tips";
+import { Alert } from "@/components/ui/alert";
+import { Avatar } from "@/components/ui/avatar";
+import { ButtonLink } from "@/components/ui/button";
+import { Card, Container } from "@/components/ui/card";
+import { getCurrentProfile, isModerator, isOnboarded } from "@/lib/auth";
+import { placeLabel } from "@/lib/chile";
+import { ACCOUNT_TYPE_LABELS, ENERGY_LABELS, SEX_LABELS, SIZE_LABELS } from "@/lib/constants";
+import { daysAgoIso, formatAge, formatDate } from "@/lib/format";
+import { DOG_CARD_COLUMNS, DOG_DETAIL_COLUMNS, toProfileStats } from "@/lib/queries";
+import { dogPhotoUrl } from "@/lib/storage";
+import { createClient } from "@/lib/supabase/server";
+import { isUuid } from "@/lib/utils";
+
+const getDog = cache(async (id: string) => {
+  if (!isUuid(id)) return null;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("dogs")
+    .select(
+      `${DOG_DETAIL_COLUMNS}, dog_photos(id, storage_path, position, created_at), owner:profiles!dogs_owner_id_fkey(id, display_name, avatar_path, account_type, verification_status, commune_code, created_at)`,
+    )
+    .eq("id", id)
+    .order("position", { referencedTable: "dog_photos" })
+    .order("created_at", { referencedTable: "dog_photos" })
+    .maybeSingle();
+  return data;
+});
+
+export async function generateMetadata({ params }: PageProps<"/perritos/[id]">): Promise<Metadata> {
+  const { id } = await params;
+  const dog = await getDog(id);
+  if (!dog) return { title: "Publicación no encontrada" };
+  const verb = dog.kind === "adoption" ? "en adopción" : dog.kind === "lost" ? "perdido" : "encontrado";
+  const title = `${dog.name}, ${verb} en ${placeLabel(dog.commune_code)}`;
+  const image = dogPhotoUrl(dog.cover_path);
+  return {
+    title,
+    description: dog.description.slice(0, 160),
+    openGraph: { title, description: dog.description.slice(0, 160), images: image ? [image] : undefined },
+  };
+}
+
+function YesNo({ value }: { value: boolean | null }) {
+  if (value === null) return <span className="text-stone-400">Sin información</span>;
+  return value ? (
+    <span className="inline-flex items-center gap-1 font-bold text-teal-700">
+      <Check className="h-4 w-4" /> Sí
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1 font-bold text-rose-600">
+      <X className="h-4 w-4" /> No
+    </span>
+  );
+}
+
+function Fact({ icon, label, value }: { icon: ReactNode; label: string; value: ReactNode }) {
+  return (
+    <div className="flex items-start gap-3 rounded-2xl bg-stone-50 p-3">
+      <span className="mt-0.5 text-brand-600">{icon}</span>
+      <div className="min-w-0">
+        <p className="text-xs font-bold tracking-wide text-stone-500 uppercase">{label}</p>
+        <p className="font-semibold text-stone-800">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function HealthItem({ ok, label }: { ok: boolean; label: string }) {
+  return (
+    <li className="flex items-center gap-2">
+      {ok ? (
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-100 text-teal-700">
+          <Check className="h-4 w-4" />
+        </span>
+      ) : (
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-stone-100 text-stone-400">
+          <X className="h-4 w-4" />
+        </span>
+      )}
+      <span className={ok ? "font-semibold text-stone-800" : "text-stone-500"}>{label}</span>
+    </li>
+  );
+}
+
+export default async function DogPage({ params }: PageProps<"/perritos/[id]">) {
+  const { id } = await params;
+  const dog = await getDog(id);
+  if (!dog) notFound();
+
+  const supabase = await createClient();
+  const viewer = await getCurrentProfile();
+  const isOwner = viewer?.id === dog.owner_id;
+  const owner = dog.owner;
+  const photos = dog.dog_photos ?? [];
+  const isAdoption = dog.kind === "adoption";
+  const loginNext = `/perritos/${dog.id}`;
+
+  const [{ data: stats }, favoriteRes, applicationRes, ownerAppsRes, matchesRes] = await Promise.all([
+    supabase.rpc("get_profile_stats", { p_user_id: dog.owner_id }),
+    viewer && !isOwner
+      ? supabase
+          .from("favorites")
+          .select("dog_id")
+          .eq("dog_id", dog.id)
+          .eq("user_id", viewer.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    viewer && !isOwner && isAdoption
+      ? supabase
+          .from("applications")
+          .select("id, status")
+          .eq("dog_id", dog.id)
+          .eq("applicant_id", viewer.id)
+          .in("status", ["pending", "reviewing", "approved", "completed"])
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    isOwner && isAdoption
+      ? supabase
+          .from("applications")
+          .select("id", { count: "exact", head: true })
+          .eq("dog_id", dog.id)
+          .in("status", ["pending", "reviewing", "approved"])
+      : Promise.resolve({ count: 0 }),
+    isOwner && dog.kind === "lost" && dog.status === "available"
+      ? supabase
+          .from("dogs")
+          .select(DOG_CARD_COLUMNS)
+          .eq("kind", "found")
+          .eq("status", "available")
+          .eq("hidden", false)
+          .eq("region_code", dog.region_code ?? "")
+          .eq("size", dog.size)
+          .gte("created_at", daysAgoIso(120))
+          .order("created_at", { ascending: false })
+          .limit(6)
+      : Promise.resolve({ data: null }),
+  ]);
+
+  const ownerStats = toProfileStats(stats);
+  const isFavorite = Boolean(favoriteRes.data);
+  const myApplication = applicationRes.data;
+  const activeApplications = "count" in ownerAppsRes ? (ownerAppsRes.count ?? 0) : 0;
+  const matches = matchesRes.data ?? [];
+  const viewerReady = isOnboarded(viewer);
+
+  const actionTitle = isAdoption
+    ? `¿Quieres adoptar a ${dog.name}?`
+    : dog.kind === "lost"
+      ? `¿Viste a ${dog.name}?`
+      : "¿Es tu perrito o sabes de quién es?";
+
+  // Tarjeta con nombre y acciones: en móvil va bajo la galería; en escritorio, en la columna lateral.
+  const actionCard = (
+    <Card className="p-5 sm:p-6">
+      <div className="mb-2 flex flex-wrap gap-1.5">
+        <KindBadge kind={dog.kind} />
+        <StatusBadge status={dog.status} kind={dog.kind} />
+        {dog.is_urgent && dog.status === "available" && <UrgentBadge />}
+        {dog.hidden && <HiddenBadge />}
+      </div>
+      <h1 className="text-3xl font-extrabold tracking-tight">{dog.name}</h1>
+      <p className="mt-2 flex items-center gap-1.5 text-stone-600">
+        <MapPin className="h-4 w-4 shrink-0" />
+        {placeLabel(dog.commune_code)}
+        {dog.location_hint && <span className="text-stone-500"> · {dog.location_hint}</span>}
+      </p>
+      {!isAdoption && dog.event_date && (
+        <p className="mt-1 flex items-center gap-1.5 text-sm text-stone-600">
+          <CalendarDays className="h-4 w-4" />
+          {dog.kind === "lost" ? "Se perdió el " : "Encontrado el "}
+          {formatDate(dog.event_date)}
+        </p>
+      )}
+      <p className="mt-1 text-xs text-stone-400">Publicado el {formatDate(dog.created_at)}</p>
+
+      <div className="mt-5 space-y-2.5">
+        {isOwner ? (
+          <>
+            <ButtonLink href={`/mis-publicaciones/${dog.id}`} size="lg" className="w-full">
+              <Pencil className="h-5 w-5" />
+              Editar publicación
+            </ButtonLink>
+            {isAdoption && (
+              <ButtonLink
+                href={`/solicitudes?vista=recibidas&perrito=${dog.id}`}
+                variant="secondary"
+                size="lg"
+                className="w-full"
+              >
+                <ClipboardList className="h-5 w-5" />
+                Ver solicitudes {activeApplications > 0 && `(${activeApplications})`}
+              </ButtonLink>
+            )}
+          </>
+        ) : (
+          <>
+            <p className="font-bold text-stone-800">{actionTitle}</p>
+            {isAdoption && myApplication ? (
+              <ButtonLink href={`/solicitudes/${myApplication.id}`} size="lg" className="w-full">
+                <ClipboardList className="h-5 w-5" />
+                Ver mi solicitud
+              </ButtonLink>
+            ) : isAdoption && dog.status === "available" && !dog.hidden ? (
+              <ButtonLink
+                href={
+                  viewer
+                    ? `/perritos/${dog.id}/postular`
+                    : `/ingresar?next=${encodeURIComponent(`/perritos/${dog.id}/postular`)}`
+                }
+                size="lg"
+                className="w-full"
+              >
+                <HeartHandshake className="h-5 w-5" />
+                Quiero adoptarlo
+              </ButtonLink>
+            ) : null}
+            {dog.status !== "archived" &&
+              !dog.hidden &&
+              (viewer ? (
+                viewerReady ? (
+                  <ContactButton
+                    dogId={dog.id}
+                    variant={isAdoption ? "secondary" : "primary"}
+                    label={
+                      isAdoption
+                        ? "Hacer una pregunta"
+                        : dog.kind === "lost"
+                          ? "Tengo información"
+                          : "Es mío / sé de quién es"
+                    }
+                  />
+                ) : (
+                  <ButtonLink
+                    href={`/bienvenida?next=${encodeURIComponent(loginNext)}`}
+                    variant="secondary"
+                    size="lg"
+                    className="w-full"
+                  >
+                    Completa tu perfil para escribir
+                  </ButtonLink>
+                )
+              ) : (
+                <ButtonLink
+                  href={`/ingresar?next=${encodeURIComponent(loginNext)}`}
+                  variant="secondary"
+                  size="lg"
+                  className="w-full"
+                >
+                  Ingresa para escribir
+                </ButtonLink>
+              ))}
+          </>
+        )}
+        <div className="flex items-center gap-2 pt-1">
+          {!isOwner && <FavoriteButton dogId={dog.id} initial={isFavorite} signedIn={Boolean(viewer)} />}
+          <ShareButton
+            title={`${dog.name} · Huellitas`}
+            text={
+              isAdoption
+                ? `${dog.name} busca hogar en ${placeLabel(dog.commune_code)}. ¡Ayuda compartiendo!`
+                : dog.kind === "lost"
+                  ? `Se busca a ${dog.name} en ${placeLabel(dog.commune_code)}. ¡Ayuda compartiendo!`
+                  : `Encontraron a este perrito en ${placeLabel(dog.commune_code)}. ¿Lo conoces?`
+            }
+          />
+          {!isOwner && (
+            <div className="ml-auto">
+              <ReportButton
+                targetType="dog"
+                targetId={dog.id}
+                signedIn={Boolean(viewer)}
+                loginNext={loginNext}
+                variant="link"
+                className="text-xs"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </Card>
+  );
+
+  return (
+    <Container className="py-6 sm:py-10">
+      <Link
+        href={`/perritos?tipo=${isAdoption ? "adopcion" : dog.kind === "lost" ? "perdidos" : "encontrados"}`}
+        className="mb-5 inline-flex items-center gap-1.5 text-sm font-bold text-stone-600 hover:text-stone-900"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Volver a la búsqueda
+      </Link>
+
+      {dog.hidden && (isOwner || isModerator(viewer)) && (
+        <Alert variant="danger" title="Esta publicación está oculta" className="mb-6">
+          {dog.hidden_reason ?? "Moderación la está revisando."} Si crees que es un error, escríbenos desde tu
+          perfil.
+        </Alert>
+      )}
+      {dog.status === "adopted" && (
+        <Alert variant="success" title={`¡${dog.name} ya encontró un hogar!`} className="mb-6">
+          Gracias a todas las personas que ayudaron. Hay muchos más perritos esperando una familia.
+        </Alert>
+      )}
+      {dog.status === "reunited" && (
+        <Alert variant="success" title={`¡${dog.name} está de vuelta en casa!`} className="mb-6">
+          Gracias por compartir y ayudar a encontrarlo.
+        </Alert>
+      )}
+      {(dog.status === "paused" || dog.status === "archived") && (
+        <Alert variant="info" className="mb-6">
+          Esta publicación está {dog.status === "paused" ? "pausada" : "archivada"} y no aparece en las
+          búsquedas.
+        </Alert>
+      )}
+
+      <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
+        <div className="min-w-0 space-y-6">
+          <DogGallery name={dog.name} photos={photos} />
+          <div className="lg:hidden">{actionCard}</div>
+
+          <Card className="p-5 sm:p-6">
+            <h2 className="text-xl font-extrabold">Sobre {dog.name}</h2>
+            <p className="mt-3 leading-relaxed whitespace-pre-line text-stone-700">{dog.description}</p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <Fact icon={<HeartHandshake className="h-5 w-5" />} label="Sexo" value={SEX_LABELS[dog.sex]} />
+              <Fact
+                icon={<CalendarDays className="h-5 w-5" />}
+                label="Edad aproximada"
+                value={formatAge(dog.birth_date_estimate)}
+              />
+              <Fact icon={<Ruler className="h-5 w-5" />} label="Tamaño" value={SIZE_LABELS[dog.size]} />
+              {dog.weight_kg && (
+                <Fact
+                  icon={<Scale className="h-5 w-5" />}
+                  label="Peso aproximado"
+                  value={`${String(dog.weight_kg).replace(".", ",")} kg`}
+                />
+              )}
+              <Fact icon={<ClipboardList className="h-5 w-5" />} label="Raza" value={dog.breed} />
+              {dog.color && (
+                <Fact icon={<ClipboardList className="h-5 w-5" />} label="Color" value={dog.color} />
+              )}
+            </div>
+          </Card>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="p-5 sm:p-6">
+              <h2 className="text-lg font-extrabold">Salud</h2>
+              <ul className="mt-4 space-y-2.5 text-sm">
+                <HealthItem ok={dog.vaccinated} label="Vacunas al día" />
+                <HealthItem ok={dog.dewormed} label="Desparasitado" />
+                <HealthItem ok={dog.sterilized} label="Esterilizado" />
+                <HealthItem ok={dog.microchipped} label="Con microchip" />
+              </ul>
+              {dog.special_needs && (
+                <p className="mt-4 rounded-xl bg-amber-50 p-3 text-sm font-semibold text-amber-900">
+                  Tiene necesidades especiales
+                </p>
+              )}
+              {dog.health_notes && (
+                <p className="mt-3 text-sm leading-relaxed whitespace-pre-line text-stone-600">
+                  {dog.health_notes}
+                </p>
+              )}
+            </Card>
+            <Card className="p-5 sm:p-6">
+              <h2 className="text-lg font-extrabold">Personalidad</h2>
+              <dl className="mt-4 space-y-2.5 text-sm">
+                <div className="flex justify-between gap-4">
+                  <dt className="text-stone-600">Energía</dt>
+                  <dd className="font-bold">{dog.energy ? ENERGY_LABELS[dog.energy] : "Sin información"}</dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt className="text-stone-600">Con niños</dt>
+                  <dd>
+                    <YesNo value={dog.good_with_kids} />
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt className="text-stone-600">Con otros perros</dt>
+                  <dd>
+                    <YesNo value={dog.good_with_dogs} />
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <dt className="text-stone-600">Con gatos</dt>
+                  <dd>
+                    <YesNo value={dog.good_with_cats} />
+                  </dd>
+                </div>
+              </dl>
+            </Card>
+          </div>
+
+          {isAdoption && dog.requirements && (
+            <Card className="p-5 sm:p-6">
+              <h2 className="text-lg font-extrabold">Requisitos para adoptar</h2>
+              <p className="mt-3 text-sm leading-relaxed whitespace-pre-line text-stone-700">
+                {dog.requirements}
+              </p>
+            </Card>
+          )}
+
+          {matches.length > 0 && (
+            <section>
+              <h2 className="mb-1 text-xl font-extrabold">Posibles coincidencias</h2>
+              <p className="mb-4 text-sm text-stone-600">
+                Perritos encontrados recientemente en tu región con un tamaño parecido.
+              </p>
+              <DogGrid dogs={matches} />
+            </section>
+          )}
+        </div>
+
+        <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
+          <div className="hidden lg:block">{actionCard}</div>
+
+          {owner && (
+            <Card className="p-5">
+              <p className="mb-3 text-xs font-bold tracking-wide text-stone-500 uppercase">Publicado por</p>
+              <Link href={`/usuarios/${owner.id}`} className="flex items-center gap-3">
+                <Avatar name={owner.display_name} path={owner.avatar_path} size="md" />
+                <div className="min-w-0">
+                  <p className="truncate font-extrabold text-stone-900 hover:underline">
+                    {owner.display_name}
+                  </p>
+                  <p className="text-sm text-stone-500">{ACCOUNT_TYPE_LABELS[owner.account_type]}</p>
+                  {owner.verification_status === "verified" && <VerifiedBadge />}
+                </div>
+              </Link>
+              <dl className="mt-4 grid grid-cols-2 gap-3 text-center">
+                <div className="rounded-xl bg-stone-50 p-2.5">
+                  <dt className="text-xs text-stone-500">Adopciones logradas</dt>
+                  <dd className="text-lg font-extrabold">{ownerStats.adoptions_given}</dd>
+                </div>
+                <div className="rounded-xl bg-stone-50 p-2.5">
+                  <dt className="text-xs text-stone-500">En Huellitas desde</dt>
+                  <dd className="text-sm font-extrabold">
+                    {formatDate(owner.created_at).replace(/^\d+ de /, "")}
+                  </dd>
+                </div>
+              </dl>
+            </Card>
+          )}
+
+          <SafetyTips kind={dog.kind} />
+        </aside>
+      </div>
+    </Container>
+  );
+}

@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+
+  --color-cream: #fffaf3;
+  --color-brand-50: #fff7ed;
+  --color-brand-100: #ffedd5;
+  --color-brand-200: #fed7aa;
+  --color-brand-300: #fdba74;
+  --color-brand-400: #fb923c;
+  --color-brand-500: #f97316;
+  --color-brand-600: #ea580c;
+  --color-brand-700: #c2410c;
+  --color-brand-800: #9a3412;
+  --color-brand-900: #7c2d12;
+
+  --radius-card: 1.25rem;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-cream text-stone-900 antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+
+  ::selection {
+    @apply bg-brand-200;
+  }
+}
+
+@layer components {
+  .prose-huellitas h2 {
+    @apply mt-10 mb-3 text-2xl font-extrabold text-stone-900;
+  }
+  .prose-huellitas h3 {
+    @apply mt-6 mb-2 text-lg font-bold text-stone-900;
+  }
+  .prose-huellitas p {
+    @apply my-3 leading-relaxed text-stone-700;
+  }
+  .prose-huellitas ul {
+    @apply my-3 list-disc space-y-1.5 pl-6 text-stone-700;
+  }
+  .prose-huellitas ol {
+    @apply my-3 list-decimal space-y-1.5 pl-6 text-stone-700;
+  }
+  .prose-huellitas a {
+    @apply font-semibold text-brand-700 underline underline-offset-2;
+  }
+  .prose-huellitas strong {
+    @apply text-stone-900;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}
