@@ -2,20 +2,20 @@
 -- Datos de ejemplo SOLO para desarrollo local (npx supabase db reset).
 -- Nunca ejecutes este archivo en producción.
 --
--- Cuentas de prueba (contraseña para todas: Huellitas2026):
---   admin@huellitas.test        Administración
---   fundacion@huellitas.test    Fundación verificada
---   rescatista@huellitas.test   Rescatista independiente
---   adoptante@huellitas.test    Persona que quiere adoptar
+-- Cuentas de prueba (contraseña para todas: AyudaPatitas2026):
+--   admin@ayudapatitas.test        Administración
+--   fundacion@ayudapatitas.test    Fundación verificada
+--   rescatista@ayudapatitas.test   Rescatista independiente
+--   adoptante@ayudapatitas.test    Persona que quiere adoptar
 -- =============================================================================
 
 do $$
 declare
   v_users jsonb := '[
-    {"id": "a0000000-0000-4000-8000-000000000001", "email": "admin@huellitas.test", "name": "Equipo Huellitas"},
-    {"id": "a0000000-0000-4000-8000-000000000002", "email": "fundacion@huellitas.test", "name": "Fundación Patitas Felices"},
-    {"id": "a0000000-0000-4000-8000-000000000003", "email": "rescatista@huellitas.test", "name": "Camila Rescata"},
-    {"id": "a0000000-0000-4000-8000-000000000004", "email": "adoptante@huellitas.test", "name": "Diego Adopta"}
+    {"id": "a0000000-0000-4000-8000-000000000001", "email": "admin@ayudapatitas.test", "name": "Equipo AyudaPatitas"},
+    {"id": "a0000000-0000-4000-8000-000000000002", "email": "fundacion@ayudapatitas.test", "name": "Fundación Patitas Felices"},
+    {"id": "a0000000-0000-4000-8000-000000000003", "email": "rescatista@ayudapatitas.test", "name": "Camila Rescata"},
+    {"id": "a0000000-0000-4000-8000-000000000004", "email": "adoptante@ayudapatitas.test", "name": "Diego Adopta"}
   ]';
   v_user jsonb;
 begin
@@ -28,7 +28,7 @@ begin
       email_change_token_current, phone_change, phone_change_token, reauthentication_token
     ) values (
       '00000000-0000-0000-0000-000000000000', (v_user ->> 'id')::uuid, 'authenticated', 'authenticated',
-      v_user ->> 'email', extensions.crypt('Huellitas2026', extensions.gen_salt('bf')), now(),
+      v_user ->> 'email', extensions.crypt('AyudaPatitas2026', extensions.gen_salt('bf')), now(),
       '{"provider": "email", "providers": ["email"]}',
       jsonb_build_object('display_name', v_user ->> 'name'),
       now(), now(), '', '', '', '', '', '', '', ''

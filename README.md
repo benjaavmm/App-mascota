@@ -1,4 +1,6 @@
-# 🐾 Huellitas — Adopción responsable de mascotas de todas las especies
+<p align="center"><img src="public/brand/logo.png" alt="AyudaPatitas" width="420"></p>
+
+# AyudaPatitas — Adopción responsable de mascotas de todas las especies
 
 Aplicación web (instalable en el celular como app) para **adoptar, publicar y reencontrar mascotas de todas las especies** (perros, gatos, conejos, roedores, aves domésticas, caballos y otros animales domésticos) en todo Chile, con foco en la **seguridad de las personas y de los animales**. La fauna silvestre o exótica no está permitida.
 
@@ -166,14 +168,14 @@ npm run dev
 
 Abre http://localhost:3000.
 
-**Cuentas de prueba** (contraseña `Huellitas2026`, solo en local):
+**Cuentas de prueba** (contraseña `AyudaPatitas2026`, solo en local):
 
 | Correo                      | Rol                                |
 | --------------------------- | ---------------------------------- |
-| `admin@huellitas.test`      | Administración (acceso a `/admin`) |
-| `fundacion@huellitas.test`  | Fundación verificada               |
-| `rescatista@huellitas.test` | Rescatista independiente           |
-| `adoptante@huellitas.test`  | Persona que quiere adoptar         |
+| `admin@ayudapatitas.test`      | Administración (acceso a `/admin`) |
+| `fundacion@ayudapatitas.test`  | Fundación verificada               |
+| `rescatista@ayudapatitas.test` | Rescatista independiente           |
+| `adoptante@ayudapatitas.test`  | Persona que quiere adoptar         |
 
 Los correos (confirmación de cuenta, recuperar contraseña) llegan a **Mailpit**: http://127.0.0.1:54324.
 

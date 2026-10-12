@@ -57,7 +57,7 @@ export function StatusActions({
     actions.push({
       status: "adopted",
       label: "Fue adoptado por otro medio",
-      title: `¿${name} fue adoptado fuera de Huellitas?`,
+      title: `¿${name} fue adoptado fuera de AyudaPatitas?`,
       description: "Las solicitudes abiertas se cerrarán y se avisará a cada postulante.",
     });
   }

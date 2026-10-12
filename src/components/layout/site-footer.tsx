@@ -22,7 +22,7 @@ const COLUMNS = [
     ],
   },
   {
-    title: "Huellitas",
+    title: "AyudaPatitas",
     links: [
       { href: "/publicar", label: "Publicar una mascota" },
       { href: "/terminos", label: "Términos y normas" },

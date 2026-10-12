@@ -17,7 +17,7 @@ export default function TermsPage() {
         Este texto es una base. Si operas {APP_NAME} públicamente, revísalo con asesoría legal.
       </Alert>
 
-      <div className="prose-huellitas mt-4">
+      <div className="prose-app mt-4">
         <h2>1. Qué es {APP_NAME}</h2>
         <p>
           {APP_NAME} es una plataforma gratuita que conecta a personas, rescatistas y fundaciones para dar en

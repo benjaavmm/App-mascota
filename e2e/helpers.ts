@@ -4,10 +4,10 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 export const MAILPIT_URL = process.env.MAILPIT_URL ?? "http://127.0.0.1:54324";
-export const SEED_PASSWORD = "Huellitas2026";
+export const SEED_PASSWORD = "AyudaPatitas2026";
 export const SEED = {
-  admin: "admin@huellitas.test",
-  shelter: "fundacion@huellitas.test",
+  admin: "admin@ayudapatitas.test",
+  shelter: "fundacion@ayudapatitas.test",
 };
 
 // Busca en Mailpit (correo local de Supabase) el último enlace de confirmación enviado a `email`.

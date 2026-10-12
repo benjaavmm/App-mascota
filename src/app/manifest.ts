@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { APP_DESCRIPTION, APP_NAME } from "@/lib/constants";
 
-// Permite instalar Huellitas en el celular como una app (PWA).
+// Permite instalar AyudaPatitas en el celular como una app (PWA).
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: `${APP_NAME} · Adopción responsable`,

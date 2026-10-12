@@ -247,19 +247,19 @@ otp_expiry = 3600
 # Plantillas de correo en español. Usan token_hash para que el enlace funcione
 # aunque se abra en otro dispositivo o navegador.
 [auth.email.template.confirmation]
-subject = "Confirma tu cuenta en Huellitas"
+subject = "Confirma tu cuenta en AyudaPatitas"
 content_path = "./supabase/templates/confirmation.html"
 
 [auth.email.template.recovery]
-subject = "Recupera tu contraseña de Huellitas"
+subject = "Recupera tu contraseña de AyudaPatitas"
 content_path = "./supabase/templates/recovery.html"
 
 [auth.email.template.email_change]
-subject = "Confirma tu nuevo correo en Huellitas"
+subject = "Confirma tu nuevo correo en AyudaPatitas"
 content_path = "./supabase/templates/email_change.html"
 
 [auth.email.template.magic_link]
-subject = "Tu enlace para ingresar a Huellitas"
+subject = "Tu enlace para ingresar a AyudaPatitas"
 content_path = "./supabase/templates/magic_link.html"
 
 # Uncomment to customize notification email template

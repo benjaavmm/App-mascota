@@ -40,7 +40,7 @@ export default function ResponsibleAdoptionPage() {
         </ul>
       </Card>
 
-      <div className="prose-huellitas mt-4">
+      <div className="prose-app mt-4">
         <h2>Antes de que llegue</h2>
         <ul>
           <li>
@@ -133,7 +133,7 @@ export default function ResponsibleAdoptionPage() {
 
         <h2>Seguimiento</h2>
         <p>
-          En Huellitas, cada adopción incluye seguimientos breves a la semana, al mes, a los 3 y a los 6
+          En AyudaPatitas, cada adopción incluye seguimientos breves a la semana, al mes, a los 3 y a los 6
           meses. Son una forma de dar tranquilidad a quien rescató a la mascota y de detectar a tiempo
           cualquier problema. ¡Y también de compartir fotos felices!
         </p>

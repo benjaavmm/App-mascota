@@ -231,7 +231,7 @@ export function ChatRoom({
           <form onSubmit={send} className="space-y-2">
             {risky && (
               <Alert variant="warning">
-                Parece que hablas de dinero, cuentas o códigos. En Huellitas la adopción es gratuita: nunca transfieras
+                Parece que hablas de dinero, cuentas o códigos. En AyudaPatitas la adopción es gratuita: nunca transfieras
                 dinero por adelantado ni compartas códigos de verificación.
               </Alert>
             )}

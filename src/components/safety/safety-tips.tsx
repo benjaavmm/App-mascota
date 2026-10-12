@@ -6,7 +6,7 @@ import type { Enums } from "@/types/database";
 const TIPS: Record<Enums<"listing_kind">, string[]> = {
   adoption: [
     "La adopción es gratuita. Nunca pagues “reservas”, “traslados” ni “vacunas” por adelantado.",
-    "Conversa por el chat de Huellitas: tus datos quedan protegidos.",
+    "Conversa por el chat de AyudaPatitas: tus datos quedan protegidos.",
     "Conoce a la mascota en persona, en un lugar público o acompañado/a.",
     "Firma el acta de adopción y acuerda los seguimientos.",
   ],

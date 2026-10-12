@@ -27,7 +27,7 @@ const GOLDEN_RULES: { icon: LucideIcon; title: string; text: string }[] = [
   {
     icon: Ban,
     title: "Adoptar es gratis",
-    text: "Nunca pagues “reservas”, “traslados”, “vacunas” ni “gastos” por adelantado. Cobrar por una mascota está prohibido en Huellitas.",
+    text: "Nunca pagues “reservas”, “traslados”, “vacunas” ni “gastos” por adelantado. Cobrar por una mascota está prohibido en AyudaPatitas.",
   },
   {
     icon: MessageCircle,
@@ -99,7 +99,7 @@ export default function SafetyPage() {
         ))}
       </div>
 
-      <div className="prose-huellitas mt-4">
+      <div className="prose-app mt-4">
         <h2 className="flex items-center gap-2">
           <AlertTriangle className="h-6 w-6 text-amber-600" /> Señales de estafa
         </h2>
@@ -109,7 +109,7 @@ export default function SafetyPage() {
           ))}
         </ul>
         <p>
-          Huellitas revisa automáticamente los mensajes que mencionan dinero, cuentas o códigos y muestra una
+          AyudaPatitas revisa automáticamente los mensajes que mencionan dinero, cuentas o códigos y muestra una
           advertencia a ambas partes. Aun así, la mejor protección es tu criterio:{" "}
           <strong>ante la duda, no transfieras</strong>.
         </p>
@@ -185,13 +185,13 @@ export default function SafetyPage() {
           </li>
         </ul>
         <p>
-          Reúne evidencia sin ponerte en riesgo: fotos, videos, fechas, horarios y la dirección. En Huellitas,
+          Reúne evidencia sin ponerte en riesgo: fotos, videos, fechas, horarios y la dirección. En AyudaPatitas,
           usa el botón
           <strong> Reportar</strong>: los casos de maltrato se marcan como urgentes para moderación.
         </p>
       </div>
 
-      <h2 className="mt-12 text-2xl font-extrabold">Cómo te protege Huellitas</h2>
+      <h2 className="mt-12 text-2xl font-extrabold">Cómo te protege AyudaPatitas</h2>
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         {[
           {

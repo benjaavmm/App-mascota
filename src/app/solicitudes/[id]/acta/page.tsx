@@ -66,7 +66,7 @@ export default async function AdoptionActPage({ params }: PageProps<"/solicitude
       </div>
       <Alert variant="info" className="no-print mb-6">
         Imprime dos copias (una para cada parte) y complétenlas a mano el día de la entrega. Por tu
-        privacidad, Huellitas no guarda RUT ni direcciones.
+        privacidad, AyudaPatitas no guarda RUT ni direcciones.
       </Alert>
 
       <article className="rounded-3xl border border-stone-200 bg-white p-8 text-stone-900 print:rounded-none print:border-0 print:p-0">

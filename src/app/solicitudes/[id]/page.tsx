@@ -233,7 +233,7 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
                     <dd className="font-semibold">{placeLabel(app.applicant.commune_code)}</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt className="text-stone-500">En Huellitas desde</dt>
+                    <dt className="text-stone-500">En AyudaPatitas desde</dt>
                     <dd className="font-semibold">{formatDate(app.applicant.created_at)}</dd>
                   </div>
                   <div className="flex justify-between">

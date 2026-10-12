@@ -41,7 +41,7 @@ export function OnboardingForm({
         />
       </Field>
       <ChoiceGroup
-        legend="¿Cómo usarás Huellitas?"
+        legend="¿Cómo usarás AyudaPatitas?"
         name="account_type"
         required
         errors={errors.account_type}

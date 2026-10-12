@@ -16,7 +16,7 @@ export default function PrivacyPage() {
         Resumen: recolectamos lo mínimo, nunca vendemos tus datos y tú decides con quién compartes tu contacto.
       </Alert>
 
-      <div className="prose-huellitas mt-4">
+      <div className="prose-app mt-4">
         <h2>Qué datos recolectamos</h2>
         <ul>
           <li>

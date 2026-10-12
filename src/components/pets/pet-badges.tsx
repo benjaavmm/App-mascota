@@ -43,7 +43,7 @@ export function VerifiedBadge({ compact }: { compact?: boolean }) {
   return (
     <span
       className="inline-flex items-center gap-1 text-xs font-bold text-teal-700"
-      title="Cuenta verificada por el equipo de Huellitas"
+      title="Cuenta verificada por el equipo de AyudaPatitas"
     >
       <BadgeCheck className="h-4 w-4" aria-hidden />
       {compact ? <span className="sr-only">Verificada</span> : "Verificada"}

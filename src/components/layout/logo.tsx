@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { APP_NAME } from "@/lib/constants";
@@ -18,9 +19,7 @@ export function PawIcon({ className }: { className?: string }) {
 export function Logo({ className }: { className?: string }) {
   return (
     <Link href="/" className={cn("flex items-center gap-2 font-extrabold text-stone-900", className)}>
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-white shadow-sm">
-        <PawIcon className="h-5 w-5" />
-      </span>
+      <Image src="/brand/marca.png" alt="" width={36} height={36} className="h-9 w-9 shadow-sm rounded-xl" priority />
       <span className="text-xl tracking-tight">{APP_NAME}</span>
     </Link>
   );

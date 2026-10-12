@@ -290,7 +290,7 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
         <div className="flex items-center gap-2 pt-1">
           {!isOwner && <FavoriteButton petId={pet.id} initial={isFavorite} signedIn={Boolean(viewer)} />}
           <ShareButton
-            title={`${pet.name} · Huellitas`}
+            title={`${pet.name} · AyudaPatitas`}
             text={
               isAdoption
                 ? `${pet.name} busca hogar en ${placeLabel(pet.commune_code)}. ¡Ayuda compartiendo!`
@@ -483,7 +483,7 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
                   <dd className="text-lg font-extrabold">{ownerStats.adoptions_given}</dd>
                 </div>
                 <div className="rounded-xl bg-stone-50 p-2.5">
-                  <dt className="text-xs text-stone-500">En Huellitas desde</dt>
+                  <dt className="text-xs text-stone-500">En AyudaPatitas desde</dt>
                   <dd className="text-sm font-extrabold">
                     {formatDate(owner.created_at).replace(/^\d+ de /, "")}
                   </dd>

@@ -152,7 +152,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
       {deleted && (
         <Container className="pt-6">
           <Alert variant="success">
-            Tu cuenta y tus datos fueron eliminados. ¡Gracias por haber sido parte de Huellitas!
+            Tu cuenta y tus datos fueron eliminados. ¡Gracias por haber sido parte de AyudaPatitas!
           </Alert>
         </Container>
       )}
@@ -373,7 +373,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
             </h2>
             <p className="mt-3 text-teal-100">
               Adoptar nunca tiene costo. Si alguien te pide dinero por una mascota, repórtalo: está prohibido
-              en Huellitas.
+              en AyudaPatitas.
             </p>
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

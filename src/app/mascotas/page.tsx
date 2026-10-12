@@ -37,7 +37,7 @@ const SIZES = Constants.public.Enums.pet_size as readonly string[];
 const COPY = {
   adopcion: {
     title: "en adopción",
-    description: "Cada una busca un hogar responsable. La adopción en Huellitas es siempre gratuita.",
+    description: "Cada una busca un hogar responsable. La adopción en AyudaPatitas es siempre gratuita.",
     empty: "No encontramos mascotas con esos filtros",
   },
   perdidos: {

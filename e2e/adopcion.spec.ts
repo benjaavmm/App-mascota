@@ -5,7 +5,7 @@ import { SEED, confirmDialog, getEmailLink, makeTestPhoto, newLoggedInPage } fro
 // Flujo completo: registro → publicar → postular → chat → aprobar → adopción → seguimiento → reporte → moderación.
 test.describe.serial("Flujo completo de adopción", () => {
   const run = Date.now().toString(36);
-  const adopterEmail = `adoptante-${run}@huellitas.test`;
+  const adopterEmail = `adoptante-${run}@ayudapatitas.test`;
   const adopterPassword = "Perritos2026";
   const petName = `Nala ${run}`;
   const reportPetName = `Toby ${run}`;

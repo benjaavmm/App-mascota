@@ -103,7 +103,7 @@ export const signUpSchema = z
     password,
     password_confirm: z.string(),
     accept_terms: requiredCheckbox("Debes aceptar los términos y la política de privacidad."),
-    confirm_adult: requiredCheckbox("Debes ser mayor de 18 años para usar Huellitas."),
+    confirm_adult: requiredCheckbox("Debes ser mayor de 18 años para usar AyudaPatitas."),
   })
   .refine((d) => d.password === d.password_confirm, {
     path: ["password_confirm"],
@@ -130,7 +130,7 @@ export const onboardingSchema = z.object({
   commune_code: commune,
   phone,
   accept_terms: requiredCheckbox("Debes aceptar los términos y la política de privacidad."),
-  confirm_adult: requiredCheckbox("Debes ser mayor de 18 años para usar Huellitas."),
+  confirm_adult: requiredCheckbox("Debes ser mayor de 18 años para usar AyudaPatitas."),
 });
 
 export const profileSchema = z.object({

@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Crear cuenta" };
 export default function SignUpPage() {
   return (
     <AuthShell
-      title="Únete a Huellitas"
+      title="Únete a AyudaPatitas"
       description="Crea tu cuenta gratis para adoptar, publicar y ayudar a animales que necesitan un hogar."
       footer={
         <>

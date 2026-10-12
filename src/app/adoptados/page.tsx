@@ -48,7 +48,7 @@ export default async function HappyEndingsPage({ searchParams }: PageProps<"/ado
         <EmptyState
           icon={<PartyPopper className="h-12 w-12" />}
           title="Los primeros finales felices están por llegar"
-          description="Cuando se concrete una adopción en Huellitas, la celebraremos aquí."
+          description="Cuando se concrete una adopción en AyudaPatitas, la celebraremos aquí."
           action={<ButtonLink href="/mascotas">Ver mascotas en adopción</ButtonLink>}
         />
       )}

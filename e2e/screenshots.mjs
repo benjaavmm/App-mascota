@@ -36,8 +36,8 @@ if (href) await shoot(mobile, href, "ficha-movil.png");
 // Sesión de ejemplo para pantallas privadas.
 const login = await mobile.newPage();
 await login.goto(`${BASE}/ingresar`);
-await login.getByLabel("Correo electrónico").fill("adoptante@huellitas.test");
-await login.getByLabel("Contraseña", { exact: true }).fill("Huellitas2026");
+await login.getByLabel("Correo electrónico").fill("adoptante@ayudapatitas.test");
+await login.getByLabel("Contraseña", { exact: true }).fill("AyudaPatitas2026");
 await login.getByRole("button", { name: "Ingresar" }).click();
 await login.waitForURL((url) => !url.pathname.startsWith("/ingresar"));
 await login.close();
