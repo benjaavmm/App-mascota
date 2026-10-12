@@ -59,7 +59,7 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
   const isPublisher = app.publisher_id === profile.id;
   const isApplicant = app.applicant_id === profile.id;
   const other = isPublisher ? app.applicant : app.publisher;
-  const petName = app.pet?.name ?? "el perrito";
+  const petName = app.pet?.name ?? "la mascota";
 
   const [{ data: statsData }, { data: followups }] = await Promise.all([
     isPublisher
@@ -171,16 +171,16 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
               </Answer>
               <Answer label="Otras mascotas">{app.other_pets ?? "No tiene"}</Answer>
               <Answer label="Horas al día que estaría solo/a">{app.hours_alone} h</Answer>
-              <Answer label="Experiencia con perros">{app.experience}</Answer>
+              <Answer label="Experiencia cuidando animales">{app.experience}</Answer>
               <Answer label="Motivación">{app.motivation}</Answer>
               <Answer label="Plan ante vacaciones o cambios">{app.care_plan}</Answer>
               <Answer label="Compromisos aceptados">
                 <ul className="space-y-1">
                   {[
-                    "Atención veterinaria, vacunas y alimentación",
-                    "Esterilización e inscripción en el Registro Nacional de Mascotas",
+                    "Atención veterinaria, alimentación y vacunas según su especie",
+                    "Esterilización si corresponde y, si es perro o gato, microchip e inscripción en el Registro Nacional de Mascotas",
                     "Seguimientos a 1 semana, 1, 3 y 6 meses",
-                    "Devolverlo antes que abandonarlo",
+                    "Devolverla antes que abandonarla",
                   ].map((c) => (
                     <li key={c} className="flex items-center gap-2">
                       <CheckCircle2 className="h-4 w-4 text-teal-600" /> {c}

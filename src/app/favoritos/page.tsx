@@ -24,13 +24,13 @@ export default async function FavoritesPage() {
 
   return (
     <Container className="py-8 sm:py-10">
-      <PageHeader title="Mis favoritos" description="Los perritos que guardaste para revisar con calma." />
+      <PageHeader title="Mis favoritos" description="Las mascotas que guardaste para revisar con calma." />
       {pets.length === 0 ? (
         <EmptyState
           icon={<Heart className="h-12 w-12" />}
           title="Aún no tienes favoritos"
-          description="Toca el corazón en la publicación de un perrito para guardarlo aquí."
-          action={<ButtonLink href="/mascotas">Buscar perritos</ButtonLink>}
+          description="Toca el corazón en la publicación de una mascota para guardarla aquí."
+          action={<ButtonLink href="/mascotas">Buscar mascotas</ButtonLink>}
         />
       ) : (
         <PetGrid pets={pets} showStatus />

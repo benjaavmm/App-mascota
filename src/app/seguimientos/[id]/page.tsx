@@ -38,7 +38,7 @@ export default async function FollowupPage({ params }: PageProps<"/seguimientos/
   const isAdopter = f.adopter_id === profile.id;
   const isPublisher = f.publisher_id === profile.id;
   const state = followupState(f);
-  const petName = f.pet?.name ?? "el perrito";
+  const petName = f.pet?.name ?? "la mascota";
 
   let photoUrl: string | null = null;
   if (f.photo_path) {
@@ -48,21 +48,39 @@ export default async function FollowupPage({ params }: PageProps<"/seguimientos/
 
   return (
     <Container className="max-w-3xl py-8 sm:py-10">
-      <Link href="/seguimientos" className="mb-5 inline-flex items-center gap-1.5 text-sm font-bold text-stone-600 hover:text-stone-900">
+      <Link
+        href="/seguimientos"
+        className="mb-5 inline-flex items-center gap-1.5 text-sm font-bold text-stone-600 hover:text-stone-900"
+      >
         <ArrowLeft className="h-4 w-4" />
         Seguimientos
       </Link>
 
       <Card className="mb-6 flex items-center gap-4 p-4">
-        <PetPhoto path={f.pet?.cover_path} alt={petName} className="h-20 w-24 shrink-0 rounded-2xl" sizes="96px" />
+        <PetPhoto
+          path={f.pet?.cover_path}
+          alt={petName}
+          className="h-20 w-24 shrink-0 rounded-2xl"
+          sizes="96px"
+        />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold text-brand-700">Seguimiento · {f.label}</p>
           <h1 className="text-2xl font-extrabold">{petName}</h1>
           <p className="text-sm text-stone-600">
-            Adoptado por {f.adopter?.display_name} · Entregado por {f.publisher?.display_name}
+            Adoptante: {f.adopter?.display_name} · Entregó: {f.publisher?.display_name}
           </p>
         </div>
-        <Badge tone={state === "submitted" ? "teal" : state === "overdue" ? "rose" : state === "due" ? "amber" : "neutral"}>
+        <Badge
+          tone={
+            state === "submitted"
+              ? "teal"
+              : state === "overdue"
+                ? "rose"
+                : state === "due"
+                  ? "amber"
+                  : "neutral"
+          }
+        >
           {FOLLOWUP_STATE_LABELS[state]}
         </Badge>
       </Card>
@@ -76,7 +94,13 @@ export default async function FollowupPage({ params }: PageProps<"/seguimientos/
               </p>
             )}
             <p className="leading-relaxed whitespace-pre-line text-stone-700">{f.notes}</p>
-            {photoUrl && <img src={photoUrl} alt={`Foto de ${petName}`} className="mt-4 max-h-96 rounded-2xl object-cover" />}
+            {photoUrl && (
+              <img
+                src={photoUrl}
+                alt={`Foto de ${petName}`}
+                className="mt-4 max-h-96 rounded-2xl object-cover"
+              />
+            )}
           </CardSection>
           {f.publisher_comment ? (
             <Alert variant="info" title={`Respuesta de ${f.publisher?.display_name}`}>
@@ -91,16 +115,21 @@ export default async function FollowupPage({ params }: PageProps<"/seguimientos/
           )}
           {isPublisher && f.wellbeing !== null && f.wellbeing <= 2 && (
             <Alert variant="warning" title="¿Te preocupa su bienestar?">
-              Conversa con la persona adoptante por el chat. Si sospechas maltrato o abandono, repórtalo y, si hay riesgo
-              inmediato, llama al 133.
+              Conversa con la persona adoptante por el chat. Si sospechas maltrato o abandono, repórtalo y, si
+              hay riesgo inmediato, llama al 133.
             </Alert>
           )}
         </div>
       ) : isAdopter ? (
         state === "upcoming" ? (
-          <Alert variant="info">Podrás enviar este seguimiento a partir de una semana antes del {formatDate(f.due_on)}.</Alert>
+          <Alert variant="info">
+            Podrás enviar este seguimiento a partir de una semana antes del {formatDate(f.due_on)}.
+          </Alert>
         ) : (
-          <CardSection title="Enviar seguimiento" description="Toma menos de 2 minutos y da mucha tranquilidad a quien lo rescató.">
+          <CardSection
+            title="Enviar seguimiento"
+            description="Toma menos de 2 minutos y da mucha tranquilidad a quien la rescató."
+          >
             <FollowupForm followupId={f.id} userId={profile.id} petName={petName} />
           </CardSection>
         )

@@ -31,27 +31,30 @@ export default async function ProfilePage() {
   const user = await getCurrentUser();
   const supabase = await createClient();
 
-  const [{ data: privateData }, { data: blocks }, { data: reports }, { data: lastVerification }] = await Promise.all([
-    supabase.from("profile_private").select("phone").eq("user_id", profile.id).maybeSingle(),
-    supabase
-      .from("blocks")
-      .select("blocked_id, created_at, blocked:profiles!blocks_blocked_id_fkey(id, display_name, avatar_path)")
-      .eq("blocker_id", profile.id)
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("reports")
-      .select("id, target_type, reason, status, created_at, resolution_note")
-      .eq("reporter_id", profile.id)
-      .order("created_at", { ascending: false })
-      .limit(20),
-    supabase
-      .from("verification_requests")
-      .select("status, review_note, created_at")
-      .eq("user_id", profile.id)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-  ]);
+  const [{ data: privateData }, { data: blocks }, { data: reports }, { data: lastVerification }] =
+    await Promise.all([
+      supabase.from("profile_private").select("phone").eq("user_id", profile.id).maybeSingle(),
+      supabase
+        .from("blocks")
+        .select(
+          "blocked_id, created_at, blocked:profiles!blocks_blocked_id_fkey(id, display_name, avatar_path)",
+        )
+        .eq("blocker_id", profile.id)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("reports")
+        .select("id, target_type, reason, status, created_at, resolution_note")
+        .eq("reporter_id", profile.id)
+        .order("created_at", { ascending: false })
+        .limit(20),
+      supabase
+        .from("verification_requests")
+        .select("status, review_note, created_at")
+        .eq("user_id", profile.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+    ]);
 
   return (
     <Container className="max-w-3xl py-8 sm:py-10">
@@ -103,7 +106,7 @@ export default async function ProfilePage() {
         <CardSection
           id="verificacion"
           title="Verificación de cuenta"
-          description="Para rescatistas y fundaciones. La insignia genera confianza y permite publicar más perritos."
+          description="Para rescatistas y fundaciones. La insignia genera confianza y permite publicar más mascotas."
         >
           {profile.verification_status === "verified" ? (
             <Alert variant="success" title="Tu cuenta está verificada">
@@ -111,7 +114,8 @@ export default async function ProfilePage() {
             </Alert>
           ) : profile.verification_status === "pending" ? (
             <Alert variant="info" title="Solicitud en revisión">
-              Enviada el {formatDate(lastVerification?.created_at)}. Te avisaremos cuando moderación la revise.
+              Enviada el {formatDate(lastVerification?.created_at)}. Te avisaremos cuando moderación la
+              revise.
             </Alert>
           ) : (
             <>
@@ -122,15 +126,18 @@ export default async function ProfilePage() {
               )}
               <div className="mb-5 flex items-start gap-3 rounded-2xl bg-teal-50 p-4 text-sm text-teal-900">
                 <BadgeCheck className="h-5 w-5 shrink-0" />
-                Revisamos manualmente cada solicitud: redes sociales, trayectoria y documentos. No pedimos tu carnet
-                de identidad.
+                Revisamos manualmente cada solicitud: redes sociales, trayectoria y documentos. No pedimos tu
+                carnet de identidad.
               </div>
               <VerificationForm userId={profile.id} defaultType={profile.account_type} />
             </>
           )}
         </CardSection>
 
-        <CardSection title="Personas bloqueadas" description="No pueden escribirte ni postular a tus publicaciones, ni tú a las suyas.">
+        <CardSection
+          title="Personas bloqueadas"
+          description="No pueden escribirte ni postular a tus publicaciones, ni tú a las suyas."
+        >
           {!blocks?.length ? (
             <p className="text-sm text-stone-500">No has bloqueado a nadie.</p>
           ) : (
@@ -164,7 +171,9 @@ export default async function ProfilePage() {
                 <li key={r.id} className="py-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="font-semibold">{REPORT_REASON_LABELS[r.reason]}</p>
-                    <Badge tone={r.status === "resolved" ? "teal" : r.status === "dismissed" ? "neutral" : "amber"}>
+                    <Badge
+                      tone={r.status === "resolved" ? "teal" : r.status === "dismissed" ? "neutral" : "amber"}
+                    >
                       {REPORT_STATUS_LABELS[r.status]}
                     </Badge>
                   </div>
@@ -187,7 +196,8 @@ export default async function ProfilePage() {
 
         <CardSection title="Eliminar mi cuenta" className="border-rose-200">
           <p className="mb-4 text-sm text-stone-600">
-            Se eliminarán tu perfil, publicaciones, fotos, mensajes y solicitudes. Esta acción no se puede deshacer.
+            Se eliminarán tu perfil, publicaciones, fotos, mensajes y solicitudes. Esta acción no se puede
+            deshacer.
           </p>
           <DeleteAccountForm />
         </CardSection>

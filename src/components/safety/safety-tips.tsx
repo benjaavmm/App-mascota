@@ -7,20 +7,20 @@ const TIPS: Record<Enums<"listing_kind">, string[]> = {
   adoption: [
     "La adopción es gratuita. Nunca pagues “reservas”, “traslados” ni “vacunas” por adelantado.",
     "Conversa por el chat de Huellitas: tus datos quedan protegidos.",
-    "Conoce al perrito en persona, en un lugar público o acompañado/a.",
+    "Conoce a la mascota en persona, en un lugar público o acompañado/a.",
     "Firma el acta de adopción y acuerda los seguimientos.",
   ],
   lost: [
-    "Desconfía de quien pida dinero para “devolverlo” o “cubrir gastos” antes de verlo.",
+    "Desconfía de quien pida dinero para “devolverla” o “cubrir gastos” antes de verla.",
     "Pide una foto actual o videollamada antes de reunirte.",
     "Reúnete en un lugar público y ve acompañado/a.",
-    "Lleva pruebas de que es tuyo: fotos antiguas, carnet de vacunas o registro de chip.",
+    "Lleva pruebas de que es tuya: fotos antiguas, carnet veterinario o registro de microchip si tiene.",
   ],
   found: [
-    "Pide pruebas antes de entregarlo: fotos antiguas, carnet de vacunas o número de chip.",
-    "Un veterinario o municipalidad puede leer su microchip gratis.",
+    "Pide pruebas antes de entregarla: fotos antiguas, carnet veterinario o registro de microchip si tiene.",
+    "Si tiene microchip, un veterinario o la municipalidad puede leerlo gratis.",
     "Coordina la entrega en un lugar público y ve acompañado/a.",
-    "Nunca entregues tus datos bancarios ni pagues por recuperar a un perrito.",
+    "Nunca entregues tus datos bancarios ni pagues por recuperar a una mascota.",
   ],
 };
 
@@ -39,7 +39,10 @@ export function SafetyTips({ kind }: { kind: Enums<"listing_kind"> }) {
           </li>
         ))}
       </ul>
-      <Link href="/seguridad" className="mt-3 inline-block text-sm font-bold text-teal-800 underline underline-offset-2">
+      <Link
+        href="/seguridad"
+        className="mt-3 inline-block text-sm font-bold text-teal-800 underline underline-offset-2"
+      >
         Ver guía completa de seguridad
       </Link>
     </div>

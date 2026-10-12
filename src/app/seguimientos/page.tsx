@@ -35,13 +35,20 @@ function FollowupList({ rows }: { rows: Row[] }) {
         return (
           <li key={f.id}>
             <Link href={`/seguimientos/${f.id}`} className="flex items-center gap-3 py-3 hover:bg-stone-50">
-              <PetPhoto path={f.pet?.cover_path} alt={f.pet?.name ?? ""} className="h-12 w-12 shrink-0 rounded-xl" sizes="48px" />
+              <PetPhoto
+                path={f.pet?.cover_path}
+                alt={f.pet?.name ?? ""}
+                className="h-12 w-12 shrink-0 rounded-xl"
+                sizes="48px"
+              />
               <div className="min-w-0 flex-1">
                 <p className="font-bold">
                   {f.pet?.name} · {f.label}
                 </p>
                 <p className="text-sm text-stone-500">
-                  {f.submitted_at ? `Enviado el ${formatDate(f.submitted_at)}` : `Fecha: ${formatDate(f.due_on)}`}
+                  {f.submitted_at
+                    ? `Enviado el ${formatDate(f.submitted_at)}`
+                    : `Fecha: ${formatDate(f.due_on)}`}
                 </p>
               </div>
               <Badge tone={TONE[state]}>{FOLLOWUP_STATE_LABELS[state]}</Badge>
@@ -70,7 +77,7 @@ export default async function FollowupsPage() {
     <Container className="max-w-3xl py-8 sm:py-10">
       <PageHeader
         title="Seguimientos post-adopción"
-        description="Pequeños reportes para saber que cada perrito adoptado está bien cuidado."
+        description="Pequeños reportes para saber que cada mascota adoptada está bien cuidada."
       />
       {empty ? (
         <EmptyState
@@ -81,12 +88,18 @@ export default async function FollowupsPage() {
       ) : (
         <div className="space-y-6">
           {!!asAdopter?.length && (
-            <CardSection title="Perritos que adoptaste" description="Envía cada seguimiento cuando llegue su fecha.">
+            <CardSection
+              title="Mascotas que adoptaste"
+              description="Envía cada seguimiento cuando llegue su fecha."
+            >
               <FollowupList rows={asAdopter} />
             </CardSection>
           )}
           {!!asPublisher?.length && (
-            <CardSection title="Perritos que entregaste" description="Revisa cómo están y responde a cada seguimiento.">
+            <CardSection
+              title="Mascotas que entregaste"
+              description="Revisa cómo están y responde a cada seguimiento."
+            >
               <FollowupList rows={asPublisher} />
             </CardSection>
           )}

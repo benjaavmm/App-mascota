@@ -39,7 +39,7 @@ export default async function AdminPetsPage({ searchParams }: PageProps<"/admin/
         <Input
           name="q"
           defaultValue={q}
-          placeholder="Buscar por nombre del perrito"
+          placeholder="Buscar por nombre de la mascota"
           className="max-w-xs flex-1"
         />
         <Checkbox id="ocultas" name="ocultas" value="1" defaultChecked={onlyHidden} label="Solo ocultas" />

@@ -255,7 +255,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
         <SectionTitle
           title="¿Qué animal quieres adoptar?"
           href="/mascotas?tipo=adopcion"
-          linkLabel="Ver todas"
+          linkLabel="Ver todos"
         />
         <nav
           aria-label="Mascotas en adopción por especie"

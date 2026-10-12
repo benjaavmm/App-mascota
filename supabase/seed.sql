@@ -64,6 +64,7 @@ where id = 'a0000000-0000-4000-8000-000000000004';
 
 update public.profile_private set phone = '+56 9 8765 4321' where user_id = 'a0000000-0000-4000-8000-000000000002';
 
+-- Perros (species por defecto: 'dog')
 insert into public.pets (
   owner_id, kind, name, sex, size, birth_date_estimate, breed, color, weight_kg, description, energy,
   good_with_kids, good_with_dogs, good_with_cats, vaccinated, dewormed, sterilized, microchipped,

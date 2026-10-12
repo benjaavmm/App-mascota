@@ -22,7 +22,7 @@ const CARDS = [
     href: "/admin/usuarios?estado=suspendidas",
   },
   { key: "users", label: "Personas registradas" },
-  { key: "pets_available", label: "Perritos disponibles" },
+  { key: "pets_available", label: "Mascotas disponibles" },
   { key: "adoptions_completed", label: "Adopciones concretadas" },
   { key: "applications_last_7d", label: "Solicitudes (últimos 7 días)" },
 ] as const;

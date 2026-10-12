@@ -249,7 +249,7 @@ export function VerificationForm({ userId, defaultType }: { userId: string; defa
         htmlFor="description"
         required
         errors={errors.description}
-        hint="Desde cuándo rescatas, en qué comunas, cuántos perritos has dado en adopción, con quién trabajas…"
+        hint="Desde cuándo rescatas, en qué comunas, cuántos animales has dado en adopción, con quién trabajas…"
       >
         <Textarea id="description" name="description" required minLength={30} maxLength={2000} rows={4} />
       </Field>

@@ -9,7 +9,7 @@ import { Container } from "@/components/ui/card";
 import { PrintButton } from "@/components/ui/print-button";
 import { requireProfile } from "@/lib/auth";
 import { placeLabel } from "@/lib/chile";
-import { APP_NAME, SEX_LABELS, SIZE_SHORT } from "@/lib/constants";
+import { APP_NAME, SEX_LABELS, SIZE_SHORT, SPECIES_LABELS } from "@/lib/constants";
 import { formatAge, formatDate } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import { isUuid } from "@/lib/utils";
@@ -34,7 +34,7 @@ export default async function AdoptionActPage({ params }: PageProps<"/solicitude
   const { data: app } = await supabase
     .from("applications")
     .select(
-      "id, status, completed_at, decided_at, applicant_id, publisher_id, pet:pets!applications_pet_id_fkey(name, sex, size, birth_date_estimate, breed, color, sterilized, vaccinated, dewormed, microchipped, health_notes, commune_code), applicant:profiles!applications_applicant_id_fkey(display_name), publisher:profiles!applications_publisher_id_fkey(display_name)",
+      "id, status, completed_at, decided_at, applicant_id, publisher_id, pet:pets!applications_pet_id_fkey(name, species, sex, size, birth_date_estimate, breed, color, sterilized, vaccinated, dewormed, microchipped, health_notes, commune_code), applicant:profiles!applications_applicant_id_fkey(display_name), publisher:profiles!applications_publisher_id_fkey(display_name)",
     )
     .eq("id", id)
     .maybeSingle();
@@ -55,15 +55,18 @@ export default async function AdoptionActPage({ params }: PageProps<"/solicitude
   return (
     <Container className="max-w-3xl py-8 print:max-w-none print:p-0">
       <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3">
-        <Link href={`/solicitudes/${app.id}`} className="inline-flex items-center gap-1.5 text-sm font-bold text-stone-600 hover:text-stone-900">
+        <Link
+          href={`/solicitudes/${app.id}`}
+          className="inline-flex items-center gap-1.5 text-sm font-bold text-stone-600 hover:text-stone-900"
+        >
           <ArrowLeft className="h-4 w-4" />
           Volver a la solicitud
         </Link>
         <PrintButton />
       </div>
       <Alert variant="info" className="no-print mb-6">
-        Imprime dos copias (una para cada parte) y complétenlas a mano el día de la entrega. Por tu privacidad, Huellitas
-        no guarda RUT ni direcciones.
+        Imprime dos copias (una para cada parte) y complétenlas a mano el día de la entrega. Por tu
+        privacidad, Huellitas no guarda RUT ni direcciones.
       </Alert>
 
       <article className="rounded-3xl border border-stone-200 bg-white p-8 text-stone-900 print:rounded-none print:border-0 print:p-0">
@@ -102,11 +105,12 @@ export default async function AdoptionActPage({ params }: PageProps<"/solicitude
 
         {pet && (
           <section className="mt-8">
-            <h2 className="mb-2 font-extrabold">Datos del perrito</h2>
+            <h2 className="mb-2 font-extrabold">Datos de la mascota</h2>
             <table className="w-full text-sm">
               <tbody className="divide-y divide-stone-100">
                 {[
                   ["Nombre", pet.name],
+                  ["Especie", SPECIES_LABELS[pet.species]],
                   ["Sexo", SEX_LABELS[pet.sex]],
                   ["Edad aproximada", formatAge(pet.birth_date_estimate)],
                   ["Tamaño", SIZE_SHORT[pet.size]],
@@ -130,14 +134,33 @@ export default async function AdoptionActPage({ params }: PageProps<"/solicitude
         <section className="mt-8">
           <h2 className="mb-2 font-extrabold">Compromisos de quien adopta</h2>
           <ol className="list-decimal space-y-1.5 pl-5 text-sm leading-relaxed">
-            <li>Brindar alimentación, agua, abrigo, paseos y un trato digno, de acuerdo con la Ley N° 21.020 sobre Tenencia Responsable de Mascotas.</li>
-            <li>Entregar atención veterinaria oportuna, mantener sus vacunas y desparasitaciones al día.</li>
-            <li>Esterilizarlo si aún no lo está, en un plazo acordado de ________ semanas.</li>
-            <li>Inscribirlo en el Registro Nacional de Mascotas (registratumascota.cl) e identificarlo con microchip.</li>
-            <li>No venderlo, regalarlo ni entregarlo a terceros sin avisar previamente a quien lo entrega.</li>
-            <li>Si no puede seguir cuidándolo, devolverlo a quien lo entrega. Nunca abandonarlo: el abandono de mascotas está sancionado por la Ley N° 21.020.</li>
+            <li>
+              Brindar alimentación, agua, abrigo, espacio, actividad adecuada a su especie y un trato digno,
+              de acuerdo con la Ley N° 21.020 sobre Tenencia Responsable de Mascotas y Animales de Compañía.
+            </li>
+            <li>
+              Entregar atención veterinaria oportuna y mantener al día las vacunas y desparasitaciones que
+              correspondan a su especie.
+            </li>
+            <li>
+              Esterilizarla, si corresponde a su especie y aún no lo está, en un plazo acordado de ________
+              semanas.
+            </li>
+            <li>
+              Si es perro o gato, identificarla con microchip e inscribirla en el Registro Nacional de
+              Mascotas (registratumascota.cl), como exige la Ley N° 21.020.
+            </li>
+            <li>
+              No venderla, regalarla ni entregarla a terceros sin avisar previamente a quien la entrega.
+            </li>
+            <li>
+              Si no puede seguir cuidándola, devolverla a quien la entrega. Nunca abandonarla: el abandono de
+              mascotas está sancionado por la Ley N° 21.020.
+            </li>
             <li>Enviar los seguimientos acordados (1 semana, 1, 3 y 6 meses) a través de {APP_NAME}.</li>
-            <li>La adopción es gratuita: ninguna de las partes ha pagado ni recibido dinero por este perrito.</li>
+            <li>
+              La adopción es gratuita: ninguna de las partes ha pagado ni recibido dinero por esta mascota.
+            </li>
           </ol>
         </section>
 

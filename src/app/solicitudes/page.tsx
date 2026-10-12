@@ -71,7 +71,12 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/sol
         active={view}
         tabs={[
           { key: "enviadas", href: "/solicitudes", label: "Enviadas" },
-          { key: "recibidas", href: "/solicitudes?vista=recibidas", label: "Recibidas", count: receivedActive.count ?? 0 },
+          {
+            key: "recibidas",
+            href: "/solicitudes?vista=recibidas",
+            label: "Recibidas",
+            count: receivedActive.count ?? 0,
+          },
         ]}
       />
       {filteredPetName && (
@@ -89,15 +94,15 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/sol
           title={view === "enviadas" ? "Aún no has postulado" : "Aún no recibes solicitudes"}
           description={
             view === "enviadas"
-              ? "Cuando encuentres a tu perrito ideal, postula desde su publicación."
-              : "Cuando alguien postule a uno de tus perritos, aparecerá aquí."
+              ? "Cuando encuentres a la mascota ideal para ti, postula desde su publicación."
+              : "Cuando alguien postule a una de tus mascotas, aparecerá aquí."
           }
           action={
             view === "enviadas" ? (
-              <ButtonLink href="/mascotas">Buscar perritos</ButtonLink>
+              <ButtonLink href="/mascotas">Buscar mascotas</ButtonLink>
             ) : (
               <ButtonLink href="/publicar" variant="secondary">
-                Publicar un perrito
+                Publicar una mascota
               </ButtonLink>
             )
           }
@@ -107,10 +112,17 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/sol
           {rows.map((app) => (
             <li key={app.id}>
               <Link href={`/solicitudes/${app.id}`} className="flex items-center gap-4 p-4 hover:bg-stone-50">
-                <PetPhoto path={app.pet?.cover_path} alt={app.pet?.name ?? "Perrito"} className="h-16 w-16 shrink-0 rounded-2xl" sizes="64px" />
+                <PetPhoto
+                  path={app.pet?.cover_path}
+                  alt={app.pet?.name ?? "Mascota"}
+                  className="h-16 w-16 shrink-0 rounded-2xl"
+                  sizes="64px"
+                />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-extrabold text-stone-900">{app.pet?.name ?? "Publicación no disponible"}</p>
+                    <p className="font-extrabold text-stone-900">
+                      {app.pet?.name ?? "Publicación no disponible"}
+                    </p>
                     <ApplicationStatusBadge status={app.status} />
                   </div>
                   {app.other && (

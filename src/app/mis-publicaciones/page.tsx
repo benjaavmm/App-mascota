@@ -22,7 +22,9 @@ export default async function MyListingsPage() {
   const [{ data: pets }, { data: apps }] = await Promise.all([
     supabase
       .from("pets")
-      .select("id, kind, status, name, cover_path, commune_code, is_urgent, hidden, hidden_reason, created_at")
+      .select(
+        "id, kind, status, name, cover_path, commune_code, is_urgent, hidden, hidden_reason, created_at",
+      )
       .eq("owner_id", profile.id)
       .order("created_at", { ascending: false }),
     supabase
@@ -44,7 +46,7 @@ export default async function MyListingsPage() {
     <Container className="py-8 sm:py-10">
       <PageHeader
         title="Mis publicaciones"
-        description="Administra tus perritos publicados, revisa solicitudes y actualiza su estado."
+        description="Administra tus mascotas publicadas, revisa solicitudes y actualiza su estado."
         action={
           <ButtonLink href="/publicar">
             <Plus className="h-4 w-4" />
@@ -57,7 +59,7 @@ export default async function MyListingsPage() {
         <EmptyState
           icon={<PawPrint className="h-12 w-12" />}
           title="Aún no tienes publicaciones"
-          description="¿Rescataste a un perrito o buscas a uno perdido? Publícalo y la comunidad te ayudará."
+          description="¿Rescataste a un animal o buscas a tu mascota perdida? Publícalo y la comunidad te ayudará."
           action={<ButtonLink href="/publicar">Publicar ahora</ButtonLink>}
         />
       ) : (
@@ -67,7 +69,12 @@ export default async function MyListingsPage() {
             return (
               <Card key={pet.id} className="flex flex-col gap-4 p-4 sm:flex-row sm:p-5">
                 <Link href={`/mascotas/${pet.id}`} className="shrink-0">
-                  <PetPhoto path={pet.cover_path} alt={pet.name} className="aspect-[4/3] w-full rounded-2xl sm:w-44" sizes="176px" />
+                  <PetPhoto
+                    path={pet.cover_path}
+                    alt={pet.name}
+                    className="aspect-[4/3] w-full rounded-2xl sm:w-44"
+                    sizes="176px"
+                  />
                 </Link>
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-1.5">
@@ -95,14 +102,24 @@ export default async function MyListingsPage() {
                       Editar
                     </ButtonLink>
                     {pet.kind === "adoption" && (
-                      <ButtonLink href={`/solicitudes?vista=recibidas&perrito=${pet.id}`} variant={c?.active ? "soft" : "ghost"} size="sm">
+                      <ButtonLink
+                        href={`/solicitudes?vista=recibidas&perrito=${pet.id}`}
+                        variant={c?.active ? "soft" : "ghost"}
+                        size="sm"
+                      >
                         <ClipboardList className="h-4 w-4" />
                         Solicitudes {c?.active ? `(${c.active})` : ""}
                       </ButtonLink>
                     )}
                   </div>
                   <div className="mt-3 border-t border-stone-100 pt-3">
-                    <StatusActions petId={pet.id} kind={pet.kind} status={pet.status} name={pet.name} hasApproved={c?.approved} />
+                    <StatusActions
+                      petId={pet.id}
+                      kind={pet.kind}
+                      status={pet.status}
+                      name={pet.name}
+                      hasApproved={c?.approved}
+                    />
                   </div>
                 </div>
               </Card>
