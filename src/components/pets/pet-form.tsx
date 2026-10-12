@@ -61,6 +61,16 @@ export type EditablePet = Pick<
   | "is_urgent"
 >;
 
+const WEIGHT_EXAMPLES: Record<Species, string> = {
+  dog: "Ej: 12,5",
+  cat: "Ej: 4",
+  rabbit: "Ej: 2",
+  rodent: "Ej: 0,9",
+  bird: "Ej: 0,05",
+  horse: "Ej: 400",
+  other: "Ej: 3",
+};
+
 const tri = (value: boolean | null | undefined) => (value === true ? "si" : value === false ? "no" : "");
 
 function Section({
@@ -276,7 +286,7 @@ export function PetForm(props: Props) {
                 name="age_years"
                 type="number"
                 min={0}
-                max={25}
+                max={60}
                 inputMode="numeric"
                 disabled={ageUnknown}
                 defaultValue={v.age_years ?? (months !== null ? Math.floor(months / 12) : 0)}
@@ -319,7 +329,7 @@ export function PetForm(props: Props) {
               id="weight_kg"
               name="weight_kg"
               inputMode="decimal"
-              placeholder="Ej: 12,5"
+              placeholder={WEIGHT_EXAMPLES[species]}
               defaultValue={v.weight_kg ?? (pet?.weight_kg ? String(pet.weight_kg).replace(".", ",") : "")}
             />
           </Field>

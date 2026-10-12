@@ -23,7 +23,7 @@ create table public.pets (
   birth_date_estimate date,
   breed text not null default 'Mestizo' check (char_length(breed) between 1 and 60),
   color text check (char_length(color) <= 60),
-  weight_kg numeric(4, 1) check (weight_kg is null or weight_kg between 0.3 and 120),
+  weight_kg numeric(6, 2) check (weight_kg is null or weight_kg between 0.01 and 1500),
   description text not null check (char_length(description) between 30 and 3000),
   energy public.energy_level,
   good_with_kids boolean,
@@ -96,7 +96,7 @@ begin
   end if;
 
   if new.birth_date_estimate is not null
-     and (new.birth_date_estimate > current_date or new.birth_date_estimate < current_date - interval '25 years') then
+     and (new.birth_date_estimate > current_date or new.birth_date_estimate < current_date - interval '60 years') then
     raise exception 'La edad estimada no es válida.' using errcode = '23514';
   end if;
 

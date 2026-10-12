@@ -154,7 +154,7 @@ export default function SafetyPage() {
             si tiene: suele ser gratis.
           </li>
           <li>
-            Antes de entregarlo, pide pruebas: fotos antiguas, carnet de vacunas, registro del microchip o que
+            Antes de entregarla, pide pruebas: fotos antiguas, carnet de vacunas, registro del microchip o que
             la mascota reconozca a su familia.
           </li>
           <li>

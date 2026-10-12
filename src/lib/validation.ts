@@ -182,7 +182,7 @@ export const petSchema = z
     sex: z.enum(E.pet_sex, { error: "Elige el sexo." }),
     size: z.enum(E.pet_size, { error: "Elige el tamaño." }),
     age_unknown: checkbox,
-    age_years: z.coerce.number().int().min(0).max(25).optional().default(0),
+    age_years: z.coerce.number().int().min(0).max(60).optional().default(0),
     age_months: z.coerce.number().int().min(0).max(11).optional().default(0),
     breed: text(1, 60, "La raza"),
     color: optionalText(60, "El color"),
@@ -191,8 +191,8 @@ export const petSchema = z
       .trim()
       .optional()
       .transform((v) => (v ? Number(v.replace(",", ".")) : null))
-      .refine((v) => v === null || (Number.isFinite(v) && v >= 0.3 && v <= 120), {
-        error: "Peso no válido (entre 0,3 y 120 kg).",
+      .refine((v) => v === null || (Number.isFinite(v) && v >= 0.01 && v <= 1500), {
+        error: "Peso no válido (entre 0,01 y 1.500 kg).",
       }),
     description: text(30, 3000, "La descripción"),
     energy: z

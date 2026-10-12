@@ -54,7 +54,7 @@ export default function ResponsibleAdoptionPage() {
 
         <h2>Los primeros días: la regla del 3-3-3</h2>
         <p>
-          Muchas mascotas rescatadas necesitan tiempo para sentirse seguros. Como referencia:{" "}
+          Muchas mascotas rescatadas necesitan tiempo para sentirse seguras. Como referencia:{" "}
           <strong>3 días</strong> para descomprimirse, <strong>3 semanas</strong> para aprender la rutina y{" "}
           <strong>3 meses</strong> para sentirse en casa.
         </p>

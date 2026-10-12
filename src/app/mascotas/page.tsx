@@ -34,7 +34,7 @@ const SIZES = Constants.public.Enums.pet_size as readonly string[];
 const COPY = {
   adopcion: {
     title: "en adopción",
-    description: "Todos buscan un hogar responsable. La adopción en Huellitas es siempre gratuita.",
+    description: "Cada una busca un hogar responsable. La adopción en Huellitas es siempre gratuita.",
     empty: "No encontramos mascotas con esos filtros",
   },
   perdidos: {
@@ -52,11 +52,11 @@ const COPY = {
 export default async function PetsPage({ searchParams }: PageProps<"/mascotas">) {
   const params = await searchParams;
   const tipoParam = firstParam(params.tipo);
-  const tipo = (tipoParam && tipoParam in KIND_SLUGS ? tipoParam : "adopcion") as keyof typeof COPY;
+  const tipo = (tipoParam && Object.hasOwn(KIND_SLUGS, tipoParam) ? tipoParam : "adopcion") as keyof typeof COPY;
   const kind = KIND_SLUGS[tipo];
 
   const especie = firstParam(params.especie);
-  const species = especie && especie in SPECIES_SLUGS ? SPECIES_SLUGS[especie] : undefined;
+  const species = especie && Object.hasOwn(SPECIES_SLUGS, especie) ? SPECIES_SLUGS[especie] : undefined;
   const region = firstParam(params.region);
   const comuna = firstParam(params.comuna);
   const tamano = firstParam(params.tamano);
@@ -74,7 +74,7 @@ export default async function PetsPage({ searchParams }: PageProps<"/mascotas">)
     comuna: isValidCommune(comuna) ? comuna : undefined,
     tamano: tamano && SIZES.includes(tamano) ? tamano : undefined,
     sexo: sexo === "male" || sexo === "female" ? sexo : undefined,
-    edad: edad && edad in AGE_GROUPS ? edad : undefined,
+    edad: edad && Object.hasOwn(AGE_GROUPS, edad) ? edad : undefined,
     esterilizado: firstParam(params.esterilizado) === "1",
     ninos: firstParam(params.ninos) === "1",
     perros: firstParam(params.perros) === "1",

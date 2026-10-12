@@ -1,8 +1,8 @@
--- Pruebas de las alertas de búsqueda.
+-- Pruebas de las alertas de búsqueda y de los límites por especie.
 -- Ejecutar con: npx supabase test db
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(17);
+select plan(19);
 
 \set ana   '''a1111111-1111-1111-1111-111111111111'''
 \set beto  '''a2222222-2222-2222-2222-222222222222'''
@@ -96,6 +96,19 @@ reset role;
 select is(
   (select count(*)::int from public.notifications where user_id = :ana and type = 'pet_alert'),
   1, 'no avisa a quien publica');
+
+-- -----------------------------------------------------------------------------
+-- Límites de peso y edad aptos para todas las especies
+-- -----------------------------------------------------------------------------
+set local role authenticated;
+select set_config('request.jwt.claims', json_build_object('sub', :beto, 'role', 'authenticated')::text, true);
+select lives_ok($$ insert into public.pets (species, name, sex, size, description, commune_code, breed, weight_kg, birth_date_estimate)
+  values ('horse', 'Relámpago QA', 'male', 'giant', 'Caballo rescatado de maltrato, tranquilo y acostumbrado a las personas.', '13101', 'Criollo', 450, current_date - interval '28 years') $$,
+  'se puede publicar un caballo de 450 kg y 28 años');
+select lives_ok($$ insert into public.pets (species, name, sex, size, description, commune_code, breed, weight_kg)
+  values ('bird', 'Piolín QA', 'unknown', 'small', 'Canario encontrado en un patio, come bien y canta todas las mañanas.', '13101', 'Sin especificar', 0.02) $$,
+  'se puede publicar un canario de 20 gramos');
+reset role;
 
 select * from finish();
 rollback;

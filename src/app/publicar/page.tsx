@@ -15,7 +15,7 @@ export default async function PublishPage({ searchParams }: PageProps<"/publicar
   const tipo = firstParam(params.tipo);
   const defaultKind = tipo === "lost" || tipo === "found" ? tipo : "adoption";
   const especie = firstParam(params.especie);
-  const defaultSpecies = especie && especie in SPECIES_SLUGS ? SPECIES_SLUGS[especie] : "dog";
+  const defaultSpecies = especie && Object.hasOwn(SPECIES_SLUGS, especie) ? SPECIES_SLUGS[especie] : "dog";
 
   return (
     <Container className="max-w-3xl py-8 sm:py-10">

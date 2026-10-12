@@ -105,7 +105,7 @@ export const AGE_GROUPS = {
   cachorro: { label: "Cría o cachorro (menos de 1 año)", minYears: 0, maxYears: 1 },
   joven: { label: "Joven (1 a 3 años)", minYears: 1, maxYears: 3 },
   adulto: { label: "Adulto (3 a 8 años)", minYears: 3, maxYears: 8 },
-  senior: { label: "Senior (más de 8 años)", minYears: 8, maxYears: 30 },
+  senior: { label: "Senior (más de 8 años)", minYears: 8, maxYears: 60 },
 } as const;
 export type AgeGroup = keyof typeof AGE_GROUPS;
 
