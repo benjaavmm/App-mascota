@@ -27,7 +27,8 @@ import {
 import { PetGallery } from "@/components/pets/pet-gallery";
 import { SpeciesIcon } from "@/components/pets/species-icon";
 import { FavoriteButton } from "@/components/pets/favorite-button";
-import { ShareButton } from "@/components/pets/share-button";
+import { SITE_URL } from "@/lib/env";
+import { ShareButton, WhatsAppButton } from "@/components/pets/share-button";
 import { ReportButton } from "@/components/safety/report-button";
 import { SafetyTips } from "@/components/safety/safety-tips";
 import { Alert } from "@/components/ui/alert";
@@ -287,10 +288,20 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
               ))}
           </>
         )}
-        <div className="flex items-center gap-2 pt-1">
+        <div className="flex flex-wrap items-center gap-2 pt-1">
           {!isOwner && <FavoriteButton petId={pet.id} initial={isFavorite} signedIn={Boolean(viewer)} />}
           <ShareButton
             title={`${pet.name} · AyudaPatitas`}
+            text={
+              isAdoption
+                ? `${pet.name} busca hogar en ${placeLabel(pet.commune_code)}. ¡Ayuda compartiendo!`
+                : pet.kind === "lost"
+                  ? `Se busca a ${pet.name} en ${placeLabel(pet.commune_code)}. ¡Ayuda compartiendo!`
+                  : `Encontraron esta mascota en ${placeLabel(pet.commune_code)}. ¿La conoces?`
+            }
+          />
+          <WhatsAppButton
+            url={`${SITE_URL}/mascotas/${pet.id}`}
             text={
               isAdoption
                 ? `${pet.name} busca hogar en ${placeLabel(pet.commune_code)}. ¡Ayuda compartiendo!`
