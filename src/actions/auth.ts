@@ -73,8 +73,13 @@ export async function signUp(_prev: ActionState, formData: FormData): Promise<Ac
   };
 }
 
-export async function signOut() {
+export async function signOut(formData?: FormData) {
   const supabase = await createClient();
+  // Este dispositivo deja de recibir los avisos de la cuenta que cierra sesión.
+  const endpoint = formData?.get("push_endpoint");
+  if (typeof endpoint === "string" && endpoint.startsWith("https://")) {
+    await supabase.from("push_subscriptions").delete().eq("endpoint", endpoint);
+  }
   await supabase.auth.signOut();
   redirect("/");
 }

@@ -237,8 +237,27 @@ Los correos (confirmación de cuenta, recuperar contraseña) llegan a **Mailpit*
    | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_…`                             |
    | `NEXT_PUBLIC_SITE_URL`                 | `https://tu-dominio.cl`                        |
    | `SUPABASE_SECRET_KEY`                  | `sb_secret_…` (**sin** prefijo `NEXT_PUBLIC_`) |
+   | `NEXT_PUBLIC_VAPID_PUBLIC_KEY`         | clave pública VAPID (ver abajo)                |
+   | `VAPID_PRIVATE_KEY`                    | clave privada VAPID (secreta)                  |
+   | `PUSH_WEBHOOK_SECRET`                  | texto aleatorio largo (secreto)                |
 
 3. Despliega y actualiza la _Site URL_ de Supabase con tu dominio final.
+
+### Notificaciones al celular (Web Push)
+
+Cada fila nueva en `notifications` (mensajes, solicitudes, posibles coincidencias, alertas, seguimientos) dispara, con `pg_net`, una llamada a `POST /api/push`, que la envía a los dispositivos donde la persona tocó **Activar notificaciones** (en `/notificaciones`). Funciona con la app cerrada en Android y computadores; en iPhone (iOS 16.4+) solo si la app se instaló en la pantalla de inicio.
+
+1. Genera las claves una vez: `npx web-push generate-vapid-keys` y un secreto con `openssl rand -base64 32`.
+2. Carga las tres variables de la tabla anterior en Vercel y vuelve a desplegar.
+3. En el SQL Editor de Supabase, indica a dónde enviar los avisos (queda en el esquema `private`, fuera de la API):
+
+   ```sql
+   insert into private.push_config (url, secret)
+   values ('https://tu-dominio.cl/api/push', 'EL_MISMO_PUSH_WEBHOOK_SECRET')
+   on conflict (id) do update set url = excluded.url, secret = excluded.secret;
+   ```
+
+Si falta la configuración, las notificaciones siguen apareciendo dentro de la app, solo no llegan al celular.
 
 ---
 
@@ -285,7 +304,7 @@ Al aprobar, la mascota pasa a “en proceso” y no recibe nuevas solicitudes. A
 ## Pruebas
 
 ```bash
-# Pruebas de seguridad de la base de datos (RLS, permisos, flujos, alertas) — 114 pruebas pgTAP
+# Pruebas de seguridad de la base de datos (RLS, permisos, flujos, alertas, push) — 124 pruebas pgTAP
 npm run db:test
 
 # Pruebas end-to-end con navegador (requiere Supabase local con `db reset` y la app corriendo o se inicia sola)
@@ -293,7 +312,7 @@ npx playwright install chromium   # solo la primera vez
 npm run test:e2e
 ```
 
-La prueba E2E recorre el flujo completo: registro con confirmación por correo → bienvenida → una fundación publica con foto → búsqueda sin tildes → alerta de gatos → publicar un gato, filtrar por especie y recibir el aviso → gestionar alertas → postulación → chat en tiempo real con advertencia de estafa → aprobación → acta → adopción concretada → seguimiento con foto privada → reporte → moderación y auditoría. También verifica rutas protegidas y que la CSP no bloquee la app.
+La prueba E2E recorre el flujo completo: registro con confirmación por correo → bienvenida → una fundación publica con foto → búsqueda sin tildes → alerta de gatos → publicar un gato, filtrar por especie y recibir el aviso → gestionar alertas → postulación → chat en tiempo real con advertencia de estafa → aprobación → acta → adopción concretada → seguimiento con foto privada → reporte → moderación y auditoría. También verifica rutas protegidas, activar y desactivar las notificaciones al celular y que la CSP no bloquee la app.
 
 GitHub Actions (`.github/workflows/ci.yml`) ejecuta lint, verificación de tipos, build y las pruebas de base de datos en cada _pull request_.
 
@@ -318,7 +337,7 @@ GitHub Actions (`.github/workflows/ci.yml`) ejecuta lint, verificación de tipos
 
 ## Próximos pasos sugeridos
 
-- Notificaciones por correo o push (por ejemplo, con Supabase Edge Functions + Resend).
+- Copia por correo de los avisos importantes (por ejemplo, posible coincidencia o solicitud nueva).
 - Mapa de avistamientos para perdidos/encontrados con ubicación aproximada.
 - CAPTCHA en registro e ingreso (Turnstile) y MFA para cuentas de moderación.
 - App móvil nativa (React Native/Expo) reutilizando el mismo backend de Supabase.

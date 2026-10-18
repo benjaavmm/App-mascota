@@ -16,6 +16,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { signOut } from "@/actions/auth";
+import { PushEndpointField } from "@/components/layout/push-toggle";
 import { Avatar } from "@/components/ui/avatar";
 
 export const ACCOUNT_LINKS: { href: string; label: string; icon: LucideIcon }[] = [
@@ -103,6 +104,7 @@ export function UserMenu({
             </Link>
           )}
           <form action={signOut} className="mt-1 border-t border-stone-100 pt-1">
+            <PushEndpointField />
             <button
               type="submit"
               role="menuitem"

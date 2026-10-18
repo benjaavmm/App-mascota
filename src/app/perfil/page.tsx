@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { signOut } from "@/actions/auth";
 import { unblockUser } from "@/actions/safety";
+import { PushEndpointField } from "@/components/layout/push-toggle";
 import { VerifiedBadge } from "@/components/pets/pet-badges";
 import {
   AvatarUploader,
@@ -187,6 +188,7 @@ export default async function ProfilePage() {
         <CardSection title="Seguridad de la cuenta">
           <ChangePasswordForm />
           <form action={signOut} className="mt-6 border-t border-stone-100 pt-6">
+            <PushEndpointField />
             <SubmitButton variant="ghost">
               <LogOut className="h-4 w-4" />
               Cerrar sesión

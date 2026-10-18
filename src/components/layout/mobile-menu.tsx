@@ -9,6 +9,7 @@ import { createPortal } from "react-dom";
 import { signOut } from "@/actions/auth";
 import { InstallAppButton } from "@/components/layout/install-app";
 import { Logo } from "@/components/layout/logo";
+import { PushEndpointField } from "@/components/layout/push-toggle";
 import { ACCOUNT_LINKS } from "@/components/layout/user-menu";
 import { buttonClasses } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -117,6 +118,7 @@ export function MobileMenu({
                     )}
                     <li>
                       <form action={signOut}>
+                        <PushEndpointField />
                         <button
                           type="submit"
                           className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left font-semibold text-stone-700 hover:bg-white"

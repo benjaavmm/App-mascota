@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { createContext, use, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
+import { savePushSubscription } from "@/actions/push";
 import { createClient } from "@/lib/supabase/client";
 
 type Counts = { notifications: number; messages: number };
@@ -70,6 +71,29 @@ export function UnreadProvider({
       supabase.removeChannel(channel);
     };
   }, [userId, refresh]);
+
+  // Si este dispositivo ya tenía los avisos activados, se asocian a la cuenta que inició sesión
+  // (una vez por sesión del navegador), para que sigan llegando aunque se cambie de cuenta.
+  useEffect(() => {
+    if (!userId || !("serviceWorker" in navigator) || !("Notification" in window)) return;
+    if (Notification.permission !== "granted") return;
+    const key = `push-sync:${userId}`;
+    try {
+      if (sessionStorage.getItem(key)) return;
+    } catch {}
+    navigator.serviceWorker
+      .getRegistration("/")
+      .then((reg) => reg?.pushManager.getSubscription())
+      .then(async (sub) => {
+        if (!sub) return;
+        const res = await savePushSubscription(JSON.parse(JSON.stringify(sub)), navigator.userAgent);
+        if (res.error) return;
+        try {
+          sessionStorage.setItem(key, "1");
+        } catch {}
+      })
+      .catch(() => {});
+  }, [userId]);
 
   return <UnreadContext value={counts}>{children}</UnreadContext>;
 }

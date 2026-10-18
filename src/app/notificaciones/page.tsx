@@ -14,6 +14,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { markAllNotificationsRead } from "@/actions/profile";
+import { PushToggle } from "@/components/layout/push-toggle";
 import { Container, EmptyState, PageHeader } from "@/components/ui/card";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { requireUser } from "@/lib/auth";
@@ -63,6 +64,7 @@ export default async function NotificationsPage() {
           ) : null
         }
       />
+      <PushToggle />
       {!notifications?.length ? (
         <EmptyState icon={<Bell className="h-12 w-12" />} title="No tienes notificaciones" description="Aquí verás novedades de tus solicitudes, mensajes y publicaciones." />
       ) : (

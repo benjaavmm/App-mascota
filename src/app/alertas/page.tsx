@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { deleteAlert } from "@/actions/alerts";
 import { NewAlertForm } from "@/components/alerts/new-alert-form";
+import { PushToggle } from "@/components/layout/push-toggle";
 import { SpeciesIcon } from "@/components/pets/species-icon";
 import { Alert } from "@/components/ui/alert";
 import { Card, Container, PageHeader } from "@/components/ui/card";
@@ -33,6 +34,8 @@ export default async function AlertsPage() {
         title="Mis alertas"
         description="Te avisamos en tus notificaciones apenas se publique una mascota que coincida. Ideal si buscas a tu mascota perdida o una especie en particular."
       />
+
+      <PushToggle compact />
 
       <section aria-labelledby="alertas-activas" className="mb-8">
         <h2 id="alertas-activas" className="mb-3 text-lg font-extrabold">

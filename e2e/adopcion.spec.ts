@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { SEED, confirmDialog, getEmailLink, makeTestPhoto, newLoggedInPage } from "./helpers";
+import { SEED, confirmDialog, getEmailLink, login, makeTestPhoto, newLoggedInPage } from "./helpers";
 
 // Flujo completo: registro → publicar → postular → chat → aprobar → adopción → seguimiento → reporte → moderación.
 test.describe.serial("Flujo completo de adopción", () => {
@@ -315,6 +315,29 @@ test.describe("Protección de rutas", () => {
     await page.getByRole("dialog", { name: "Menú" }).getByRole("button", { name: "Instalar app" }).click();
     await expect(page.getByText("Instala AyudaPatitas en tu celular")).toBeVisible();
     await expect(page.getByText(/Agregar a pantalla de inicio/).first()).toBeVisible();
+  });
+
+  test("activar y desactivar las notificaciones al celular", async ({ browser }) => {
+    const context = await browser.newContext({ permissions: ["notifications"] });
+    // El navegador de pruebas no llega al servicio de push real: se simula la suscripción.
+    await context.addInitScript(() => {
+      let current: object | null = null;
+      const fake = {
+        endpoint: `https://fcm.googleapis.com/fcm/send/e2e-${Date.now()}`,
+        keys: { p256dh: "BElz-prueba-clave-publica", auth: "prueba-auth" },
+        unsubscribe: async () => ((current = null), true),
+      };
+      PushManager.prototype.getSubscription = async () => current as PushSubscription | null;
+      PushManager.prototype.subscribe = async () => (current = fake) as unknown as PushSubscription;
+    });
+    const page = await context.newPage();
+    await login(page, SEED.shelter);
+    await page.goto("/notificaciones");
+    await page.getByRole("button", { name: "Activar notificaciones" }).click();
+    await expect(page.getByText("Las notificaciones están activadas en este dispositivo.")).toBeVisible();
+    await page.getByRole("button", { name: "Desactivar" }).click();
+    await expect(page.getByRole("button", { name: "Activar notificaciones" })).toBeVisible();
+    await context.close();
   });
 
   test("la portada carga sin violaciones de CSP", async ({ page }) => {
