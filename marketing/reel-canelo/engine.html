@@ -149,6 +149,7 @@ function build(){
   let acc=0;built=TIMELINE.scenes.map((s,i)=>{const node=document.createElement('div');node.className='layer';stage.appendChild(node);const b={s,node,start:acc,end:acc+s.dur};acc+=s.dur;return b});
   const cap=document.createElement('div');cap.className='caption';cap.id='cap';stage.appendChild(cap);
   const pr=document.createElement('div');pr.className='progress';pr.id='pr';stage.appendChild(pr);
+  if(TIMELINE.hookTitle){const h=document.createElement('div');h.id='hook';h.style.cssText='position:absolute;left:60px;right:140px;top:300px;z-index:100002;text-align:center';h.innerHTML=`<span style="display:inline-block;background:#fde047;color:#1c1917;font-weight:900;font-size:78px;line-height:1.05;letter-spacing:-2px;padding:18px 30px;border-radius:30px;box-shadow:0 18px 40px rgba(0,0,0,.35)">${TIMELINE.hookTitle.text}</span>`;stage.appendChild(h);}
 }
 const TRANS=.22;
 window.render=function(t){
@@ -174,6 +175,7 @@ window.render=function(t){
     if(c.pos==='top'){cap.style.top='330px';cap.style.bottom='auto'}else{cap.style.top='auto';cap.style.bottom=(c.pos==='mid'?820:560)+'px'}
   } else {cap.style.opacity=0;cap.dataset.id=''}
   document.getElementById('pr').style.width=(t/TIMELINE.duration*1080)+'px';
+  const hk=document.getElementById('hook');if(hk){const H=TIMELINE.hookTitle;const pin=prog(t,0,.25),pout=prog(t,H.until-.25,.25);hk.style.opacity=pin*(1-pout);hk.style.transform=`scale(${lerp(.6,1,back(pin))}) rotate(-2deg)`;}
 };
 </script>
 <script src="timeline.js"></script>
