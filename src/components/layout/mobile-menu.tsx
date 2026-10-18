@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { signOut } from "@/actions/auth";
+import { InstallAppButton } from "@/components/layout/install-app";
 import { Logo } from "@/components/layout/logo";
 import { ACCOUNT_LINKS } from "@/components/layout/user-menu";
 import { buttonClasses } from "@/components/ui/button";
@@ -137,6 +138,9 @@ export function MobileMenu({
                   </Link>
                 </div>
               )}
+              <div className="mt-8">
+                <InstallAppButton className="w-full" />
+              </div>
             </nav>
           </div>,
           document.body,

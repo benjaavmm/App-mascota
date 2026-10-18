@@ -304,6 +304,19 @@ test.describe("Protección de rutas", () => {
     await expect(menu).toBeHidden();
   });
 
+  test("el botón Instalar app explica cómo instalarla sin tienda", async ({ page }) => {
+    // Sin el instalador nativo del navegador (como en iPhone), la app muestra los pasos.
+    await page.addInitScript(() =>
+      window.addEventListener("beforeinstallprompt", (e) => e.stopImmediatePropagation(), true),
+    );
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Abrir menú" }).click();
+    await page.getByRole("dialog", { name: "Menú" }).getByRole("button", { name: "Instalar app" }).click();
+    await expect(page.getByText("Instala AyudaPatitas en tu celular")).toBeVisible();
+    await expect(page.getByText(/Agregar a pantalla de inicio/).first()).toBeVisible();
+  });
+
   test("la portada carga sin violaciones de CSP", async ({ page }) => {
     const errors: string[] = [];
     page.on("console", (msg) => {

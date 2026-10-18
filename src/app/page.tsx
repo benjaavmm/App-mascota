@@ -15,6 +15,7 @@ import Link from "next/link";
 import { PetGrid } from "@/components/pets/pet-card";
 import { PetPhoto } from "@/components/pets/pet-photo";
 import { SpeciesIcon } from "@/components/pets/species-icon";
+import { InstallAppButton } from "@/components/layout/install-app";
 import { PawIcon } from "@/components/layout/logo";
 import { Alert } from "@/components/ui/alert";
 import { ButtonLink, buttonClasses } from "@/components/ui/button";
@@ -207,6 +208,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
                 <Siren className="h-4 w-4 text-rose-600" />
                 Perdí a mi mascota
               </ButtonLink>
+              <InstallAppButton variant="ghost" />
             </div>
           </div>
           <div className="relative hidden h-[420px] lg:block">
