@@ -3,7 +3,7 @@ window.EXTRA_SCENES = function (BASE) {
   const night = 'linear-gradient(180deg,#0b1026 0%,#1e1b4b 55%,#312e81 100%)';
   const gold = 'linear-gradient(180deg,#fde68a 0%,#fdba74 55%,#fb923c 100%)';
   const morning = 'linear-gradient(180deg,#e0f2fe 0%,#fef3c7 60%,#fde68a 100%)';
-  const label = (txt) => `<div style="position:absolute;top:290px;left:60px;background:rgba(0,0,0,.45);color:#fff;font-weight:800;font-size:28px;padding:10px 22px;border-radius:999px;z-index:20">${txt}</div>`;
+  const label = (txt) => `<div style="position:absolute;top:240px;left:60px;background:rgba(0,0,0,.45);color:#fff;font-weight:800;font-size:28px;padding:10px 22px;border-radius:999px;z-index:20">${txt}</div>`;
   const dog = (id, size, extra = '') => `<div id="${id}" style="position:absolute;font-size:${size}px;line-height:1;filter:drop-shadow(0 18px 18px rgba(0,0,0,.35));${extra}">🐕</div>`;
 
   // Celular sobre la mesa de la cocina con pantalla de bloqueo (inicio y final del loop)
@@ -120,7 +120,7 @@ window.EXTRA_SCENES = function (BASE) {
             <div id="zz" style="position:absolute;left:640px;top:1020px;font-size:90px">💤</div>
             <div style="position:absolute;left:220px;top:1250px;font-size:110px">🥣</div>
             <div id="hand" style="position:absolute;font-size:170px">🤚</div>
-            <div id="rosa" class="chip" style="position:absolute;left:50%;top:330px;font-size:46px">☀️ Doña Rosa · a la mañana</div>
+            <div id="rosa" class="chip" style="position:absolute;left:50%;top:480px;font-size:46px">☀️ Doña Rosa · a la mañana</div>
             ${label('Recreación')}</div>`;
         root.dataset.init = 1;
       }
