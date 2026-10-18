@@ -1,0 +1,86 @@
+{
+ "title": "Canelo se perdió (y casi estafan a su familia)",
+ "angle": "Evaluación: el Guion 1 tiene buen gancho y cubre mucho, pero acumula unos 7,6 s de problema seguidos, presenta a la protagonista recién en el segundo 10 y suena a tutorial. El 2 es el que más emociona y retiene (Canelo con nombre, humor, reencuentro), aunque su primer cuadro es menos impactante y la notificación que muestra no es la que usa la app. El 3 se entiende bien, pero el formato lista '7 cosas' se ve como anuncio y no emociona. La versión final usa el Guion 2 como base y le agrega tres cosas: (1) el gancho de los Guiones 1 y 3, con el timbre ESTAFA sobre la notificación del estafador desde el cuadro 0 y la escena contada desde el final con un rebobinado; (2) del Guion 1, la rima visual entre la estafa y la advertencia del chat, la búsqueda con '¡hasta caballos!' y el acta Ley Cholito con el seguimiento; (3) del Guion 3, la idea de mostrar cada función con una pantalla real ligada a un dolor. Además revisé el código de la app: la familia recibe la notificación real 'Posible coincidencia para Canelo' (la de alertas guardadas es otra), el formulario advierte si escribes un teléfono y el chat salta con la palabra 'transferencias' (con 'plata' sola no). El cierre 'por si me vuelvo a perder' empalma con 'Anoche me perdí' para que el video haga loop.",
+ "total_seconds": 39,
+ "scenes": [
+  {
+   "seconds": 3,
+   "voiceover": "Anoche me perdí… y casi estafan a mi familia.",
+   "on_screen_text": "Me perdí… y casi estafan a mi familia",
+   "visual": "Cuadro 0, sin logo: plano cenital de un celular sobre la mesa de una cocina de noche (ilustración en motion). El fondo de la pantalla de bloqueo es Canelo, un quiltro canela ilustrado. Ya en el primer cuadro cae, con vibración y un 'ding', la notificación 'Número desconocido: Tengo a su perro. Deposíteme la recompensa primero y se lo llevo.' A los 1,2 s un timbre rojo 'ESTAFA' golpea la notificación con una pequeña sacudida de cámara. El titular va arriba, bajo los 270 px superiores, y los subtítulos aparecen palabra por palabra (60-75 px) en la franja central, sin tocar el 35% inferior ni el 21% derecho. Etiqueta chica arriba a la izquierda: 'Recreación · historia ilustrada'. El último cuadro del reel repite este encuadre exacto para el loop. La voz es cálida y juguetona, en primera persona de Canelo, y parte en 0,0 s."
+  },
+  {
+   "seconds": 2.4,
+   "voiceover": "Soy Canelo. Cero sentido de orientación.",
+   "on_screen_text": "Canelo · quiltro · Maipú",
+   "visual": "Rebobinado rápido con líneas de VHS (0,3 s) y corte a la noche anterior: Canelo ilustrado sale disparado por un portón entreabierto de un pasaje de Maipú, con la cámara baja siguiéndolo. Frena bajo un poste de luz, mira a un lado y al otro, y tres pines de mapa le giran sobre la cabeza como las estrellitas de un dibujo animado."
+  },
+  {
+   "seconds": 2.6,
+   "voiceover": "Me subieron a mil grupos… con su número.",
+   "on_screen_text": "Tu número, a la vista de todos",
+   "visual": "Maqueta genérica de un chat grupal 'Vecinos Maipú' y de un grupo de red social 'Mascotas perdidas', sin logos reales. Aparece el afiche 'SE BUSCA CANELO · Llamar al +56 9 •••• ••••' con el número subrayado en amarillo. Al tiro lo entierran mensajes que suben a toda velocidad: '¿alguien tiene gásfiter?', 'vendo coche de guagua', un meme, otro perrito perdido. Zoom out mientras el afiche se pierde hacia arriba. Etiqueta 'Recreación'."
+  },
+  {
+   "seconds": 3.1,
+   "voiceover": "Y les escribió un estafador. Spóiler: no me tenía.",
+   "on_screen_text": "Spóiler: no me tenía",
+   "visual": "Vuelve en grande el mensaje del inicio con el timbre ESTAFA: 'Tengo a su perro. Deposíteme la recompensa primero…'. Justo en 'Spóiler' hay un corte seco a un inserto de 1 s: Canelo solo en otra esquina, mirando a cámara y levantando una ceja, claramente sin nadie al lado. Etiqueta 'Recreación'."
+  },
+  {
+   "seconds": 3.4,
+   "voiceover": "Pero también me subieron a Ayuda Patitas. Sin su teléfono.",
+   "on_screen_text": "Aquí tu teléfono no se publica",
+   "visual": "EL GIRO: un barrido cambia el gris de la noche por crema y naranjo #EA580C. Celular con la pantalla REAL de 'Publicar': tipo Perdido, especie Perro, comuna Maipú y la foto (ilustración) de Canelo. En la descripción alguien escribe 'llamar al +56 9…' y aparece la advertencia REAL del formulario: 'Parece que incluiste un teléfono. Por tu seguridad, usa el chat de la app.' (1,5 s). Corte a la ficha publicada: solo se ve el botón 'Enviar mensaje', sin teléfono ni correo, encerrado en un círculo dibujado a mano."
+  },
+  {
+   "seconds": 3.2,
+   "voiceover": "Doña Rosa me encontró y me publicó como encontrado.",
+   "on_screen_text": "Doña Rosa lo publicó como encontrado",
+   "visual": "Ilustración de mañana: Canelo dormido en el felpudo de una casa de otro pasaje, con un pocillo de agua al lado. La mano ilustrada de doña Rosa le hace cariño y saca el celular. Corte a la pantalla REAL de 'Publicar' con 'Encontrado' marcado, Perro, Región Metropolitana, Maipú y las fotos subiendo."
+  },
+  {
+   "seconds": 2.6,
+   "voiceover": "Y la app le avisó sola a mi familia.",
+   "on_screen_text": "Tu aviso ya no se pierde en el feed",
+   "visual": "El mismo celular en la cocina de la familia; atrás, desenfocado, sigue corriendo el feed gris de los grupos. Cae desde arriba la notificación REAL de la app: 'Posible coincidencia para Canelo. Publicaron una mascota encontrada con características parecidas en tu región.' Suena un 'ding', zoom rápido y una mano agarra el celular. Corte a la ficha 'Encontrado · Maipú'."
+  },
+  {
+   "seconds": 3.5,
+   "voiceover": "Hablaron por chat. Si se habla de transferencias, la app advierte.",
+   "on_screen_text": "¿Transferencias? La app te advierte",
+   "visual": "Pantalla REAL del chat interno, con los mensajes apareciendo uno a uno. La familia escribe: '¡Es mi Canelo! ¿Le transfiero algo por las molestias?' y, antes de enviar, se despliega la advertencia ámbar REAL: 'Parece que hablas de dinero, cuentas o códigos. En AyudaPatitas la adopción es gratuita: nunca transfieras dinero por adelantado…'. Zoom de golpe a la advertencia. Doña Rosa responde: '¡Nada que ver! Venga a buscarlo no más.' Es la rima visual con el estafador de la escena 1: otra vez se habla de plata, pero ahora la app te cuida. Etiqueta 'Recreación con la app real'."
+  },
+  {
+   "seconds": 2.2,
+   "voiceover": "Y hoy… volví a casa.",
+   "on_screen_text": "Volví a casa",
+   "visual": "El mismo portón de la escena 2, ahora con luz dorada de tarde. Se abre, un niño ilustrado se tira al suelo y Canelo le lame la cara. Caen huellitas naranjas como confeti. Es el momento más cálido: hay que dejar respirar la pausa del '…'."
+  },
+  {
+   "seconds": 3,
+   "voiceover": "Ah, y para adoptar: gatos, conejos, ¡hasta caballos!",
+   "on_screen_text": "Adoptar es gratis: gatos, conejos, ¡caballos!",
+   "visual": "Cambio de ritmo con un 'whoosh'. Pantalla REAL de búsqueda de adopción: los chips de especie se iluminan al ritmo de la voz (Gatos, Conejos, Caballos) y se aplican el filtro por comuna y 'Se lleva bien con niños'. Al final, un conejo ilustrado de demostración salta desde la grilla."
+  },
+  {
+   "seconds": 2.7,
+   "voiceover": "Con acta Ley Cholito y seguimiento con foto.",
+   "on_screen_text": "Acta Ley Cholito + seguimientos con foto",
+   "visual": "Tres cortes rápidos. (1) El formulario REAL de postulación se desliza y se marcan los compromisos: veterinario, esterilización, seguimientos y no abandono. (2) El acta de adopción REAL sale como de una impresora, con un resaltado naranjo sobre 'Ley N° 21.020'. (3) Sobre la pantalla REAL de seguimientos aparece una línea de tiempo animada (1 semana · 1 mes · 3 meses · 6 meses); se enciende '1 semana' y aparece la foto (ilustración) del conejo durmiendo en su nueva casa, con un check verde."
+  },
+  {
+   "seconds": 3.4,
+   "voiceover": "Entra gratis a ayuda patitas punto ce ele. Y síguenos.",
+   "on_screen_text": "www.ayudapatitas.cl · Gratis · Link en bio",
+   "visual": "Fondo naranjo #EA580C. Recién aquí aparece el logo de la huellita AyudaPatitas, con un pop suave, y la URL se escribe letra por letra en blanco, grande y centrada, fuera del 35% inferior. Debajo, un celular muestra cómo se agrega el ícono a la pantalla de inicio desde el navegador (se instala como app, sin tienda). Sticker chico 'Recién partimos: rescatistas y fundaciones, publiquen gratis' y botón animado 'Seguir @ayudapatitas.cl'."
+  },
+  {
+   "seconds": 3.9,
+   "voiceover": "Mándaselo a quien comparte perritos perdidos. Por si me vuelvo a perder.",
+   "on_screen_text": "Mándaselo a tu amigo de los perritos perdidos",
+   "visual": "Vuelve el celular sobre la mesa de la cocina con EXACTAMENTE el encuadre de la escena 1, pero de día. El fondo de pantalla ahora es Canelo con el niño, y Canelo duerme al lado del celular. Un avión de papel (enviar) despega y vuela hacia la zona del botón de compartir. En 'por si me vuelvo a perder', Canelo abre un ojo y mira de reojo el portón entreabierto que se ve por la ventana. En el último medio segundo la luz baja a noche y la pantalla queda igual al cuadro 0, así el loop empalma con 'Anoche me perdí…'. Exportar en 1080x1920 sin marca de agua, con la voz como audio original de @ayudapatitas.cl; la música suave se agrega después en Instagram, por debajo de la voz."
+  }
+ ],
+ "caption": "Anoche Canelo se perdió… y lo primero que le llegó a su familia fue un estafador pidiendo la recompensa.\n\nEn AyudaPatitas tu teléfono no se publica: se conversa por chat interno, y si alguien habla de transferencias, la app te advierte. Y cuando alguien publica una mascota encontrada parecida a la tuya en tu región, te avisamos solos. Tu aviso ya no se pierde en el feed.\n\n¿Quieres adoptar? Perros, gatos, conejos, aves, caballos y más, con postulación responsable, acta con la Ley Cholito y seguimientos con foto. Adoptar es gratis; vender animales o cobrar por adoptar está prohibido.\n\nRecién partimos: rescatistas, fundaciones y particulares, publiquen gratis.\n\nwww.ayudapatitas.cl (link en bio). Se instala en el celular como app, sin pasar por la tienda.\n\nMándaselo a tu amigo de los perritos perdidos. Esta es la parte 1: síguenos para la que viene.\n\nCanelo es un personaje ilustrado (recreación). Las pantallas son reales de la app.\n\n#AyudaPatitas #AdopcionResponsable #MascotasPerdidas #AdoptaNoCompres #LeyCholito #PerrosPerdidos #GatosPerdidos #Rescatistas #Quiltro #Maipu #Chile"
+}
