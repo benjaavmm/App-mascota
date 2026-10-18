@@ -96,7 +96,7 @@ window.EXTRA_SCENES = function (BASE) {
             <div style="position:absolute;left:600px;top:540px;width:0;height:0;border-left:170px solid transparent;border-right:170px solid transparent;border-bottom:540px solid rgba(253,230,138,.22)"></div>
             ${dog('d2', 260, 'left:560px;top:820px')}
             <div id="q" style="position:absolute;left:820px;top:700px;font-size:110px">🤨</div>
-            <div id="alone" class="chip" style="position:absolute;left:120px;top:560px;font-size:44px">Spóiler: no me tenía 🙃</div>
+            <div id="alone" class="chip" style="position:absolute;left:120px;top:560px;font-size:44px">Spóiler: no me tenían 🙃</div>
             ${label('Recreación')}</div>`;
         root.dataset.init = 1;
       }
@@ -152,7 +152,7 @@ window.EXTRA_SCENES = function (BASE) {
           <div style="position:absolute;left:0;right:0;bottom:0;height:820px;background:#d6d3d1"></div>
           <div style="position:absolute;left:40px;top:760px;width:420px;height:340px;background:#fdba74;border-radius:10px"><div style="position:absolute;left:150px;top:150px;width:110px;height:190px;background:#9a3412"></div></div>
           <div id="gate2" style="position:absolute;left:470px;top:880px;width:200px;height:220px;transform-origin:0 50%;background:repeating-linear-gradient(90deg,#78716c 0 10px,transparent 10px 36px);border-top:10px solid #78716c;border-bottom:10px solid #78716c"></div>
-          <div id="kid" style="position:absolute;left:560px;top:880px;font-size:260px;line-height:1">🧒</div>
+          <div id="kid" style="position:absolute;left:620px;top:860px;font-size:280px;line-height:1">🧒</div>
           ${dog('d4', 220)}
           <div id="heart" style="position:absolute;left:600px;top:700px;font-size:130px">🧡</div>
           <div id="conf" style="position:absolute;inset:0;pointer-events:none">${Array.from({ length: 22 }, (_, i) => `<span class="cf" style="position:absolute;font-size:${50 + (i % 4) * 14}px">🐾</span>`).join('')}</div>`;
@@ -160,7 +160,7 @@ window.EXTRA_SCENES = function (BASE) {
       }
       root.querySelector('#gate2').style.transform = `perspective(600px) rotateY(${-60 * easeOut(prog(t, 0, .4))}deg)`;
       const j = easeOut(prog(t, .15, .6)); const d = root.querySelector('#d4');
-      d.style.left = lerp(200, 520, j) + 'px'; d.style.top = (880 - Math.sin(j * Math.PI) * 220) + 'px'; d.style.transform = `rotate(${lerp(-10, 20, j)}deg)`;
+      d.style.left = lerp(150, 400, j) + 'px'; d.style.top = (880 - Math.sin(j * Math.PI) * 220) + 'px'; d.style.transform = `rotate(${lerp(-10, 20, j)}deg)`;
       const kid = root.querySelector('#kid'); kid.style.transform = `rotate(${lerp(0, -14, easeOut(prog(t, .6, .3)))}deg)`;
       const hp = prog(t, .75, .4); const h = root.querySelector('#heart'); h.style.opacity = hp > 0 ? 1 : 0; h.style.transform = `translateY(${-hp * 120}px) scale(${back(hp)})`;
       root.querySelectorAll('.cf').forEach((c, i) => { const st = .5 + (i % 7) * .07; const p = Math.max(0, t - st); c.style.left = ((i * 97) % 1000 + Math.sin(p * 3 + i) * 30) + 'px'; c.style.top = (200 + p * 520 * (0.7 + (i % 3) * .2)) + 'px'; c.style.opacity = t > st ? 1 : 0; c.style.transform = `rotate(${p * 120 + i * 20}deg)`; });
@@ -184,12 +184,12 @@ window.EXTRA_SCENES = function (BASE) {
         root.innerHTML = `<div id="day">${table(true)}</div><div id="nightL" style="position:absolute;inset:0">${table(false)}</div>
           ${dog('d5', 230, 'left:60px;top:1400px;z-index:10')}<div id="zz5" style="position:absolute;left:250px;top:1330px;font-size:80px;z-index:10">💤</div>
           <div id="plane" style="position:absolute;font-size:150px;z-index:12">✈️</div>
-          <div id="share" class="chip" style="position:absolute;left:50%;top:330px;font-size:46px;z-index:12">📤 Mándaselo a tu amigo de los perritos perdidos</div>`;
+          <div id="share" class="chip" style="position:absolute;left:50%;top:330px;font-size:46px;z-index:12">📤 ¡Compártelo!</div>`;
         root.dataset.init = 1;
       }
       const nl = root.querySelector('#nightL'); nl.style.opacity = clamp((t - (s.dur - .55)) / .45);
       const pp = prog(t, .6, 1.4); const pl = root.querySelector('#plane'); pl.style.opacity = pp > 0 && pp < 1 ? 1 : 0; pl.style.left = lerp(200, 980, pp) + 'px'; pl.style.top = (1250 - Math.sin(pp * Math.PI) * 500 + pp * 300) + 'px'; pl.style.transform = `rotate(${lerp(-20, 30, pp)}deg)`;
-      const sh = root.querySelector('#share'); const sp = prog(t, .2, .35); sh.style.opacity = clamp(sp * 2) * (1 - clamp((t - (s.dur - .6)) / .3)); sh.style.transform = `translateX(-50%) scale(${back(sp)})`; sh.style.whiteSpace = 'normal'; sh.style.width = '820px'; sh.style.textAlign = 'center'; sh.style.justifyContent = 'center';
+      const sh = root.querySelector('#share'); const sp = prog(t, .2, .35); sh.style.opacity = clamp(sp * 2) * (1 - clamp((t - (s.dur - .6)) / .3)); sh.style.transform = `translateX(-50%) scale(${back(sp)})`; sh.style.whiteSpace = 'nowrap'; sh.style.textAlign = 'center'; sh.style.justifyContent = 'center';
       const z = root.querySelector('#zz5'); z.style.opacity = t > s.dur - 1.6 ? 0 : .5 + .5 * Math.abs(Math.sin(t * 3));
       root.querySelector('#d5').style.transform = t > s.dur - 1.6 ? 'scaleX(-1) translateY(-10px)' : 'none';
       root.querySelector('#d5').style.opacity = 1 - clamp((t - (s.dur - .55)) / .45);

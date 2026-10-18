@@ -1,6 +1,6 @@
 # Reel de lanzamiento: "Canelo se perdió (y casi estafan a su familia)"
 
-Video final: `docs/reel-canelo.mp4` (1080×1920, 30 fps, 42 s, voz + música original + subtítulos).
+Video final: `docs/reel-canelo.mp4` (1080×1920, 30 fps, 54 s, con la voz de Benjamín, música original y subtítulos).
 Portada: `docs/portada-reel-canelo.jpg`. Texto del post: `caption-instagram.txt`.
 
 ## Cómo se hizo
@@ -13,3 +13,8 @@ Portada: `docs/portada-reel-canelo.jpg`. Texto del post: `caption-instagram.txt`
    `make_timeline.py` sincroniza escenas y subtítulos con la voz, `mix.py` mezcla voz, música y efectos.
 
 Los scripts usan rutas de trabajo temporales; sirven como base para la "Parte 2".
+
+## Versión 2 (con voz propia)
+- `fineseg.py` y `cutlines.py` cortan la grabación en sus 13 frases (en los puntos más silenciosos) y las verifican con Whisper small.
+- `frases-voz.json` tiene el texto final de cada frase (subtítulos) y su duración.
+- `make_timeline2.py` arma escenas al ritmo de la voz, con pausas para respirar, subtítulos discretos y lupas; `mix2.py` mezcla voz, música y efectos.

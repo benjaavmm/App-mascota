@@ -1,0 +1,93 @@
+[
+ {
+  "i": 1,
+  "file": "uservo/u01.wav",
+  "dur": 3.56,
+  "text": "Anoche me perdí… y casi estafan a mi familia.",
+  "heard": "Anoche me perdí y casi estafan a mi familia."
+ },
+ {
+  "i": 2,
+  "file": "uservo/u02.wav",
+  "dur": 2.38,
+  "text": "Soy Canelo, con cero sentido de orientación.",
+  "heard": "Soy Canelo con cero sentido de orientación."
+ },
+ {
+  "i": 3,
+  "file": "uservo/u03.wav",
+  "dur": 2.84,
+  "text": "Me subieron a mil grupos publicando el número de teléfono.",
+  "heard": "Me subieron a mil grupos publicando el número de teléfono."
+ },
+ {
+  "i": 4,
+  "file": "uservo/u04.wav",
+  "dur": 3.09,
+  "text": "Y les escribían estafadores. Y spóiler: no me tenían.",
+  "heard": "y le escribían esta fador que spoiler no me tenían."
+ },
+ {
+  "i": 5,
+  "file": "uservo/u05.wav",
+  "dur": 3.65,
+  "text": "Pero también me subieron a AyudaPatitas, sin subir el número de teléfono.",
+  "heard": "Pero también me subieron ayuda patitas, sin subir el número de teléfono."
+ },
+ {
+  "i": 6,
+  "file": "uservo/u06.wav",
+  "dur": 2.91,
+  "text": "Y doña Rosa me encontró, y me publicó como encontrado.",
+  "heard": "Y doña Rosa me encontró y me publicó como encontrado."
+ },
+ {
+  "i": 7,
+  "file": "uservo/u07.wav",
+  "dur": 2.01,
+  "text": "Y la aplicación le avisó sola a mi familia.",
+  "heard": "y la aplicación les ha visto solo a mi familia."
+ },
+ {
+  "i": 8,
+  "file": "uservo/u08.wav",
+  "dur": 3.48,
+  "text": "Hablaron por el chat, y si se habla de transferencias, la aplicación te advierte.",
+  "heard": "Habladen por el chat y si se habla de transferencias la aplicación te advierte."
+ },
+ {
+  "i": 9,
+  "file": "uservo/u09.wav",
+  "dur": 2.23,
+  "text": "Y hoy, por fin, volví a casa.",
+  "heard": "Y hoy, por fin volví a casa."
+ },
+ {
+  "i": 10,
+  "file": "uservo/u10.wav",
+  "dur": 3.06,
+  "text": "Ah, y hay muchas otras especies para adoptar,",
+  "heard": "y hay muchas otras especies para adoptar."
+ },
+ {
+  "i": 11,
+  "file": "uservo/u11.wav",
+  "dur": 2.52,
+  "text": "con acta de la Ley Cholito y seguimientos con foto.",
+  "heard": "con acta de la hecholito y seguimientos con fotos."
+ },
+ {
+  "i": 12,
+  "file": "uservo/u12.wav",
+  "dur": 2.74,
+  "text": "Entra gratis a ayudapatitas.cl y síguenos.",
+  "heard": "Entra a gratisayodapatitas.cl y síguenos."
+ },
+ {
+  "i": 13,
+  "file": "uservo/u13.wav",
+  "dur": 4.08,
+  "text": "Mándaselo a quien comparte perritos perdidos, por si me vuelvo a perder.",
+  "heard": "Mándaselo aquí en Comparte Perritos Perdidos por si me vuelvo a perder."
+ }
+]

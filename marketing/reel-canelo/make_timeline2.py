@@ -69,7 +69,8 @@ for i in sorted(segs):
         L = len(" ".join(c)) / tot * v
         pos = "top" if s["type"] in PHONEY else "low"
         if s["type"] in ("morning", "alert"): pos = "top"
-        captions.append({"start": round(a, 3), "end": round(a + L + (.25 if c is chunks[-1] else 0), 3), "text": " ".join(c), "pos": pos}); a += L
+        if s["type"] == "logo": pos = "hide"
+        captions.append({"start": round(a, 3), "end": round(a + L + (.25 if c is chunks[-1] else 0), 3), "text": " ".join(c), "pos": pos, "hide": pos == "hide"}); a += L
     t += d
 total = round(t, 3)
 TL = {"duration": total, "scenes": scenes, "captions": captions}
