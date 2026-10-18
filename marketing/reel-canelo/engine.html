@@ -156,7 +156,7 @@ window.render=function(t){
   if(!built.length)build();
   for(const b of built){
     const vis=t>=b.start-TRANS&&t<b.end+0.0001;
-    b.node.style.display=vis?'block':'none';
+    b.node.style.display=vis?'':'none';
     if(!vis)continue;
     const lt=Math.max(0,t-b.start);
     SCENES[b.s.type](b.s,lt,b.node);
