@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<style>
+@font-face{font-family:N1;src:url('07454f8ad8aaac57-s.p.2kjei9psvcorz.woff2');font-weight:200 1000}
+@font-face{font-family:N2;src:url('224e262ef877bfa4-s.1zkvd_innyig_.woff2');font-weight:200 1000}
+@font-face{font-family:N3;src:url('7f11d98043fdedc9-s.2c8-7nzo1jf9r.woff2');font-weight:200 1000}
+@font-face{font-family:N4;src:url('d8cb5ab3660140cd-s.2demiz2t05dx4.woff2');font-weight:200 1000}
+@font-face{font-family:N5;src:url('e6d00ff86ef9e699-s.1vcas2uk12q5a.woff2');font-weight:200 1000}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:N1,N2,N3,N4,N5,sans-serif;color:#1c1917;background:#888;width:1080px}
+.s{position:relative;width:1080px;height:1350px;overflow:hidden;margin-bottom:20px;background:radial-gradient(circle at 12% 6%,#ccfbf1 0,#fff7ed 42%,#ffedd5 100%)}
+.s.story{height:1920px}
+.s.o{background:radial-gradient(circle at 20% 12%,#fb923c 0,#ea580c 48%,#c2410c 100%);color:#fff}
+.s.d{background:radial-gradient(circle at 50% 25%,#292524 0,#0c0a09 100%);color:#fff}
+.s.t{background:radial-gradient(circle at 20% 12%,#5eead4 0,#14b8a6 50%,#0f766e 100%);color:#fff}
+.brand{position:absolute;top:56px;left:64px;display:flex;align-items:center;gap:18px;font-weight:900;font-size:38px;color:#c2410c}
+.o .brand,.d .brand,.t .brand{color:#fff}
+.brand img{width:70px;height:70px;border-radius:20px;box-shadow:0 8px 18px rgba(0,0,0,.15)}
+.pg{position:absolute;top:66px;right:64px;font-weight:900;font-size:30px;color:#c2410c;background:#fff;border-radius:999px;padding:10px 24px;box-shadow:0 8px 18px rgba(0,0,0,.08)}
+.foot{position:absolute;left:64px;right:64px;bottom:56px;display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:34px;color:#c2410c}
+.o .foot,.d .foot,.t .foot{color:#fff}
+.swipe{background:#1c1917;color:#fff;border-radius:999px;padding:14px 30px;font-size:32px}
+.o .swipe{background:#fff;color:#c2410c}
+.body{position:absolute;left:64px;right:64px;top:180px;bottom:150px;display:flex;flex-direction:column;justify-content:center}
+.row{display:flex;justify-content:space-between;align-items:center}
+.emo2{font-size:180px;line-height:1;transform:rotate(8deg);filter:drop-shadow(0 20px 24px rgba(0,0,0,.15))}
+.num{width:130px;height:130px;border-radius:50%;background:#ea580c;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:72px;box-shadow:0 16px 30px rgba(234,88,12,.35)}
+.emo{position:absolute;right:56px;top:170px;font-size:230px;line-height:1;transform:rotate(8deg);filter:drop-shadow(0 20px 24px rgba(0,0,0,.15))}
+h1{font-weight:900;letter-spacing:-2.5px;line-height:1.04}
+h2{font-weight:900;font-size:84px;letter-spacing:-2px;line-height:1.05;margin-top:40px}
+p.tx{font-size:46px;font-weight:600;line-height:1.38;color:#44403c;margin-top:34px}
+.o p.tx,.d p.tx,.t p.tx{color:#ffedd5}
+p.tx b{color:#c2410c;font-weight:900}
+.tip{margin-top:40px;background:#fff;border-left:14px solid #14b8a6;border-radius:28px;padding:28px 34px;font-size:40px;font-weight:700;line-height:1.3;box-shadow:0 14px 30px rgba(67,20,7,.08)}
+.tip.red{border-left-color:#dc2626}
+.shot{margin-top:40px;border-radius:34px;overflow:hidden;box-shadow:0 24px 50px rgba(67,20,7,.18);border:6px solid #fff;background:#fff}
+.shot div{width:100%;background-repeat:no-repeat}
+.hl{background:#fff;color:#c2410c;border-radius:18px;padding:0 .16em;display:inline-block;line-height:1.12;margin-top:12px}
+.hlo{background:#ea580c;color:#fff;border-radius:18px;padding:0 .16em;display:inline-block;line-height:1.12;margin-top:12px}
+.chip{display:inline-block;background:#fff;color:#c2410c;font-weight:900;font-size:40px;padding:16px 34px;border-radius:999px;box-shadow:0 12px 26px rgba(0,0,0,.15);margin:0 12px 16px 0}
+.list{margin-top:40px;display:flex;flex-direction:column;gap:22px}
+.list div{background:#fff;border-radius:28px;padding:24px 30px;font-size:42px;font-weight:800;display:flex;gap:20px;align-items:center;box-shadow:0 10px 24px rgba(67,20,7,.08)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const brand = `<div class="brand"><img src="icon-512.png">AyudaPatitas</div>`;
+const shot = (img, y, h, w = 952) => `<div class="shot"><div style="height:${Math.round(h * w / 780)}px;background-image:url(shots/${img}.png);background-size:${w}px auto;background-position:0 ${-Math.round(y * w / 780)}px"></div></div>`;
+const step = (n, total, emoji, title, text, extra = '', cls = '', foot = 'Desliza →') =>
+  `<div class="s ${cls}">${brand}<div class="pg">${n}/${total}</div><div class="body"><div class="row"><div class="num">${n - 1}</div><div class="emo2">${emoji}</div></div><h2>${title}</h2><p class="tx">${text}</p>${extra}</div><div class="foot"><span>ayudapatitas.cl</span><span class="swipe">${foot}</span></div></div>`;
+const cover = (cls, emoji, title, sub, chips) =>
+  `<div class="s ${cls}">${brand}<div class="body" style="top:150px"><div style="font-size:150px;line-height:1;margin-bottom:36px">${emoji}</div><h1 style="font-size:${title.length > 60 ? 108 : 124}px">${title}</h1><p class="tx" style="font-size:52px;font-weight:800;margin-top:40px">${sub}</p><div style="margin-top:56px">${chips.map((c) => `<span class="chip">${c}</span>`).join('')}</div></div><div class="foot"><span>ayudapatitas.cl</span><span class="swipe">Desliza →</span></div></div>`;
+const cta = (title, sub) =>
+  `<div class="s o" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 80px"><img src="icon-512.png" style="width:300px;height:300px;border-radius:80px;box-shadow:0 30px 60px rgba(0,0,0,.25)"><h1 style="font-size:96px;margin-top:60px">${title}</h1><p class="tx" style="font-size:48px;font-weight:800;margin-top:36px">${sub}</p><div style="margin-top:60px;font-size:72px;font-weight:900;color:#ea580c;background:#fff;padding:26px 60px;border-radius:999px;box-shadow:0 20px 40px rgba(0,0,0,.2)">ayudapatitas.cl</div></div>`;
+
+const A = 9, B = 9;
+const SETS = {
+  'perdida': [
+    cover('o', '🐶🔎', '¿Se perdió tu <span class="hl">mascota?</span>', 'Qué hacer en las primeras 24 horas', ['📌 Guárdalo', '🔁 Compártelo']),
+    step(2, A, '🏃', 'Busca de inmediato', 'Recorre unas <b>10 cuadras</b> a la redonda. Llámala por su nombre y lleva su comida o un juguete que suene.', `<div class="tip">💡 Muchos se esconden <b>cerca y asustados</b>: revisa bajo autos, arbustos y patios.</div>`),
+    step(3, A, '📲', 'Publícala en AyudaPatitas', 'Elige <b>«Se me perdió»</b>, sube fotos claras y recientes, la comuna y una seña única (collar, mancha, cicatriz). <b>Es gratis.</b>', shot('c-publicar-top', 960, 300)),
+    step(4, A, '🔔', 'Recibe avisos al tiro', 'Si alguien publica un animal <b>encontrado</b> parecido en tu zona, te llega una <b>posible coincidencia</b>.', shot('c-notificacion', 470, 320)),
+    step(5, A, '🏥', 'Avisa a veterinarias y a tu municipalidad', 'Si tiene <b>microchip</b>, así te pueden ubicar. Deja una foto y una forma de contacto.'),
+    step(6, A, '🔗', 'Comparte un solo enlace', 'Manda el enlace de tu publicación por <b>WhatsApp</b> y a los grupos de tu comuna: toda la info en un solo lugar.', `<div class="tip">🔒 No publiques tu dirección. En AyudaPatitas te escriben por el <b>chat seguro</b>.</div>`),
+    step(7, A, '🚩', 'Ojo con las estafas', 'Nunca deposites dinero <b>antes de ver a tu mascota</b> y nunca compartas códigos que te lleguen por SMS.', `<div class="tip red">🤝 Para reencontrarse, juntarse en un <b>lugar público</b> y con compañía.</div>`),
+    step(8, A, '🧡', 'No te rindas', 'Muchas mascotas vuelven a casa después de días o semanas. Revisa también la sección <b>«Encontrados»</b>.', '', '', 'Guárdalo 📌'),
+    cta('Guarda este post', 'y compártelo con tu comuna. Puede ayudar a alguien hoy.'),
+  ],
+  'adoptar': [
+    cover('t', '🐾🤔', 'Antes de adoptar, hazte estas <span class="hl" style="color:#0f766e">7 preguntas</span>', 'Adoptar es un compromiso para toda la vida', ['📌 Guárdalo', '🏡 Adopción responsable']),
+    step(2, B, '⏰', '¿Tengo tiempo cada día?', 'Paseos, juegos, cariño y compañía. Un animal no es un adorno: <b>es parte de la familia</b>.'),
+    step(3, B, '🏡', '¿Mi casa lo permite?', 'Espacio, patio o paseos diarios. Si arriendas, revisa que tu contrato <b>acepte mascotas</b>.'),
+    step(4, B, '💸', '¿Puedo cubrir sus gastos?', 'Comida, vacunas, antiparasitarios, esterilización y <b>urgencias veterinarias</b>.'),
+    step(5, B, '🧳', '¿Quién lo cuida si viajo?', 'Ten un plan B: familia, amistades o una guardería de confianza.'),
+    step(6, B, '👨‍👩‍👧', '¿Toda mi familia está de acuerdo?', 'Que todos quieran recibirlo, y revisar <b>alergias</b> antes de llevarlo a casa.'),
+    step(7, B, '🗓️', '¿Estoy listo para muchos años?', 'Un perro o un gato puede vivir <b>15 años o más</b>. Un caballo, más de 25.'),
+    step(8, B, '📋', '¿Cumpliré la Ley Cholito?', 'Perros y gatos deben tener <b>microchip</b> e inscribirse en el <b>Registro Nacional de Mascotas</b> (Ley 21.020).', '', '', 'Guárdalo 📌'),
+    cta('¿Respondiste que sí a todo? 🎉', 'Tu próximo compañero te espera. Adopta gratis y con seguimiento.'),
+  ],
+  'dato': [
+    `<div class="s d">${brand}<div class="body" style="top:250px"><span class="chip" style="background:#fde047;color:#1c1917">⚖️ Dato de domingo</span><h1 style="font-size:100px;margin-top:50px">En Chile, abandonar a una mascota es <span class="hlo">maltrato animal</span></h1><p class="tx" style="margin-top:44px">Así lo establece la Ley 21.020 (Ley Cholito).</p><div class="tip" style="color:#1c1917;margin-top:56px">🧡 Si ya no puedes cuidarla, búscale un hogar responsable: <b>publícala gratis</b> en AyudaPatitas.</div></div><div class="foot"><span>ayudapatitas.cl</span><span class="swipe" style="background:#fff;color:#1c1917">Compártelo 🔁</span></div></div>`,
+  ],
+  'historias': [
+    `<div class="s story o">${brand}<div class="body" style="top:330px;bottom:auto;text-align:center"><div style="font-size:200px">🐕</div><h1 style="font-size:110px;margin-top:30px">¿Adoptarías un animal <span class="hl">adulto?</span></h1><p class="tx" style="font-size:50px;margin-top:40px">Suelen ser más tranquilos y ya sabes cómo es su carácter 🧡</p></div></div>`,
+    `<div class="s story t">${brand}<div class="body" style="top:330px;bottom:auto;text-align:center"><div style="font-size:200px">📸🐾</div><h1 style="font-size:104px;margin-top:30px">Muéstranos a tu mascota adoptada</h1><p class="tx" style="font-size:50px;margin-top:40px">¿Cómo llegó a tu vida? Las mejores historias las compartimos aquí 🧡</p></div></div>`,
+    `<div class="s story d">${brand}<div class="body" style="top:330px;bottom:auto;text-align:center"><div style="font-size:200px">🚩</div><h1 style="font-size:104px;margin-top:30px">¿Alguna vez te intentaron estafar?</h1><p class="tx" style="font-size:50px;margin-top:40px">Vota y comparte esta historia para que no le pase a nadie más.</p></div></div>`,
+  ],
+};
+document.getElementById('root').innerHTML = Object.entries(SETS).map(([k, list]) => list.map((h, i) => h.replace('class="s', `data-name="${k}-${String(i + 1).padStart(2, '0')}" class="s`)).join('')).join('');
+</script>
+</body>
+</html>
