@@ -340,6 +340,17 @@ test.describe("Protección de rutas", () => {
     await context.close();
   });
 
+  test("cada publicación ofrece un cartel con código QR", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/mascotas");
+    await page.locator('a[href^="/mascotas/"]:has(h3)').first().click();
+    const poster = page.getByRole("link", { name: "Cartel" });
+    await expect(poster).toBeVisible();
+    const res = await page.request.get((await poster.getAttribute("href"))!);
+    expect(res.status()).toBe(200);
+    expect(res.headers()["content-type"]).toBe("image/png");
+  });
+
   test("la portada carga sin violaciones de CSP", async ({ page }) => {
     const errors: string[] = [];
     page.on("console", (msg) => {

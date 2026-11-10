@@ -259,20 +259,23 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
       </section>
 
       <Container>
-        <dl className="grid grid-cols-2 gap-3 rounded-3xl bg-stone-900 p-6 text-white sm:grid-cols-4 sm:p-8">
+        <dl className="flex flex-wrap justify-center gap-3 rounded-3xl bg-stone-900 p-6 text-white sm:p-8">
           {[
             { label: "Buscan hogar", value: s.available },
             { label: "Ya adoptados", value: s.adopted },
             { label: "De vuelta en casa", value: s.reunited },
             { label: "Organizaciones verificadas", value: s.verified_orgs },
-          ].map((item) => (
-            <div key={item.label} className="text-center">
-              <dd className="text-3xl font-extrabold text-brand-300 sm:text-4xl">
-                {(item.value ?? 0).toLocaleString("es-CL")}
-              </dd>
-              <dt className="mt-1 text-sm text-stone-300">{item.label}</dt>
-            </div>
-          ))}
+          ]
+            // Al partir no mostramos contadores en cero.
+            .filter((item, i) => i === 0 || (item.value ?? 0) > 0)
+            .map((item) => (
+              <div key={item.label} className="flex-1 basis-1/3 text-center sm:basis-0">
+                <dd className="text-3xl font-extrabold text-brand-300 sm:text-4xl">
+                  {(item.value ?? 0).toLocaleString("es-CL")}
+                </dd>
+                <dt className="mt-1 text-sm text-stone-300">{item.label}</dt>
+              </div>
+            ))}
         </dl>
       </Container>
 

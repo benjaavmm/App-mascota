@@ -28,7 +28,7 @@ import { PetGallery } from "@/components/pets/pet-gallery";
 import { SpeciesIcon } from "@/components/pets/species-icon";
 import { FavoriteButton } from "@/components/pets/favorite-button";
 import { SITE_URL } from "@/lib/env";
-import { ShareButton, WhatsAppButton } from "@/components/pets/share-button";
+import { PosterButton, ShareButton, WhatsAppButton } from "@/components/pets/share-button";
 import { ReportButton } from "@/components/safety/report-button";
 import { SafetyTips } from "@/components/safety/safety-tips";
 import { Alert } from "@/components/ui/alert";
@@ -310,6 +310,7 @@ export default async function PetPage({ params }: PageProps<"/mascotas/[id]">) {
                   : `Encontraron esta mascota en ${placeLabel(pet.commune_code)}. ¿La conoces?`
             }
           />
+          {pet.status === "available" && <PosterButton petId={pet.id} />}
           {!isOwner && (
             <div className="ml-auto">
               <ReportButton

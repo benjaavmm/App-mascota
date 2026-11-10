@@ -23,21 +23,21 @@ export function PetCard({ pet, showStatus = false }: { pet: PetCardData; showSta
           path={pet.cover_path}
           species={pet.species}
           alt={`Foto de ${pet.name}`}
-          className="aspect-[4/3] transition-transform duration-300 group-hover:scale-[1.02]"
+          className="aspect-square transition-transform sm:aspect-[4/3] duration-300 group-hover:scale-[1.02]"
         />
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+        <div className="absolute top-2 left-2 flex flex-wrap gap-1 sm:top-3 sm:left-3 sm:gap-1.5">
           <KindBadge kind={pet.kind} />
           {pet.is_urgent && pet.status === "available" && <UrgentBadge />}
           {(showStatus || pet.status !== "available") && <StatusBadge status={pet.status} kind={pet.kind} />}
         </div>
       </div>
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="flex items-center gap-1.5 text-lg font-extrabold text-stone-900">
-          <SpeciesIcon species={pet.species} className="h-5 w-5 shrink-0 text-brand-600" />
+      <div className="flex flex-1 flex-col p-3 sm:p-4">
+        <h3 className="flex items-center gap-1.5 text-base font-extrabold text-stone-900 sm:text-lg">
+          <SpeciesIcon species={pet.species} className="h-4 w-4 shrink-0 text-brand-600 sm:h-5 sm:w-5" />
           <span className="truncate">{pet.name}</span>
           <span className="sr-only">({SPECIES_LABELS[pet.species]})</span>
         </h3>
-        <p className="mt-0.5 text-sm text-stone-600">
+        <p className="mt-0.5 text-xs text-stone-600 sm:text-sm">
           {[
             SEX_LABELS[pet.sex],
             isLostFound ? null : formatAge(pet.birth_date_estimate),
@@ -46,7 +46,7 @@ export function PetCard({ pet, showStatus = false }: { pet: PetCardData; showSta
             .filter(Boolean)
             .join(" · ")}
         </p>
-        <div className="mt-auto flex items-center justify-between gap-2 pt-3 text-sm text-stone-500">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 pt-2 text-xs text-stone-500 sm:pt-3 sm:text-sm">
           <span className="flex min-w-0 items-center gap-1">
             <MapPin className="h-4 w-4 shrink-0" aria-hidden />
             <span className="truncate">{commune}</span>
@@ -70,7 +70,7 @@ export function PetCard({ pet, showStatus = false }: { pet: PetCardData; showSta
 
 export function PetGrid({ pets, showStatus }: { pets: PetCardData[]; showStatus?: boolean }) {
   return (
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
       {pets.map((pet) => (
         <PetCard key={pet.id} pet={pet} showStatus={showStatus} />
       ))}

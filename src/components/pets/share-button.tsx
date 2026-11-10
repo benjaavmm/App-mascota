@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, MessageCircle, Share2 } from "lucide-react";
+import { Check, MessageCircle, Printer, Share2 } from "lucide-react";
 import { useState } from "react";
 
 import { buttonClasses } from "@/components/ui/button";
@@ -55,6 +55,20 @@ export function WhatsAppButton({ text, url }: { text: string; url: string }) {
     >
       <MessageCircle className="h-5 w-5" />
       WhatsApp
+    </a>
+  );
+}
+
+// Descarga el cartel (imagen con foto, datos y código QR) para imprimir o subir a historias.
+export function PosterButton({ petId }: { petId: string }) {
+  return (
+    <a
+      href={`/mascotas/${petId}/cartel`}
+      download="cartel-ayudapatitas.png"
+      className={buttonClasses({ variant: "secondary" })}
+    >
+      <Printer className="h-5 w-5" />
+      Cartel
     </a>
   );
 }
