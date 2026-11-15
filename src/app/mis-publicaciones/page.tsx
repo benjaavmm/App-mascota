@@ -1,4 +1,4 @@
-import { ClipboardList, Eye, Pencil, PawPrint, Plus } from "lucide-react";
+import { ClipboardList, Eye, PawPrint, Pencil, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -48,10 +48,16 @@ export default async function MyListingsPage() {
         title="Mis publicaciones"
         description="Administra tus mascotas publicadas, revisa solicitudes y actualiza su estado."
         action={
-          <ButtonLink href="/publicar">
-            <Plus className="h-4 w-4" />
-            Nueva publicación
-          </ButtonLink>
+          <>
+            <ButtonLink href="/mis-publicaciones/formulario" variant="secondary">
+              <ClipboardList className="h-4 w-4" />
+              Mi formulario de adopción
+            </ButtonLink>
+            <ButtonLink href="/publicar">
+              <Plus className="h-4 w-4" />
+              Nueva publicación
+            </ButtonLink>
+          </>
         }
       />
 

@@ -8,6 +8,8 @@ export const SEED_PASSWORD = "AyudaPatitas2026";
 export const SEED = {
   admin: "admin@ayudapatitas.test",
   shelter: "fundacion@ayudapatitas.test",
+  rescuer: "rescatista@ayudapatitas.test",
+  adopter: "adoptante@ayudapatitas.test",
 };
 
 // Busca en Mailpit (correo local de Supabase) el último enlace de confirmación enviado a `email`.

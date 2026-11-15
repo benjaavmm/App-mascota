@@ -50,6 +50,7 @@ Construida con **Next.js 16 + TypeScript + Tailwind CSS 4** y **Supabase** (Post
 - Publicar mascotas de cualquier especie doméstica **en adopción, perdidas o encontradas** con hasta 8 fotos.
 - Panel **Mis publicaciones**: editar, cambiar portada, pausar, archivar, marcar “adoptado” o “volvió a casa”.
 - **Solicitudes recibidas** con todas las respuestas del cuestionario, historial de la persona postulante y acciones: _en revisión_, _aprobar_, _no aceptar_ (con mensaje), _cancelar aprobación_ y _confirmar adopción_.
+- **Formulario de adopción propio** (en _Mis publicaciones_): agregar hasta 10 preguntas al cuestionario (respuesta corta o larga, sí/no u opciones) o usar un formulario externo de Google Forms, Microsoft Forms, Typeform, Jotform o Tally; los compromisos, el chat, el acta y los seguimientos se mantienen.
 - **Acta de adopción imprimible** (PDF desde el navegador) con los compromisos legales.
 - **Seguimientos post‑adopción** automáticos: 1 semana, 1 mes, 3 meses y 6 meses.
 - **Coincidencias perdidos/encontrados**: al publicar una mascota encontrada, se avisa a quienes buscan una parecida en la misma región.
@@ -304,7 +305,7 @@ Al aprobar, la mascota pasa a “en proceso” y no recibe nuevas solicitudes. A
 ## Pruebas
 
 ```bash
-# Pruebas de seguridad de la base de datos (RLS, permisos, flujos, alertas, push) — 124 pruebas pgTAP
+# Pruebas de seguridad de la base de datos (RLS, permisos, flujos, alertas, push, formularios) — 142 pruebas pgTAP
 npm run db:test
 
 # Pruebas end-to-end con navegador (requiere Supabase local con `db reset` y la app corriendo o se inicia sola)

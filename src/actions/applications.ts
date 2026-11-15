@@ -4,6 +4,8 @@ import { refresh, revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth";
+import { getPublisherForm } from "@/lib/adoption-form";
+import type { AdoptionFormConfig } from "@/lib/forms";
 import { friendlyError } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/server";
 import { isUuid } from "@/lib/utils";
@@ -11,6 +13,7 @@ import type { TablesInsert } from "@/types/database";
 import {
   applicationSchema,
   decisionSchema,
+  externalApplicationSchema,
   followupSchema,
   formObject,
   validationError,
@@ -18,6 +21,26 @@ import {
 } from "@/lib/validation";
 
 const SESSION_EXPIRED: ActionState = { error: "Tu sesión expiró. Vuelve a ingresar." };
+
+// Revisa las respuestas a las preguntas propias de quien publica (campos "q_<id>").
+function checkCustomAnswers(questions: AdoptionFormConfig["questions"], values: Record<string, string>) {
+  const byId: Record<string, string> = {};
+  const errors: Record<string, string[]> = {};
+  for (const q of questions) {
+    const answer = (values[`q_${q.id}`] ?? "").trim();
+    if (!answer) {
+      if (q.required) errors[`q_${q.id}`] = ["Esta pregunta es obligatoria."];
+      continue;
+    }
+    const max = q.kind === "long" ? 1500 : 300;
+    if (answer.length > max) errors[`q_${q.id}`] = [`Máximo ${max} caracteres.`];
+    else if (q.kind === "yesno" && answer !== "Sí" && answer !== "No")
+      errors[`q_${q.id}`] = ["Elige Sí o No."];
+    else if (q.kind === "choice" && !q.options?.includes(answer)) errors[`q_${q.id}`] = ["Elige una opción."];
+    else byId[q.id] = answer;
+  }
+  return { byId, errors };
+}
 
 export async function submitApplication(
   petId: string,
@@ -29,14 +52,35 @@ export async function submitApplication(
   if (!user) return SESSION_EXPIRED;
 
   const values = formObject(formData);
-  const parsed = applicationSchema.safeParse(values);
-  if (!parsed.success) return validationError(parsed.error, values);
-
   const supabase = await createClient();
+  const form = await getPublisherForm(supabase, petId);
+
+  let row: TablesInsert<"applications">;
+  if (form.externalUrl) {
+    const parsed = externalApplicationSchema.safeParse(values);
+    if (!parsed.success) return validationError(parsed.error, values);
+    row = { pet_id: petId, ...parsed.data } as TablesInsert<"applications">;
+  } else {
+    const parsed = applicationSchema.safeParse(values);
+    const answers = checkCustomAnswers(form.questions, values);
+    if (!parsed.success || Object.keys(answers.errors).length) {
+      return {
+        error: "Revisa los campos marcados.",
+        fieldErrors: {
+          ...(parsed.success ? {} : (validationError(parsed.error).fieldErrors ?? {})),
+          ...answers.errors,
+        },
+        values,
+      };
+    }
+    row = { pet_id: petId, ...parsed.data, custom_answers: answers.byId } as TablesInsert<"applications">;
+  }
+
   const { data, error } = await supabase
     .from("applications")
-    // publisher_id, applicant_id y conversation_id los asigna un trigger de la base de datos.
-    .insert({ pet_id: petId, ...parsed.data } as TablesInsert<"applications">)
+    // publisher_id, applicant_id y conversation_id los asigna un trigger de la base de datos,
+    // que también valida las respuestas a las preguntas propias de quien publica.
+    .insert(row)
     .select("id")
     .single();
   if (error || !data) return { error: friendlyError(error), values };

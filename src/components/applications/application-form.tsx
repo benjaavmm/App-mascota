@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
+import { ExternalLink, Loader2 } from "lucide-react";
 import { useActionState, useState, useTransition, type FormEvent, type ReactNode } from "react";
 
 import { Alert, FormMessage } from "@/components/ui/alert";
@@ -8,6 +8,7 @@ import { buttonClasses } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox, ChoiceGroup, Field, FieldError, Input, Textarea } from "@/components/ui/field";
 import { HOUSING_TENURE_LABELS, HOUSING_TYPE_LABELS } from "@/lib/constants";
+import { formHost, type AdoptionFormConfig } from "@/lib/forms";
 import type { ActionState } from "@/lib/validation";
 import type { Enums } from "@/types/database";
 
@@ -20,23 +21,26 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
+type FormAction = (state: ActionState, formData: FormData) => Promise<ActionState>;
+
 export function ApplicationForm({
   petName,
   species,
+  publisherName,
+  questions,
   action,
 }: {
   petName: string;
   species: Enums<"species">;
-  action: (state: ActionState, formData: FormData) => Promise<ActionState>;
+  publisherName: string;
+  questions: AdoptionFormConfig["questions"];
+  action: FormAction;
 }) {
   const [state, dispatch] = useActionState(action, {});
   const [pending, startTransition] = useTransition();
   const [tenure, setTenure] = useState("");
   const errors = state.fieldErrors ?? {};
   const v = state.values ?? {};
-  // La Ley 21.020 exige microchip y registro solo para perros y gatos.
-  const requiresRegistry = species === "dog" || species === "cat";
-
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -224,40 +228,20 @@ export function ApplicationForm({
         </Field>
       </Section>
 
-      <Section title="Compromisos de adopción responsable">
-        <p className="-mt-2 text-sm text-stone-600">
-          Según la Ley 21.020 de Tenencia Responsable, quien adopta una mascota debe velar por su bienestar.
-          {requiresRegistry &&
-            " En perros y gatos, además, es obligatorio identificarla con microchip e inscribirla en el Registro Nacional de Mascotas."}
-        </p>
-        {(
-          [
-            [
-              "commits_vet_care",
-              "Me comprometo a darle atención veterinaria, alimentación adecuada y las vacunas que correspondan a su especie.",
-            ],
-            [
-              "commits_sterilization",
-              requiresRegistry
-                ? "Me comprometo a esterilizarla si aún no lo está, y a identificarla con microchip e inscribirla en el Registro Nacional de Mascotas."
-                : "Me comprometo a esterilizarla si corresponde a su especie y aún no lo está.",
-            ],
-            [
-              "accepts_followup",
-              "Acepto enviar seguimientos (1 semana, 1, 3 y 6 meses) con fotos de cómo está.",
-            ],
-            [
-              "commits_return_not_abandon",
-              "Si algún día no puedo cuidarla, la devolveré a quien me la entregó. Nunca la abandonaré.",
-            ],
-          ] as const
-        ).map(([name, label]) => (
-          <div key={name}>
-            <Checkbox id={name} name={name} required label={label} defaultChecked={v[name] === "on"} />
-            <FieldError errors={errors[name]} />
-          </div>
-        ))}
-      </Section>
+      {questions.length > 0 && (
+        <Section title={`Preguntas de ${publisherName}`}>
+          {questions.map((q) => (
+            <CustomQuestion
+              key={q.id}
+              question={q}
+              errors={errors[`q_${q.id}`]}
+              defaultValue={v[`q_${q.id}`]}
+            />
+          ))}
+        </Section>
+      )}
+
+      <Commitments species={species} errors={errors} values={v} />
 
       <Alert variant="info">
         Solo quien publicó a {petName} verá tus respuestas. Tu teléfono y correo no se comparten
@@ -272,6 +256,199 @@ export function ApplicationForm({
         >
           {pending && <Loader2 className="h-5 w-5 animate-spin" />}
           {pending ? "Enviando…" : "Enviar solicitud"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// Una pregunta propia de quien publica.
+function CustomQuestion({
+  question: q,
+  errors,
+  defaultValue,
+}: {
+  question: AdoptionFormConfig["questions"][number];
+  errors?: string[];
+  defaultValue?: string;
+}) {
+  const name = `q_${q.id}`;
+  if (q.kind === "yesno" || q.kind === "choice") {
+    const options = q.kind === "yesno" ? ["Sí", "No"] : (q.options ?? []);
+    return (
+      <ChoiceGroup
+        legend={q.label}
+        name={name}
+        required={q.required}
+        errors={errors}
+        defaultValue={defaultValue}
+        options={options.map((o) => ({ value: o, label: o }))}
+      />
+    );
+  }
+  return (
+    <Field label={q.label} htmlFor={name} required={q.required} errors={errors}>
+      {q.kind === "long" ? (
+        <Textarea
+          id={name}
+          name={name}
+          required={q.required}
+          maxLength={1500}
+          rows={3}
+          defaultValue={defaultValue ?? ""}
+        />
+      ) : (
+        <Input
+          id={name}
+          name={name}
+          required={q.required}
+          maxLength={300}
+          defaultValue={defaultValue ?? ""}
+        />
+      )}
+    </Field>
+  );
+}
+
+// Compromisos de adopción responsable: se piden siempre, también con formulario externo.
+function Commitments({
+  species,
+  errors,
+  values: v,
+}: {
+  species: Enums<"species">;
+  errors: Record<string, string[] | undefined>;
+  values: Record<string, string>;
+}) {
+  // La Ley 21.020 exige microchip y registro solo para perros y gatos.
+  const requiresRegistry = species === "dog" || species === "cat";
+  return (
+    <Section title="Compromisos de adopción responsable">
+      <p className="-mt-2 text-sm text-stone-600">
+        Según la Ley 21.020 de Tenencia Responsable, quien adopta una mascota debe velar por su bienestar.
+        {requiresRegistry &&
+          " En perros y gatos, además, es obligatorio identificarla con microchip e inscribirla en el Registro Nacional de Mascotas."}
+      </p>
+      {(
+        [
+          [
+            "commits_vet_care",
+            "Me comprometo a darle atención veterinaria, alimentación adecuada y las vacunas que correspondan a su especie.",
+          ],
+          [
+            "commits_sterilization",
+            requiresRegistry
+              ? "Me comprometo a esterilizarla si aún no lo está, y a identificarla con microchip e inscribirla en el Registro Nacional de Mascotas."
+              : "Me comprometo a esterilizarla si corresponde a su especie y aún no lo está.",
+          ],
+          [
+            "accepts_followup",
+            "Acepto enviar seguimientos (1 semana, 1, 3 y 6 meses) con fotos de cómo está.",
+          ],
+          [
+            "commits_return_not_abandon",
+            "Si algún día no puedo cuidarla, la devolveré a quien me la entregó. Nunca la abandonaré.",
+          ],
+        ] as const
+      ).map(([name, label]) => (
+        <div key={name}>
+          <Checkbox id={name} name={name} required label={label} defaultChecked={v[name] === "on"} />
+          <FieldError errors={errors[name]} />
+        </div>
+      ))}
+    </Section>
+  );
+}
+
+// Postulación cuando quien publica usa su propio formulario (Google Forms, etc.).
+export function ExternalApplicationForm({
+  petName,
+  species,
+  publisherName,
+  formUrl,
+  action,
+}: {
+  petName: string;
+  species: Enums<"species">;
+  publisherName: string;
+  formUrl: string;
+  action: FormAction;
+}) {
+  const [state, dispatch] = useActionState(action, {});
+  const [pending, startTransition] = useTransition();
+  const errors = state.fieldErrors ?? {};
+  const v = state.values ?? {};
+
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    startTransition(() => dispatch(formData));
+  };
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-6" noValidate>
+      <Section title={`1. Completa el formulario de ${publisherName}`}>
+        <p className="-mt-2 text-sm text-stone-600">
+          {publisherName} usa su propio formulario de adopción. Se abre en otra pestaña; cuando lo envíes,
+          vuelve aquí para terminar.
+        </p>
+        <a
+          href={formUrl}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          className={buttonClasses({ size: "lg", className: "w-full sm:w-auto" })}
+        >
+          <ExternalLink className="h-5 w-5" />
+          Abrir formulario
+        </a>
+        <p className="text-xs text-stone-500">
+          Enlace a <strong>{formHost(formUrl)}</strong>. Nunca pongas contraseñas ni datos bancarios en un
+          formulario.
+        </p>
+      </Section>
+
+      <Section title={`2. Confirma tu postulación a ${petName}`}>
+        <div>
+          <Checkbox
+            id="external_form_confirmed"
+            name="external_form_confirmed"
+            required
+            label={`Ya completé y envié el formulario de ${publisherName}`}
+            defaultChecked={v.external_form_confirmed === "on" || undefined}
+          />
+          <FieldError errors={errors.external_form_confirmed} />
+        </div>
+        <Field
+          label={`Mensaje para ${publisherName} (opcional)`}
+          htmlFor="applicant_note"
+          errors={errors.applicant_note}
+          hint="Por ejemplo, con qué nombre completaste el formulario."
+        >
+          <Textarea
+            id="applicant_note"
+            name="applicant_note"
+            maxLength={1000}
+            rows={3}
+            defaultValue={v.applicant_note ?? ""}
+          />
+        </Field>
+      </Section>
+
+      <Commitments species={species} errors={errors} values={v} />
+
+      <Alert variant="info">
+        Al enviar, se abre un chat seguro con {publisherName} para coordinar. Adoptar es gratis: nadie debe
+        pedirte dinero.
+      </Alert>
+      <FormMessage state={state} />
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={pending}
+          className={buttonClasses({ size: "lg", className: "w-full sm:w-auto" })}
+        >
+          {pending && <Loader2 className="h-5 w-5 animate-spin" />}
+          {pending ? "Enviando…" : "Enviar postulación"}
         </button>
       </div>
     </form>

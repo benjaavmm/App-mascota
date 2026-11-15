@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { isValidCommune } from "@/lib/chile";
+import { FORM_URL_PATTERN, MAX_QUESTIONS } from "@/lib/forms";
 import { Constants } from "@/types/database";
 
 z.config(z.locales.es());
@@ -228,6 +229,13 @@ export type PetInput = z.infer<typeof petSchema>;
 // ---------------------------------------------------------------------------
 // Solicitudes de adopción
 // ---------------------------------------------------------------------------
+const commitments = {
+  commits_vet_care: requiredCheckbox("Este compromiso es obligatorio."),
+  commits_sterilization: requiredCheckbox("Este compromiso es obligatorio."),
+  accepts_followup: requiredCheckbox("Este compromiso es obligatorio."),
+  commits_return_not_abandon: requiredCheckbox("Este compromiso es obligatorio."),
+};
+
 export const applicationSchema = z
   .object({
     housing_type: z.enum(E.housing_type, { error: "Elige el tipo de vivienda." }),
@@ -255,14 +263,61 @@ export const applicationSchema = z
     experience: text(10, 1500, "Tu experiencia"),
     motivation: text(50, 2000, "Tu motivación"),
     care_plan: text(20, 1500, "Tu plan de cuidados"),
-    commits_vet_care: requiredCheckbox("Este compromiso es obligatorio."),
-    commits_sterilization: requiredCheckbox("Este compromiso es obligatorio."),
-    accepts_followup: requiredCheckbox("Este compromiso es obligatorio."),
-    commits_return_not_abandon: requiredCheckbox("Este compromiso es obligatorio."),
+    ...commitments,
   })
   .refine((d) => d.housing_tenure !== "rented" || d.landlord_allows_pets !== null, {
     path: ["landlord_allows_pets"],
     error: "Indica si tu contrato de arriendo permite mascotas.",
+  });
+
+// Postulación cuando quien publica usa su propio formulario (Google Forms, etc.).
+export const externalApplicationSchema = z.object({
+  external_form_confirmed: requiredCheckbox("Confirma que completaste el formulario de quien publica."),
+  applicant_note: optionalText(1000, "El mensaje"),
+  ...commitments,
+});
+
+const formQuestionSchema = z
+  .object({
+    label: text(3, 200, "El texto de la pregunta"),
+    kind: z.enum(["short", "long", "yesno", "choice"]),
+    required: z.boolean(),
+    options: z
+      .array(z.string().trim().min(1).max(80, { error: "Cada opción: máximo 80 caracteres." }))
+      .max(8, { error: "Máximo 8 opciones por pregunta." })
+      .nullable(),
+  })
+  .transform((q) => ({ ...q, options: q.kind === "choice" ? (q.options ?? []) : null }))
+  .refine((q) => q.kind !== "choice" || (q.options?.length ?? 0) >= 2, {
+    error: "Las preguntas de opciones necesitan al menos 2 opciones.",
+  });
+
+export const adoptionFormSchema = z
+  .object({
+    mode: z.enum(["app", "external"]),
+    external_url: z.string().trim().max(500, { error: "El enlace es demasiado largo." }).optional(),
+    intro: optionalText(600, "El mensaje"),
+    questions: z
+      .string()
+      .optional()
+      .transform((raw, ctx) => {
+        try {
+          return JSON.parse(raw || "[]") as unknown;
+        } catch {
+          ctx.addIssue({ code: "custom", message: "Las preguntas no son válidas." });
+          return z.NEVER;
+        }
+      })
+      .pipe(
+        z
+          .array(formQuestionSchema)
+          .max(MAX_QUESTIONS, { error: `Puedes agregar hasta ${MAX_QUESTIONS} preguntas propias.` }),
+      ),
+  })
+  .refine((d) => d.mode !== "external" || FORM_URL_PATTERN.test(d.external_url ?? ""), {
+    path: ["external_url"],
+    error:
+      "Pega el enlace completo de tu formulario (Google Forms, Microsoft Forms, Typeform, Jotform o Tally).",
   });
 
 export const decisionSchema = z.object({

@@ -4,11 +4,12 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { submitApplication } from "@/actions/applications";
-import { ApplicationForm } from "@/components/applications/application-form";
+import { ApplicationForm, ExternalApplicationForm } from "@/components/applications/application-form";
 import { PetPhoto } from "@/components/pets/pet-photo";
 import { Alert } from "@/components/ui/alert";
 import { ButtonLink } from "@/components/ui/button";
 import { Card, Container } from "@/components/ui/card";
+import { getOwnerForm } from "@/lib/adoption-form";
 import { isAccountActive, requireProfile } from "@/lib/auth";
 import { placeLabel } from "@/lib/chile";
 import { SEX_LABELS, SIZE_SHORT } from "@/lib/constants";
@@ -33,13 +34,18 @@ export default async function ApplyPage({ params }: PageProps<"/mascotas/[id]/po
     .maybeSingle();
   if (!pet) notFound();
 
-  const { data: existing } = await supabase
-    .from("applications")
-    .select("id")
-    .eq("pet_id", pet.id)
-    .eq("applicant_id", profile.id)
-    .in("status", ["pending", "reviewing", "approved"])
-    .maybeSingle();
+  const [{ data: existing }, { data: publisher }, form] = await Promise.all([
+    supabase
+      .from("applications")
+      .select("id")
+      .eq("pet_id", pet.id)
+      .eq("applicant_id", profile.id)
+      .in("status", ["pending", "reviewing", "approved"])
+      .maybeSingle(),
+    supabase.from("profiles").select("display_name").eq("id", pet.owner_id).maybeSingle(),
+    getOwnerForm(supabase, pet.owner_id),
+  ]);
+  const publisherName = publisher?.display_name ?? "quien publica";
   if (existing) redirect(`/solicitudes/${existing.id}`);
 
   const blocker =
@@ -96,12 +102,29 @@ export default async function ApplyPage({ params }: PageProps<"/mascotas/[id]/po
                 <strong>Requisitos de quien publica:</strong> {pet.requirements}
               </span>
             )}
+            {form.intro && (
+              <span className="mt-2 block whitespace-pre-line">
+                <strong>Mensaje de {publisherName}:</strong> {form.intro}
+              </span>
+            )}
           </Alert>
-          <ApplicationForm
-            petName={pet.name}
-            species={pet.species}
-            action={submitApplication.bind(null, pet.id)}
-          />
+          {form.externalUrl ? (
+            <ExternalApplicationForm
+              petName={pet.name}
+              species={pet.species}
+              publisherName={publisherName}
+              formUrl={form.externalUrl}
+              action={submitApplication.bind(null, pet.id)}
+            />
+          ) : (
+            <ApplicationForm
+              petName={pet.name}
+              species={pet.species}
+              publisherName={publisherName}
+              questions={form.questions}
+              action={submitApplication.bind(null, pet.id)}
+            />
+          )}
         </>
       )}
     </Container>

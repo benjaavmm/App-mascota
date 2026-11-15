@@ -3,12 +3,82 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 export type Database = {
   public: {
     Tables: {
+      adoption_form_questions: {
+        Row: {
+          id: string;
+          kind: string;
+          label: string;
+          options: string[] | null;
+          owner_id: string;
+          position: number;
+          required: boolean;
+        };
+        ComputedFields: never;
+        Insert: {
+          id?: string;
+          kind: string;
+          label: string;
+          options?: string[] | null;
+          owner_id: string;
+          position: number;
+          required?: boolean;
+        };
+        Update: {
+          id?: string;
+          kind?: string;
+          label?: string;
+          options?: string[] | null;
+          owner_id?: string;
+          position?: number;
+          required?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "adoption_form_questions_owner_id_fkey";
+            columns: ["owner_id"];
+            isOneToOne: false;
+            referencedRelation: "adoption_forms";
+            referencedColumns: ["owner_id"];
+          },
+        ];
+      };
+      adoption_forms: {
+        Row: {
+          external_url: string | null;
+          intro: string | null;
+          owner_id: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          external_url?: string | null;
+          intro?: string | null;
+          owner_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          external_url?: string | null;
+          intro?: string | null;
+          owner_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "adoption_forms_owner_id_fkey";
+            columns: ["owner_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       applications: {
         Row: {
           accepts_followup: boolean;
-          adults_count: number;
+          adults_count: number | null;
           applicant_id: string;
-          care_plan: string;
+          applicant_note: string | null;
+          care_plan: string | null;
           children_ages: string | null;
           children_count: number;
           commits_return_not_abandon: boolean;
@@ -17,17 +87,20 @@ export type Database = {
           completed_at: string | null;
           conversation_id: string | null;
           created_at: string;
+          custom_answers: NonNullable<Json>;
           decided_at: string | null;
           decision_message: string | null;
-          experience: string;
-          has_secure_yard: boolean;
-          hours_alone: number;
-          household_agrees: boolean;
-          housing_tenure: Database["public"]["Enums"]["housing_tenure"];
-          housing_type: Database["public"]["Enums"]["housing_type"];
+          experience: string | null;
+          external_form_confirmed: boolean | null;
+          external_form_url: string | null;
+          has_secure_yard: boolean | null;
+          hours_alone: number | null;
+          household_agrees: boolean | null;
+          housing_tenure: Database["public"]["Enums"]["housing_tenure"] | null;
+          housing_type: Database["public"]["Enums"]["housing_type"] | null;
           id: string;
           landlord_allows_pets: boolean | null;
-          motivation: string;
+          motivation: string | null;
           other_pets: string | null;
           pet_id: string;
           publisher_id: string;
@@ -37,9 +110,10 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           accepts_followup: boolean;
-          adults_count: number;
+          adults_count?: number | null;
           applicant_id?: string;
-          care_plan: string;
+          applicant_note?: string | null;
+          care_plan?: string | null;
           children_ages?: string | null;
           children_count?: number;
           commits_return_not_abandon: boolean;
@@ -48,17 +122,20 @@ export type Database = {
           completed_at?: string | null;
           conversation_id?: string | null;
           created_at?: string;
+          custom_answers?: NonNullable<Json>;
           decided_at?: string | null;
           decision_message?: string | null;
-          experience: string;
-          has_secure_yard: boolean;
-          hours_alone: number;
-          household_agrees: boolean;
-          housing_tenure: Database["public"]["Enums"]["housing_tenure"];
-          housing_type: Database["public"]["Enums"]["housing_type"];
+          experience?: string | null;
+          external_form_confirmed?: boolean | null;
+          external_form_url?: string | null;
+          has_secure_yard?: boolean | null;
+          hours_alone?: number | null;
+          household_agrees?: boolean | null;
+          housing_tenure?: Database["public"]["Enums"]["housing_tenure"] | null;
+          housing_type?: Database["public"]["Enums"]["housing_type"] | null;
           id?: string;
           landlord_allows_pets?: boolean | null;
-          motivation: string;
+          motivation?: string | null;
           other_pets?: string | null;
           pet_id: string;
           publisher_id: string;
@@ -67,9 +144,10 @@ export type Database = {
         };
         Update: {
           accepts_followup?: boolean;
-          adults_count?: number;
+          adults_count?: number | null;
           applicant_id?: string;
-          care_plan?: string;
+          applicant_note?: string | null;
+          care_plan?: string | null;
           children_ages?: string | null;
           children_count?: number;
           commits_return_not_abandon?: boolean;
@@ -78,17 +156,20 @@ export type Database = {
           completed_at?: string | null;
           conversation_id?: string | null;
           created_at?: string;
+          custom_answers?: NonNullable<Json>;
           decided_at?: string | null;
           decision_message?: string | null;
-          experience?: string;
-          has_secure_yard?: boolean;
-          hours_alone?: number;
-          household_agrees?: boolean;
-          housing_tenure?: Database["public"]["Enums"]["housing_tenure"];
-          housing_type?: Database["public"]["Enums"]["housing_type"];
+          experience?: string | null;
+          external_form_confirmed?: boolean | null;
+          external_form_url?: string | null;
+          has_secure_yard?: boolean | null;
+          hours_alone?: number | null;
+          household_agrees?: boolean | null;
+          housing_tenure?: Database["public"]["Enums"]["housing_tenure"] | null;
+          housing_type?: Database["public"]["Enums"]["housing_type"] | null;
           id?: string;
           landlord_allows_pets?: boolean | null;
-          motivation?: string;
+          motivation?: string | null;
           other_pets?: string | null;
           pet_id?: string;
           publisher_id?: string;
@@ -1120,6 +1201,10 @@ export type Database = {
         Args: { p_approve: boolean; p_note?: string; p_request_id: string };
         Returns: undefined;
       };
+      save_adoption_form: {
+        Args: { p_external_url: string; p_intro: string; p_questions?: Json };
+        Returns: undefined;
+      };
       save_push_subscription: {
         Args: { p_auth: string; p_endpoint: string; p_p256dh: string; p_user_agent?: string };
         Returns: undefined;
@@ -1143,13 +1228,20 @@ export type Database = {
         Args: { p_followup_id: string; p_notes: string; p_photo_path?: string; p_wellbeing: number };
         Returns: undefined;
       };
+      valid_form_options: { Args: { p_options: string[] }; Returns: boolean };
       withdraw_application: { Args: { p_application_id: string }; Returns: undefined };
     };
     Enums: {
       account_status: "active" | "suspended" | "banned";
       account_type: "person" | "rescuer" | "shelter";
       application_status:
-        "pending" | "reviewing" | "approved" | "rejected" | "withdrawn" | "cancelled" | "completed";
+        | "pending"
+        | "reviewing"
+        | "approved"
+        | "rejected"
+        | "withdrawn"
+        | "cancelled"
+        | "completed";
       energy_level: "low" | "medium" | "high";
       housing_tenure: "owned" | "rented" | "family" | "other";
       housing_type: "house" | "apartment" | "rural" | "other";
@@ -1185,13 +1277,14 @@ type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    keyof (DefaultSchema["Tables"] & DefaultSchema["Views"]) | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
@@ -1209,12 +1302,13 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I;
@@ -1231,12 +1325,13 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U;
@@ -1253,12 +1348,13 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never) = never,
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
@@ -1267,12 +1363,13 @@ export type Enums<
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    keyof DefaultSchema["CompositeTypes"] | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never) = never,
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]

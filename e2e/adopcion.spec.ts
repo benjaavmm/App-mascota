@@ -3,6 +3,28 @@ import { expect, test, type Page } from "@playwright/test";
 import { SEED, confirmDialog, getEmailLink, login, makeTestPhoto, newLoggedInPage } from "./helpers";
 
 // Flujo completo: registro → publicar → postular → chat → aprobar → adopción → seguimiento → reporte → moderación.
+async function fillQuestionnaire(page: Page) {
+  await page.getByText("Departamento", { exact: true }).click();
+  await page.getByRole("group", { name: /La vivienda es/ }).getByText("Arrendada").click();
+  await page.getByRole("group", { name: /arriendo/ }).getByText("Sí").click();
+  await page.getByRole("group", { name: /patio/ }).getByText("No").click();
+  await page.getByLabel("Adultos en el hogar").fill("2");
+  await page.getByLabel(/Todas las personas con las que vivo/).check();
+  await page.getByLabel(/Cuántas horas al día/).fill("4");
+  await page.getByLabel("¿Qué experiencia tienes cuidando animales?").fill("Crecí con perros rescatados en la casa de mis padres.");
+  await page
+    .getByLabel(/Por qué quieres adoptar/)
+    .fill("Trabajo de forma híbrida, tengo tiempo para paseos diarios y quiero darle un hogar definitivo y mucho amor.");
+  await page.getByLabel(/vacaciones, mudanzas/).fill("Mi hermana vive cerca y la cuidaría si viajo.");
+}
+
+async function checkCommitments(page: Page) {
+  await page.getByLabel(/atención veterinaria/).check();
+  await page.getByLabel(/esterilizarla/).check();
+  await page.getByLabel(/seguimientos/).check();
+  await page.getByLabel(/Nunca la abandonaré/).check();
+}
+
 test.describe.serial("Flujo completo de adopción", () => {
   const run = Date.now().toString(36);
   const adopterEmail = `adoptante-${run}@ayudapatitas.test`;
@@ -170,22 +192,8 @@ test.describe.serial("Flujo completo de adopción", () => {
     await adopter.getByRole("link", { name: "Quiero adoptar" }).click();
     await expect(adopter).toHaveURL(/\/postular$/);
 
-    await adopter.getByText("Departamento", { exact: true }).click();
-    await adopter.getByRole("group", { name: /La vivienda es/ }).getByText("Arrendada").click();
-    await adopter.getByRole("group", { name: /arriendo/ }).getByText("Sí").click();
-    await adopter.getByRole("group", { name: /patio/ }).getByText("No").click();
-    await adopter.getByLabel("Adultos en el hogar").fill("2");
-    await adopter.getByLabel(/Todas las personas con las que vivo/).check();
-    await adopter.getByLabel(/Cuántas horas al día/).fill("4");
-    await adopter.getByLabel("¿Qué experiencia tienes cuidando animales?").fill("Crecí con perros rescatados en la casa de mis padres.");
-    await adopter
-      .getByLabel(/Por qué quieres adoptar/)
-      .fill("Trabajo de forma híbrida, tengo tiempo para paseos diarios y quiero darle un hogar definitivo y mucho amor.");
-    await adopter.getByLabel(/vacaciones, mudanzas/).fill("Mi hermana vive cerca y la cuidaría si viajo.");
-    await adopter.getByLabel(/atención veterinaria/).check();
-    await adopter.getByLabel(/esterilizarla/).check();
-    await adopter.getByLabel(/seguimientos/).check();
-    await adopter.getByLabel(/Nunca la abandonaré/).check();
+    await fillQuestionnaire(adopter);
+    await checkCommitments(adopter);
     await adopter.getByRole("button", { name: "Enviar solicitud" }).click();
 
     await expect(adopter).toHaveURL(/\/solicitudes\/[0-9a-f-]{36}\?enviada=1/);
@@ -360,5 +368,86 @@ test.describe("Protección de rutas", () => {
     expect(response?.headers()["content-security-policy"]).toContain("nonce-");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     expect(errors.filter((e) => /Content Security Policy/i.test(e))).toEqual([]);
+  });
+});
+
+test.describe.serial("Formulario de adopción propio", () => {
+  let rescuer: Page;
+  let adopter: Page;
+
+  test.beforeAll(async ({ browser }) => {
+    rescuer = await newLoggedInPage(browser, SEED.rescuer);
+    adopter = await newLoggedInPage(browser, SEED.adopter);
+  });
+  test.afterAll(async () => {
+    // Deja a la rescatista con el cuestionario de AyudaPatitas, sin preguntas propias.
+    await rescuer.goto("/mis-publicaciones/formulario");
+    await rescuer.getByText("Cuestionario de AyudaPatitas", { exact: true }).click();
+    while ((await rescuer.getByRole("button", { name: /Eliminar pregunta/ }).count()) > 0) {
+      await rescuer.getByRole("button", { name: /Eliminar pregunta/ }).first().click();
+    }
+    await rescuer.getByRole("button", { name: "Guardar formulario" }).click();
+    await expect(rescuer.getByText(/¡Listo!/)).toBeVisible();
+    await rescuer.context().close();
+    await adopter.context().close();
+  });
+
+  async function applyTo(petName: string) {
+    await adopter.goto(`/mascotas?q=${encodeURIComponent(petName)}`);
+    await adopter.getByRole("link", { name: new RegExp(petName) }).first().click();
+    await adopter.getByRole("link", { name: "Quiero adoptar" }).click();
+    await expect(adopter).toHaveURL(/\/postular$/);
+  }
+
+  test("agregar preguntas propias al cuestionario", async () => {
+    await rescuer.goto("/mis-publicaciones");
+    await rescuer.getByRole("link", { name: "Mi formulario de adopción" }).click();
+    await rescuer.getByRole("button", { name: "Agregar pregunta" }).click();
+    await rescuer.getByLabel("Texto de la pregunta 1").fill("¿Tienes mallas en las ventanas?");
+    await rescuer.getByLabel("Tipo de respuesta de la pregunta 1").selectOption("yesno");
+    await rescuer.getByRole("button", { name: "Agregar pregunta" }).click();
+    await rescuer.getByLabel("Texto de la pregunta 2").fill("¿Cómo nos conociste?");
+    await rescuer.getByLabel("Tipo de respuesta de la pregunta 2").selectOption("choice");
+    await rescuer.getByLabel(/Opciones \(una por línea/).fill("Instagram\nUn amigo\nOtro");
+    await rescuer.getByText("Obligatoria").nth(1).click();
+    await rescuer.getByRole("button", { name: "Guardar formulario" }).click();
+    await expect(rescuer.getByText(/Tus preguntas ya aparecen/)).toBeVisible();
+  });
+
+  test("quien postula responde las preguntas propias", async () => {
+    await applyTo("Luna");
+    await expect(adopter.getByRole("heading", { name: "Preguntas de Camila Rescata" })).toBeVisible();
+    await fillQuestionnaire(adopter);
+    await checkCommitments(adopter);
+    await adopter.getByRole("button", { name: "Enviar solicitud" }).click();
+    await expect(adopter.getByText("Esta pregunta es obligatoria.")).toBeVisible();
+    await adopter.getByRole("group", { name: /mallas/ }).getByText("Sí").click();
+    await adopter.getByRole("group", { name: /Cómo nos conociste/ }).getByText("Instagram").click();
+    await adopter.getByRole("button", { name: "Enviar solicitud" }).click();
+    await expect(adopter).toHaveURL(/\/solicitudes\/[0-9a-f-]{36}\?enviada=1/);
+    await expect(adopter.getByText("¿Tienes mallas en las ventanas?")).toBeVisible();
+    await expect(adopter.getByText("Instagram", { exact: true })).toBeVisible();
+  });
+
+  test("usar un formulario externo (Google Forms)", async () => {
+    await rescuer.goto("/mis-publicaciones/formulario");
+    await rescuer.getByText("Mi propio formulario", { exact: true }).click();
+    await rescuer.getByLabel(/Enlace de tu formulario/).fill("https://evil.example.com/form");
+    await rescuer.getByRole("button", { name: "Guardar formulario" }).click();
+    await expect(rescuer.getByText(/Pega el enlace completo de tu formulario/)).toBeVisible();
+    await rescuer.getByLabel(/Enlace de tu formulario/).fill("https://forms.gle/AyudaPatitasE2E");
+    await rescuer.getByRole("button", { name: "Guardar formulario" }).click();
+    await expect(rescuer.getByText(/verán el enlace a tu formulario/)).toBeVisible();
+
+    await applyTo("Pirata");
+    const link = adopter.getByRole("link", { name: "Abrir formulario" });
+    await expect(link).toHaveAttribute("href", "https://forms.gle/AyudaPatitasE2E");
+    await checkCommitments(adopter);
+    await adopter.getByRole("button", { name: "Enviar postulación" }).click();
+    await expect(adopter.getByText(/Confirma que completaste el formulario/)).toBeVisible();
+    await adopter.getByLabel(/Ya completé y envié el formulario/).check();
+    await adopter.getByRole("button", { name: "Enviar postulación" }).click();
+    await expect(adopter).toHaveURL(/\/solicitudes\/[0-9a-f-]{36}\?enviada=1/);
+    await expect(adopter.getByText(/Postuló con el formulario de Camila Rescata/)).toBeVisible();
   });
 });

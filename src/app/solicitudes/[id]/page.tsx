@@ -23,6 +23,7 @@ import {
   HOUSING_TYPE_LABELS,
 } from "@/lib/constants";
 import { formatDate, formatRelative } from "@/lib/format";
+import { formHost, isAnswerList } from "@/lib/forms";
 import { toProfileStats } from "@/lib/queries";
 import { createClient } from "@/lib/supabase/server";
 import { firstParam, isUuid } from "@/lib/utils";
@@ -158,22 +159,49 @@ export default async function ApplicationPage({ params, searchParams }: PageProp
 
           <CardSection title="Respuestas del cuestionario">
             <dl className="divide-y divide-stone-100">
-              <Answer label="Vivienda">
-                {HOUSING_TYPE_LABELS[app.housing_type]} · {HOUSING_TENURE_LABELS[app.housing_tenure]}
-                {app.housing_tenure === "rented" &&
-                  ` · Arriendo permite mascotas: ${yesNo(app.landlord_allows_pets)}`}
-              </Answer>
-              <Answer label="Patio o terraza cerrada">{yesNo(app.has_secure_yard)}</Answer>
-              <Answer label="Personas en el hogar">
-                {app.adults_count} adulto(s), {app.children_count} niño(s)
-                {app.children_ages ? ` (${app.children_ages})` : ""}
-                {" · "}Todos están de acuerdo: {yesNo(app.household_agrees)}
-              </Answer>
-              <Answer label="Otras mascotas">{app.other_pets ?? "No tiene"}</Answer>
-              <Answer label="Horas al día que estaría solo/a">{app.hours_alone} h</Answer>
-              <Answer label="Experiencia cuidando animales">{app.experience}</Answer>
-              <Answer label="Motivación">{app.motivation}</Answer>
-              <Answer label="Plan ante vacaciones o cambios">{app.care_plan}</Answer>
+              {app.external_form_url && (
+                <Answer label="Formulario propio">
+                  Postuló con el formulario de {app.publisher?.display_name ?? "quien publica"} y confirmó
+                  haberlo enviado.{" "}
+                  {isPublisher && (
+                    <a
+                      href={app.external_form_url}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow"
+                      className="font-bold text-brand-700 underline"
+                    >
+                      Abrir formulario ({formHost(app.external_form_url)})
+                    </a>
+                  )}
+                </Answer>
+              )}
+              {app.applicant_note && <Answer label="Mensaje">{app.applicant_note}</Answer>}
+              {app.housing_type && app.housing_tenure && (
+                <>
+                  <Answer label="Vivienda">
+                    {HOUSING_TYPE_LABELS[app.housing_type]} · {HOUSING_TENURE_LABELS[app.housing_tenure]}
+                    {app.housing_tenure === "rented" &&
+                      ` · Arriendo permite mascotas: ${yesNo(app.landlord_allows_pets)}`}
+                  </Answer>
+                  <Answer label="Patio o terraza cerrada">{yesNo(app.has_secure_yard)}</Answer>
+                  <Answer label="Personas en el hogar">
+                    {app.adults_count} adulto(s), {app.children_count} niño(s)
+                    {app.children_ages ? ` (${app.children_ages})` : ""}
+                    {" · "}Todos están de acuerdo: {yesNo(app.household_agrees)}
+                  </Answer>
+                  <Answer label="Otras mascotas">{app.other_pets ?? "No tiene"}</Answer>
+                  <Answer label="Horas al día que estaría solo/a">{app.hours_alone} h</Answer>
+                  <Answer label="Experiencia cuidando animales">{app.experience}</Answer>
+                  <Answer label="Motivación">{app.motivation}</Answer>
+                  <Answer label="Plan ante vacaciones o cambios">{app.care_plan}</Answer>
+                </>
+              )}
+              {isAnswerList(app.custom_answers) &&
+                app.custom_answers.map((a, i) => (
+                  <Answer key={i} label={a.question}>
+                    {a.answer}
+                  </Answer>
+                ))}
               <Answer label="Compromisos aceptados">
                 <ul className="space-y-1">
                   {[
