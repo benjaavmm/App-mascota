@@ -73,7 +73,12 @@ export async function submitApplication(
         values,
       };
     }
-    row = { pet_id: petId, ...parsed.data, custom_answers: answers.byId } as TablesInsert<"applications">;
+    row = {
+      pet_id: petId,
+      ...parsed.data,
+      // Solo se envían si hay preguntas propias respondidas.
+      ...(Object.keys(answers.byId).length ? { custom_answers: answers.byId } : {}),
+    } as TablesInsert<"applications">;
   }
 
   const { data, error } = await supabase
